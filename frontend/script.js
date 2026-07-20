@@ -6,7 +6,7 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
 console.log('🔗 API_URL:', API_URL);
 
 let photosData = [];
-let state = { name: '', shortLine: '', letter: '', passkey: '1122', photos: [], giftId: null };
+let state = { name: '', shortLine: '', letter: '', passkey: '8274', photos: [], giftId: null };
 let enteredPass = '';
 let currentGiftData = null;
 
@@ -157,8 +157,8 @@ if (startBtn) {
             const name = document.getElementById('herName')?.value.trim() || 'my love';
             const shortLine = document.getElementById('shortLine')?.value.trim() || 'In your smile, I found my peace.';
             const letter = document.getElementById('letterText')?.value.trim() || 'You mean the world to me.';
-            const pk = document.getElementById('passkey')?.value.trim() || '1122';
-            const passkey = /^\d{4}$/.test(pk) ? pk : '1122';
+            const pk = document.getElementById('passkey')?.value.trim() || '8274';
+            const passkey = /^\d{4}$/.test(pk) ? pk : '8274';
 
             const payload = { name, shortLine, letter, passkey, photos: photosData };
 
