@@ -1106,9 +1106,9 @@
                 <div class="salutation" id="letterSalutation">Dear friend,</div>
                 <div class="body-text" id="letterBody"></div>
                 <div class="sign" id="letterSign">— with love</div>
-          <!-- </div>
+            </div>
             <button class="restart-btn" id="restartBtn">⟳ Start over</button>
-        </div>--> 
+        </div>
     </div>
 
     <script>
@@ -1151,7 +1151,7 @@
             shortLine: '',
             letterText: '',
             passkey: '1122',
-            photos: [], // array of data URLs
+            photos: [],
             currentScreen: 'setup',
             passEntry: '',
             envelopeOpened: false,
@@ -1164,7 +1164,7 @@
         // ─── Helpers ───
         function showScreen(id) {
             Object.keys(screens).forEach(k => {
-                screens[k].classList.toggle('active', k === id);
+                if (screens[k]) screens[k].classList.toggle('active', k === id);
             });
             state.currentScreen = id;
         }
@@ -1226,34 +1226,36 @@
         const photoInput = $('photoInput');
         const photoPreview = $('photoPreview');
 
-        // Auto-fill short line on name/occasion change
         function autoShort() {
-            const name = nameInput.value.trim() || 'you';
-            const occ = occSelect.value;
-            if (!shortInput.value || shortInput.value === getDefaultShort(occSelect.value, 'you') || shortInput.value ===
-                getDefaultShort(occSelect.value, name)) {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            if (shortInput && (!shortInput.value || shortInput.value === getDefaultShort(occ, 'you') || shortInput.value ===
+                    getDefaultShort(occ, name))) {
                 shortInput.value = getDefaultShort(occ, name);
             }
         }
-        nameInput.addEventListener('input', autoShort);
-        occSelect.addEventListener('change', autoShort);
+        if (nameInput) nameInput.addEventListener('input', autoShort);
+        if (occSelect) occSelect.addEventListener('change', autoShort);
 
         // Photo upload
         const photoData = [];
-        photoInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    photoData.push(ev.target.result);
-                    renderPhotoPreviews();
-                };
-                reader.readAsDataURL(file);
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        photoData.push(ev.target.result);
+                        renderPhotoPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                photoInput.value = '';
             });
-            photoInput.value = '';
-        });
+        }
 
         function renderPhotoPreviews() {
+            if (!photoPreview) return;
             photoPreview.innerHTML = '';
             photoData.forEach((url, i) => {
                 const img = document.createElement('img');
@@ -1278,97 +1280,113 @@
         }
 
         // ─── Start / Preview ───
-        $('startBtn').addEventListener('click', function() {
-            const name = nameInput.value.trim() || 'you';
-            const occ = occSelect.value;
-            const purpose = purposeSelect.value;
-            const short = shortInput.value.trim() || getDefaultShort(occ, name);
-            const letter = letterInput.value.trim() || 'Wishing you all the best.';
-            const pass = passInput.value.trim() || '1122';
+        const startBtn = $('startBtn');
+        if (startBtn) {
+            startBtn.addEventListener('click', function() {
+                const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+                const occ = occSelect ? occSelect.value : 'birthday';
+                const purpose = purposeSelect ? purposeSelect.value : 'celebration';
+                const short = shortInput ? shortInput.value.trim() || getDefaultShort(occ, name) : getDefaultShort(occ,
+                    name);
+                const letter = letterInput ? letterInput.value.trim() || 'Wishing you all the best.' :
+                    'Wishing you all the best.';
+                const pass = passInput ? passInput.value.trim() || '1122' : '1122';
 
-            state.name = name;
-            state.occasion = occ;
-            state.purpose = purpose;
-            state.shortLine = short;
-            state.letterText = letter;
-            state.passkey = pass.padStart(4, '0').slice(0, 4);
-            state.photos = [...photoData];
-            state.passEntry = '';
-            state.envelopeOpened = false;
-            state.candleBlown = false;
-            state.cakeSliced = false;
-            state.unlocked = false;
-            state.heroDone = false;
+                state.name = name;
+                state.occasion = occ;
+                state.purpose = purpose;
+                state.shortLine = short;
+                state.letterText = letter;
+                state.passkey = pass.padStart(4, '0').slice(0, 4);
+                state.photos = [...photoData];
+                state.passEntry = '';
+                state.envelopeOpened = false;
+                state.candleBlown = false;
+                state.cakeSliced = false;
+                state.unlocked = false;
+                state.heroDone = false;
 
-            // update envelope
-            $('toNameDisplay').textContent = name;
-            document.querySelector('.envelope').classList.remove('opened');
+                const nameDisplay = $('toNameDisplay');
+                if (nameDisplay) nameDisplay.textContent = name;
+                const envelopeEl = document.querySelector('.envelope');
+                if (envelopeEl) envelopeEl.classList.remove('opened');
 
-            // update hero
-            $('heroIcon').textContent = getOccasionIcon(occ);
-            $('heroTitle').textContent = getOccasionTitle(occ);
-            $('heroSub').textContent = short;
-            $('purposeBadge').textContent = getPurposeLabel(purpose);
+                const heroIcon = $('heroIcon');
+                if (heroIcon) heroIcon.textContent = getOccasionIcon(occ);
+                const heroTitle = $('heroTitle');
+                if (heroTitle) heroTitle.textContent = getOccasionTitle(occ);
+                const heroSub = $('heroSub');
+                if (heroSub) heroSub.textContent = short;
+                const purposeBadge = $('purposeBadge');
+                if (purposeBadge) purposeBadge.textContent = getPurposeLabel(purpose);
 
-            // update note
-            const hl = document.querySelector('#noteLine .hl');
-            if (hl) hl.textContent = name;
-            const noteText = short.replace(/\[name\]/g, name);
-            document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
-                (m) => `<span class="hl">${m}</span>`);
-            // fallback if no "you"
-            if (!document.querySelector('#noteLine .hl')) {
-                document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>') +
-                    ` <span class="hl">${name}</span>`;
-            }
+                const noteLine = $('noteLine');
+                if (noteLine) {
+                    const noteText = short.replace(/\[name\]/g, name);
+                    noteLine.innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
+                        (m) => `<span class="hl">${m}</span>`);
+                    if (!noteLine.querySelector('.hl')) {
+                        noteLine.innerHTML = noteText.replace(/\n/g, '<br>') +
+                            ` <span class="hl">${name}</span>`;
+                    }
+                }
 
-            // update letter
-            $('letterSalutation').textContent = `Dear ${name},`;
-            $('letterBody').textContent = letter;
-            $('letterSign').textContent = `— with love`;
+                const letterSalutation = $('letterSalutation');
+                if (letterSalutation) letterSalutation.textContent = `Dear ${name},`;
+                const letterBody = $('letterBody');
+                if (letterBody) letterBody.textContent = letter;
+                const letterSign = $('letterSign');
+                if (letterSign) letterSign.textContent = `— with love`;
 
-            // passkey
-            state.passkey = pass.padStart(4, '0').slice(0, 4);
-            $('passError').textContent = '';
-            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                state.passkey = pass.padStart(4, '0').slice(0, 4);
+                const passError = $('passError');
+                if (passError) passError.textContent = '';
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
 
-            // photos
-            renderPhotos();
+                renderPhotos();
 
-            // reset cake
-            const flame = $('flame');
-            flame.classList.remove('blown');
-            $('smoke').classList.remove('active');
-            $('cutMark').classList.remove('show');
-            $('slicePiece').classList.remove('out');
-            $('knife').classList.add('disabled');
-            $('knife').classList.remove('swipe');
-            $('cakeInstruction').textContent = 'Blow the candle 🕯️ — or tap the flame';
-            $('toNoteFromCakeBtn').style.display = 'none';
+                const flame = $('flame');
+                if (flame) flame.classList.remove('blown');
+                const smoke = $('smoke');
+                if (smoke) smoke.classList.remove('active');
+                const cutMark = $('cutMark');
+                if (cutMark) cutMark.classList.remove('show');
+                const slicePiece = $('slicePiece');
+                if (slicePiece) slicePiece.classList.remove('out');
+                const knife = $('knife');
+                if (knife) {
+                    knife.classList.add('disabled');
+                    knife.classList.remove('swipe');
+                }
+                const cakeInstruction = $('cakeInstruction');
+                if (cakeInstruction) cakeInstruction.textContent = 'Blow the candle 🕯️ — or tap the flame';
+                const toNoteFromCakeBtn = $('toNoteFromCakeBtn');
+                if (toNoteFromCakeBtn) toNoteFromCakeBtn.style.display = 'none';
+                const cakeConfetti = $('cakeConfetti');
+                if (cakeConfetti) cakeConfetti.innerHTML = '';
 
-            // clear confetti
-            $('cakeConfetti').innerHTML = '';
-
-            // show envelope
-            showScreen('envelope');
-        });
+                showScreen('envelope');
+            });
+        }
 
         // ─── Envelope ───
         const envelope = document.querySelector('.envelope');
-        envelope.addEventListener('click', function() {
-            if (this.classList.contains('opened')) return;
-            this.classList.add('opened');
-            state.envelopeOpened = true;
-            setTimeout(() => {
-                showScreen('hero');
-                spawnHeroParticles();
-                // auto-transition after hero animation
-            }, 500);
-        });
+        if (envelope) {
+            envelope.addEventListener('click', function() {
+                if (this.classList.contains('opened')) return;
+                this.classList.add('opened');
+                state.envelopeOpened = true;
+                setTimeout(() => {
+                    showScreen('hero');
+                    spawnHeroParticles();
+                }, 500);
+            });
+        }
 
         // ─── Hero particles ───
         function spawnHeroParticles() {
             const container = $('heroParticles');
+            if (!container) return;
             container.innerHTML = '';
             const emojis = ['✨', '🎉', '🎊', '⭐', '💖', '🌸', '🎈', '🌈', '💫', '🌟'];
             const count = 50;
@@ -1387,27 +1405,27 @@
                 p.style.animation = `${dir} ${dur}s ease-in ${delay}s forwards`;
                 container.appendChild(p);
             }
-            // auto remove after animation
             setTimeout(() => { container.innerHTML = ''; }, 7000);
         }
 
         // ─── Hero continue ───
-        $('toNoteBtn').addEventListener('click', function() {
-            state.heroDone = true;
-            // check if we should show cake
-            const cakeOccasions = ['birthday', 'anniversary'];
-            if (cakeOccasions.includes(state.occasion)) {
-                showScreen('cake');
-                // enable knife after a moment
-                setTimeout(() => {
-                    $('knife').classList.remove('disabled');
-                }, 600);
-                // trigger some confetti
-                spawnCakeConfetti(12);
-            } else {
-                showScreen('note');
-            }
-        });
+        const toNoteBtn = $('toNoteBtn');
+        if (toNoteBtn) {
+            toNoteBtn.addEventListener('click', function() {
+                state.heroDone = true;
+                const cakeOccasions = ['birthday', 'anniversary'];
+                if (cakeOccasions.includes(state.occasion)) {
+                    showScreen('cake');
+                    setTimeout(() => {
+                        const knife = $('knife');
+                        if (knife) knife.classList.remove('disabled');
+                    }, 600);
+                    spawnCakeConfetti(12);
+                } else {
+                    showScreen('note');
+                }
+            });
+        }
 
         // ─── Cake screen ───
         const flame = $('flame');
@@ -1418,70 +1436,72 @@
         const cakeInstruction = $('cakeInstruction');
         const toNoteFromCakeBtn = $('toNoteFromCakeBtn');
 
-        // Blow candle
         function blowCandle() {
             if (state.candleBlown) return;
             state.candleBlown = true;
-            flame.classList.add('blown');
-            smoke.classList.add('active');
-            cakeInstruction.textContent = 'Now cut the cake! Tap the knife 🔪';
-            knife.classList.remove('disabled');
+            if (flame) flame.classList.add('blown');
+            if (smoke) smoke.classList.add('active');
+            if (cakeInstruction) cakeInstruction.textContent = 'Now cut the cake! Tap the knife 🔪';
+            if (knife) knife.classList.remove('disabled');
             spawnCakeConfetti(30);
-            // re-enable knife
             setTimeout(() => {
-                if (!state.cakeSliced) {
+                if (!state.cakeSliced && cakeInstruction) {
                     cakeInstruction.textContent = 'Go ahead, tap the knife!';
                 }
             }, 800);
         }
 
-        flame.addEventListener('click', function(e) {
-            e.stopPropagation();
-            blowCandle();
-        });
-
-        // Blow by tapping anywhere on cake stage (except knife)
-        document.querySelector('.cake-stage-wrap').addEventListener('click', function(e) {
-            if (e.target.closest('.knife') || e.target.closest('.flame')) return;
-            if (!state.candleBlown) {
+        if (flame) {
+            flame.addEventListener('click', function(e) {
+                e.stopPropagation();
                 blowCandle();
-            }
-        });
+            });
+        }
 
-        // Knife cut
-        knife.addEventListener('click', function() {
-            if (this.classList.contains('disabled')) return;
-            if (state.cakeSliced) return;
-            if (!state.candleBlown) {
-                cakeInstruction.textContent = 'Blow the candle first! 🕯️';
-                return;
-            }
-            // swipe animation
-            this.classList.add('swipe');
-            setTimeout(() => this.classList.remove('swipe'), 600);
+        const cakeStage = document.querySelector('.cake-stage-wrap');
+        if (cakeStage) {
+            cakeStage.addEventListener('click', function(e) {
+                if (e.target.closest('.knife') || e.target.closest('.flame')) return;
+                if (!state.candleBlown) {
+                    blowCandle();
+                }
+            });
+        }
 
-            // show cut mark
-            cutMark.classList.add('show');
+        if (knife) {
+            knife.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                if (state.cakeSliced) return;
+                if (!state.candleBlown) {
+                    if (cakeInstruction) cakeInstruction.textContent = 'Blow the candle first! 🕯️';
+                    return;
+                }
+                this.classList.add('swipe');
+                setTimeout(() => this.classList.remove('swipe'), 600);
 
-            // slice piece out
-            setTimeout(() => {
-                slicePiece.classList.add('out');
-                state.cakeSliced = true;
-                cakeInstruction.textContent = '🎂 Delicious!';
-                spawnCakeConfetti(40);
-                toNoteFromCakeBtn.style.display = 'inline-block';
-                knife.classList.add('disabled');
-            }, 350);
-        });
+                if (cutMark) cutMark.classList.add('show');
 
-        $('toNoteFromCakeBtn').addEventListener('click', function() {
-            showScreen('note');
-        });
+                setTimeout(() => {
+                    if (slicePiece) slicePiece.classList.add('out');
+                    state.cakeSliced = true;
+                    if (cakeInstruction) cakeInstruction.textContent = '🎂 Delicious!';
+                    spawnCakeConfetti(40);
+                    if (toNoteFromCakeBtn) toNoteFromCakeBtn.style.display = 'inline-block';
+                    knife.classList.add('disabled');
+                }, 350);
+            });
+        }
+
+        if (toNoteFromCakeBtn) {
+            toNoteFromCakeBtn.addEventListener('click', function() {
+                showScreen('note');
+            });
+        }
 
         // ─── Cake confetti ───
         function spawnCakeConfetti(count) {
             const container = $('cakeConfetti');
-            const colors = ['#ff6fa5', '#f2c14e', '#5ec6ff', '#ff9d3a', '#a8e6cf', '#ffd3b4', '#dcedc1', '#ff8a8a', '#b8a9c9'];
+            if (!container) return;
             const emojis = ['🎉', '✨', '🎊', '💖', '⭐', '🌸', '🎈', '🌈'];
             for (let i = 0; i < count; i++) {
                 const p = document.createElement('div');
@@ -1507,12 +1527,16 @@
         }
 
         // ─── Note to Passkey ───
-        $('toPassBtn').addEventListener('click', function() {
-            showScreen('pass');
-            state.passEntry = '';
-            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
-            $('passError').textContent = '';
-        });
+        const toPassBtn = $('toPassBtn');
+        if (toPassBtn) {
+            toPassBtn.addEventListener('click', function() {
+                showScreen('pass');
+                state.passEntry = '';
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const passError = $('passError');
+                if (passError) passError.textContent = '';
+            });
+        }
 
         // ─── Passkey keypad ───
         const passDots = document.querySelectorAll('#passDots span');
@@ -1530,24 +1554,22 @@
                 const key = this.dataset.k;
                 if (key === 'clear') {
                     state.passEntry = '';
-                    passError.textContent = '';
+                    if (passError) passError.textContent = '';
                     updatePassDots();
                     return;
                 }
                 if (key === 'back') {
                     state.passEntry = state.passEntry.slice(0, -1);
-                    passError.textContent = '';
+                    if (passError) passError.textContent = '';
                     updatePassDots();
                     return;
                 }
                 if (state.passEntry.length >= 4) return;
                 state.passEntry += key;
                 updatePassDots();
-                passError.textContent = '';
+                if (passError) passError.textContent = '';
                 if (state.passEntry.length === 4) {
-                    // check
                     if (state.passEntry === state.passkey) {
-                        // correct!
                         state.unlocked = true;
                         setTimeout(() => {
                             showScreen('unlock');
@@ -1560,11 +1582,11 @@
                             }, 1200);
                         }, 300);
                     } else {
-                        passError.textContent = '❌ Wrong passkey, try again';
+                        if (passError) passError.textContent = '❌ Wrong passkey, try again';
                         setTimeout(() => {
                             state.passEntry = '';
                             updatePassDots();
-                            passError.textContent = '';
+                            if (passError) passError.textContent = '';
                         }, 800);
                     }
                 }
@@ -1574,13 +1596,14 @@
         // ─── Photos ───
         function renderPhotos() {
             const grid = $('photoGrid');
+            if (!grid) return;
             grid.innerHTML = '';
             if (!state.photos || state.photos.length === 0) {
                 grid.innerHTML =
                     '<div class="no-photos">No photos added — but that\'s okay. The words matter most.</div>';
                 return;
             }
-            state.photos.forEach((url, i) => {
+            state.photos.forEach((url) => {
                 const div = document.createElement('div');
                 div.className = 'taped';
                 const rot = (Math.random() - 0.5) * 8;
@@ -1593,55 +1616,63 @@
             });
         }
 
-        $('toLetterBtn').addEventListener('click', function() {
-            showScreen('letter');
-        });
+        const toLetterBtn = $('toLetterBtn');
+        if (toLetterBtn) {
+            toLetterBtn.addEventListener('click', function() {
+                showScreen('letter');
+            });
+        }
 
         // ─── Restart ───
-        $('restartBtn').addEventListener('click', function() {
-            showScreen('setup');
-        });
+        const restartBtn = $('restartBtn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', function() {
+                showScreen('setup');
+            });
+        }
 
         // ─── EXPORT FIX ───
-        $('exportBtn').addEventListener('click', function() {
-            const name = nameInput.value.trim() || 'you';
-            const occ = occSelect.value;
-            const purpose = purposeSelect.value;
-            const short = shortInput.value.trim() || getDefaultShort(occ, name);
-            const letter = letterInput.value.trim() || 'Wishing you all the best.';
-            const pass = passInput.value.trim() || '1122';
+        const exportBtn = $('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+                const occ = occSelect ? occSelect.value : 'birthday';
+                const purpose = purposeSelect ? purposeSelect.value : 'celebration';
+                const short = shortInput ? shortInput.value.trim() || getDefaultShort(occ, name) : getDefaultShort(occ,
+                    name);
+                const letter = letterInput ? letterInput.value.trim() || 'Wishing you all the best.' :
+                    'Wishing you all the best.';
+                const pass = passInput ? passInput.value.trim() || '1122' : '1122';
 
-            const data = {
-                name,
-                occasion: occ,
-                purpose,
-                shortLine: short,
-                letterText: letter,
-                passkey: pass.padStart(4, '0').slice(0, 4),
-                photos: photoData,
-            };
+                const data = {
+                    name,
+                    occasion: occ,
+                    purpose,
+                    shortLine: short,
+                    letterText: letter,
+                    passkey: pass.padStart(4, '0').slice(0, 4),
+                    photos: photoData,
+                };
 
-            const htmlContent = generateStandaloneHTML(data);
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `celebration_${name.replace(/\s/g,'_')}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+                const htmlContent = generateStandaloneHTML(data);
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `celebration_${name.replace(/\s/g,'_')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
 
         function generateStandaloneHTML(data) {
-            // Get current HTML content
             const doctype = '<!DOCTYPE html>\n';
             const html = document.documentElement.outerHTML;
 
-            // Create script that loads data and jumps directly to celebration
             const dataScript = `
         <script>
-        // Wait for page to load and main script to initialize
         (function() {
             function waitForLoad() {
                 if (typeof loadFromData !== 'undefined' && typeof showScreen !== 'undefined') {
@@ -1655,9 +1686,7 @@
         <\/script>
         `;
 
-            // Insert before </body>
             const modifiedHtml = html.replace('</body>', dataScript + '\n</body>');
-
             return doctype + modifiedHtml;
         }
 
@@ -1677,38 +1706,51 @@
             state.unlocked = false;
             state.heroDone = false;
 
-            // Fill form for reference
-            nameInput.value = state.name;
-            occSelect.value = state.occasion;
-            purposeSelect.value = state.purpose;
-            shortInput.value = state.shortLine;
-            letterInput.value = state.letterText;
-            passInput.value = state.passkey;
-            // photos
+            if (nameInput) nameInput.value = state.name;
+            if (occSelect) occSelect.value = state.occasion;
+            if (purposeSelect) purposeSelect.value = state.purpose;
+            if (shortInput) shortInput.value = state.shortLine;
+            if (letterInput) letterInput.value = state.letterText;
+            if (passInput) passInput.value = state.passkey;
+
             photoData.length = 0;
             state.photos.forEach(url => photoData.push(url));
             renderPhotoPreviews();
 
-            // Jump to envelope
-            $('toNameDisplay').textContent = state.name;
-            document.querySelector('.envelope').classList.remove('opened');
-            $('heroIcon').textContent = getOccasionIcon(state.occasion);
-            $('heroTitle').textContent = getOccasionTitle(state.occasion);
-            $('heroSub').textContent = state.shortLine;
-            $('purposeBadge').textContent = getPurposeLabel(state.purpose);
-            const noteText = state.shortLine.replace(/\[name\]/g, state.name);
-            document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
-                (m) => `<span class="hl">${m}</span>`);
-            if (!document.querySelector('#noteLine .hl')) {
-                document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>') +
-                    ` <span class="hl">${state.name}</span>`;
+            const nameDisplay = $('toNameDisplay');
+            if (nameDisplay) nameDisplay.textContent = state.name;
+            const envelopeEl = document.querySelector('.envelope');
+            if (envelopeEl) envelopeEl.classList.remove('opened');
+
+            const heroIcon = $('heroIcon');
+            if (heroIcon) heroIcon.textContent = getOccasionIcon(state.occasion);
+            const heroTitle = $('heroTitle');
+            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
+            const heroSub = $('heroSub');
+            if (heroSub) heroSub.textContent = state.shortLine;
+            const purposeBadge = $('purposeBadge');
+            if (purposeBadge) purposeBadge.textContent = getPurposeLabel(state.purpose);
+
+            const noteLine = $('noteLine');
+            if (noteLine) {
+                const noteText = state.shortLine.replace(/\[name\]/g, state.name);
+                noteLine.innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
+                    (m) => `<span class="hl">${m}</span>`);
+                if (!noteLine.querySelector('.hl')) {
+                    noteLine.innerHTML = noteText.replace(/\n/g, '<br>') +
+                        ` <span class="hl">${state.name}</span>`;
+                }
             }
-            $('letterSalutation').textContent = `Dear ${state.name},`;
-            $('letterBody').textContent = state.letterText;
-            $('letterSign').textContent = `— with love`;
+
+            const letterSalutation = $('letterSalutation');
+            if (letterSalutation) letterSalutation.textContent = `Dear ${state.name},`;
+            const letterBody = $('letterBody');
+            if (letterBody) letterBody.textContent = state.letterText;
+            const letterSign = $('letterSign');
+            if (letterSign) letterSign.textContent = `— with love`;
+
             renderPhotos();
 
-            // reset cake
             const flameEl = $('flame');
             if (flameEl) flameEl.classList.remove('blown');
             const smokeEl = $('smoke');
@@ -1738,14 +1780,14 @@
         if (importData) {
             try {
                 const parsed = JSON.parse(decodeURIComponent(importData));
-                // Wait for script to load
                 setTimeout(() => loadFromData(parsed), 300);
             } catch (e) { /* ignore */ }
         }
 
         // ─── Initial setup ───
         const today = new Date().toISOString().split('T')[0];
-        $('occDate').value = today;
+        const occDate = $('occDate');
+        if (occDate) occDate.value = today;
         setTimeout(autoShort, 100);
 
         // ─── Keyboard support for passkey ───
@@ -1755,7 +1797,7 @@
                 if (state.passEntry.length >= 4) return;
                 state.passEntry += e.key;
                 updatePassDots();
-                passError.textContent = '';
+                if (passError) passError.textContent = '';
                 if (state.passEntry.length === 4) {
                     if (state.passEntry === state.passkey) {
                         state.unlocked = true;
@@ -1770,23 +1812,23 @@
                             }, 1200);
                         }, 300);
                     } else {
-                        passError.textContent = '❌ Wrong passkey, try again';
+                        if (passError) passError.textContent = '❌ Wrong passkey, try again';
                         setTimeout(() => {
                             state.passEntry = '';
                             updatePassDots();
-                            passError.textContent = '';
+                            if (passError) passError.textContent = '';
                         }, 800);
                     }
                 }
             }
             if (e.key === 'Backspace') {
                 state.passEntry = state.passEntry.slice(0, -1);
-                passError.textContent = '';
+                if (passError) passError.textContent = '';
                 updatePassDots();
             }
             if (e.key === 'Escape' || e.key === 'c') {
                 state.passEntry = '';
-                passError.textContent = '';
+                if (passError) passError.textContent = '';
                 updatePassDots();
             }
         });
