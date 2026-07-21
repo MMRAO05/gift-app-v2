@@ -18,10 +18,14 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https://cdn.jsdelivr.net"   // ← yeh add karein
+            ],
             imgSrc: ["'self'", "data:", "blob:"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            connectSrc: ["'self'", "https://api.github.com"], // optional, for GitHub API
+            connectSrc: ["'self'"],
         },
     },
     crossOriginResourcePolicy: { policy: "cross-origin" }
