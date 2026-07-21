@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>A Little Celebration</title>
+    <title>✨ A Little Celebration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -87,7 +87,7 @@
         }
 
         /* ---------- Setup ---------- */
-        #setup {
+        #scr-setup {
             background: linear-gradient(180deg, #11153a, #0a0e27);
         }
         .setup-card {
@@ -949,14 +949,14 @@
         <div id="starfield"></div>
 
         <!-- SETUP -->
-        <div class="screen active" id="setup">
+        <div class="screen active" id="scr-setup">
             <div class="setup-card glass">
                 <h1>Create a Celebration</h1>
                 <p class="sub">Pick the occasion, add your words, and send a surprise that opens like magic.</p>
 
                 <div class="field">
                     <label for="herName">Their name</label>
-                    <input type="text" id="herName" placeholder="e.g. Ayesha" maxlength="30">
+                    <input type="text" id="herName" placeholder="e.g. Ayesha" maxlength="30" value="Ayesha">
                 </div>
 
                 <div class="row2">
@@ -990,7 +990,7 @@
 
                 <div class="field">
                     <label for="shortLine">Short note (shown early, keep it brief)</label>
-                    <input type="text" id="shortLine" placeholder="Every year with you feels like a gift." maxlength="90">
+                    <input type="text" id="shortLine" placeholder="Every year with you feels like a gift." maxlength="90" value="Every year with you feels like a gift.">
                 </div>
 
                 <div class="field">
@@ -1000,7 +1000,7 @@
 
                 <div class="field">
                     <label for="passkey">4-digit passkey (they'll enter this to unlock)</label>
-                    <input type="password" id="passkey" maxlength="4" inputmode="numeric" placeholder="1122">
+                    <input type="password" id="passkey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122">
                     <small>Leave blank to use 1122</small>
                 </div>
 
@@ -1106,8 +1106,8 @@
                 <div class="salutation" id="letterSalutation">Dear friend,</div>
                 <div class="body-text" id="letterBody"></div>
                 <div class="sign" id="letterSign">— with love</div>
-           <!--</div>
-            <button class="restart-btn" id="restartBtn">⟳ Start over</button>
+           </div>
+           <!-- <button class="restart-btn" id="restartBtn">⟳ Start over</button>
         </div>--> 
     </div>
 
@@ -1132,7 +1132,7 @@
         // ─── DOM refs ───
         const $ = id => document.getElementById(id);
         const screens = {
-            setup: $('setup'),
+            setup: $('scr-setup'),
             envelope: $('envelope-screen'),
             hero: $('hero-screen'),
             cake: $('cake-screen'),
@@ -1671,23 +1671,15 @@
             const doctype = '<!DOCTYPE html>\n';
             const html = document.documentElement.outerHTML;
 
-            const dataScript = `
-        <script>
-        (function() {
-            function waitForLoad() {
-                if (typeof loadFromData !== 'undefined' && typeof showScreen !== 'undefined') {
-                    loadFromData(${JSON.stringify(data)});
-                } else {
-                    setTimeout(waitForLoad, 100);
-                }
-            }
-            window.addEventListener('DOMContentLoaded', waitForLoad);
-        })();
-        <\/script>
-        `;
+            // 🔹 FIX: Hide the setup screen (id="scr-setup") and include data
+            const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${JSON.stringify(data).replace(/</g, '\\u003c')};<\/script>`;
 
-            const modifiedHtml = html.replace('</body>', dataScript + '\n</body>');
-            return doctype + modifiedHtml;
+            const bodyIdx = html.indexOf('<body');
+            if (bodyIdx === -1) return doctype + html;
+            const closeIdx = html.indexOf('>', bodyIdx) + 1;
+            const modifiedHtml = doctype + html.slice(0, closeIdx) + injected + html.slice(closeIdx);
+
+            return modifiedHtml;
         }
 
         // ─── Import data (for standalone HTML) ───
@@ -1772,6 +1764,20 @@
             if (confettiContainer) confettiContainer.innerHTML = '';
 
             showScreen('envelope');
+        }
+
+        // ─── Auto-load if window.__PRESET__ is defined (exported file) ───
+        if (window.__PRESET__) {
+            // Ensure DOM is ready
+            (function() {
+                if (document.readyState === 'complete') {
+                    loadFromData(window.__PRESET__);
+                } else {
+                    window.addEventListener('load', function() {
+                        loadFromData(window.__PRESET__);
+                    });
+                }
+            })();
         }
 
         // ─── Handle import via URL param ───
