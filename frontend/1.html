@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>A Little Celebration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0e27;
+            --bg-mid: #171c42;
+            --glass: rgba(255, 255, 255, .07);
+            --glass-brd: rgba(255, 255, 255, .14);
+            --gold: #f2c14e;
+            --pink: #ff6fa5;
+            --blue: #5ec6ff;
+            --text-light: #f6f3ff;
+            --text-soft: #b9b4d6;
+            --accent: #ff6fa5;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: var(--bg-deep);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+        #stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% -10%, #2a2f6b 0%, var(--bg-deep) 60%);
+        }
+
+        /* starfield */
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: .6;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: .15;
+            }
+            50% {
+                opacity: .9;
+            }
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 22px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .6s ease;
+            z-index: 2;
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-brd);
+            border-radius: 20px;
+        }
+
+        /* ---------- Setup ---------- */
+        #setup {
+            background: linear-gradient(180deg, #11153a, #0a0e27);
+        }
+        .setup-card {
+            width: 100%;
+            max-width: 430px;
+            padding: 26px 22px 30px;
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+        .setup-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 30px;
+            background: linear-gradient(90deg, var(--gold), var(--pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0 0 4px;
+        }
+        .setup-card p.sub {
+            margin: 0 0 20px;
+            color: var(--text-soft);
+            font-size: 13.5px;
+        }
+        .field {
+            text-align: left;
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-soft);
+            margin-bottom: 6px;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+        }
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: rgba(255, 255, 255, .06);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .field select option {
+            background: #171c42;
+            color: #fff;
+        }
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--pink);
+        }
+        .field textarea {
+            min-height: 85px;
+            line-height: 1.4;
+            resize: vertical;
+        }
+        .field small {
+            display: block;
+            margin-top: 4px;
+            color: #7f7aa0;
+            font-size: 11px;
+        }
+        .row2 {
+            display: flex;
+            gap: 10px;
+        }
+        .row2 .field {
+            flex: 1;
+        }
+        .photo-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .photo-thumb {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, .2);
+        }
+        .upload-btn {
+            border: 1.5px dashed rgba(255, 255, 255, .3);
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 12.5px;
+            color: var(--text-soft);
+            cursor: pointer;
+            background: rgba(255, 255, 255, .05);
+        }
+        .primary-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--pink), #c23e7d);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 26px rgba(255, 111, 165, .28);
+        }
+        .primary-btn.gold {
+            background: linear-gradient(135deg, var(--gold), #c9932e);
+            box-shadow: 0 10px 26px rgba(242, 193, 78, .25);
+        }
+        .primary-btn:active {
+            transform: translateY(1px);
+        }
+        .ghost-hint {
+            margin-top: 12px;
+            font-size: 11.5px;
+            color: #7f7aa0;
+            line-height: 1.5;
+        }
+
+        /* ---------- Envelope ---------- */
+        #envelope-screen {}
+        .eyebrow {
+            font-size: 12px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            margin-bottom: 10px;
+        }
+        .env-name {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 26px;
+            margin: 0 0 32px;
+            color: var(--gold);
+        }
+        .envelope {
+            width: 180px;
+            height: 120px;
+            position: relative;
+            cursor: pointer;
+        }
+        .envelope .back {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #2b2f5e, #1c2049);
+            border-radius: 8px;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
+        }
+        .envelope .letter-peek {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            top: -14px;
+            height: 70px;
+            background: #fdf6e8;
+            border-radius: 6px 6px 0 0;
+            transition: transform .6s cubic-bezier(.34, 1.56, .64, 1);
+            transform: translateY(70px);
+        }
+        .envelope.opened .letter-peek {
+            transform: translateY(0px);
+        }
+        .envelope .flap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 64px;
+            background: linear-gradient(160deg, #363b74, #232759);
+            clip-path: polygon(0 0, 50% 62%, 100% 0);
+            transform-origin: top center;
+            transition: transform .5s ease;
+            z-index: 3;
+        }
+        .envelope.opened .flap {
+            transform: rotateX(180deg);
+        }
+        .seal {
+            position: absolute;
+            left: 50%;
+            top: 36px;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ff8fb0, var(--pink) 60%, #a83464);
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .35);
+            transition: transform .4s ease, opacity .4s ease;
+        }
+        .envelope.opened .seal {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+        }
+        .tap-caption {
+            margin-top: 26px;
+            font-size: 13px;
+            color: var(--text-soft);
+            letter-spacing: .03em;
+        }
+
+        /* ---------- Hero (occasion animation) ---------- */
+        #hero-screen {
+            overflow: hidden;
+        }
+        .hero-icon {
+            font-size: 70px;
+            animation: heroPop 1s cubic-bezier(.34, 1.56, .64, 1);
+            filter: drop-shadow(0 6px 18px rgba(0, 0, 0, .4));
+        }
+        @keyframes heroPop {
+            from {
+                transform: scale(0.2);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 30px;
+            margin: 18px 0 6px;
+            background: linear-gradient(90deg, var(--gold), var(--pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-sub {
+            font-size: 14.5px;
+            color: var(--text-soft);
+        }
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 22px;
+            opacity: .9;
+            z-index: 1;
+        }
+        @keyframes riseUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-110vh) translateX(var(--dx, 0px)) rotate(20deg);
+                opacity: 0;
+            }
+        }
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) translateX(var(--dx, 0px)) rotate(180deg);
+                opacity: 0;
+            }
+        }
+        .hero-continue {
+            margin-top: 26px;
+            border: none;
+            background: none;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--gold);
+            padding-bottom: 2px;
+            z-index: 2;
+            position: relative;
+        }
+        .purpose-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .16);
+            font-size: 11.5px;
+            color: var(--gold);
+            letter-spacing: .03em;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ---------- Cake screen ---------- */
+        #cake-screen {
+            overflow: hidden;
+        }
+        .cake-stage-wrap {
+            position: relative;
+            width: 230px;
+            height: 170px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        .cake-wrap {
+            position: relative;
+            width: 180px;
+        }
+        .candle {
+            position: absolute;
+            left: 50%;
+            top: -46px;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 26px;
+            background: linear-gradient(180deg, #fff, #f2c14e);
+            border-radius: 2px;
+            z-index: 3;
+        }
+        .flame {
+            position: absolute;
+            left: 50%;
+            top: -20px;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 20px;
+            background: radial-gradient(circle at 50% 30%, #fff59d, #ff9d3a 60%, #ff5e3a);
+            border-radius: 50% 50% 50% 50%/60% 60% 40% 40%;
+            animation: flicker .6s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 7px rgba(255, 157, 58, .75));
+            cursor: pointer;
+            transition: opacity .3s, transform .3s;
+        }
+        .flame.blown {
+            opacity: 0;
+            transform: translateX(-50%) scale(.2);
+            pointer-events: none;
+        }
+        @keyframes flicker {
+            0% {
+                transform: translateX(-50%) scale(1) rotate(-3deg);
+            }
+            100% {
+                transform: translateX(-50%) scale(1.1) rotate(3deg);
+            }
+        }
+        .smoke {
+            position: absolute;
+            left: 50%;
+            top: -20px;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, .6);
+            border-radius: 50%;
+            opacity: 0;
+        }
+        .smoke.active {
+            animation: smokeRise 1.3s ease-out forwards;
+        }
+        @keyframes smokeRise {
+            0% {
+                opacity: .7;
+                transform: translate(-50%, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -46px) scale(3.2);
+            }
+        }
+        .tier-top {
+            width: 110px;
+            height: 50px;
+            margin: 0 auto -4px;
+            background: linear-gradient(180deg, #fff0f5, #ffd0e0);
+            border-radius: 8px 8px 4px 4px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, .25);
+            position: relative;
+            z-index: 2;
+        }
+        .tier-bottom {
+            width: 180px;
+            height: 70px;
+            background: linear-gradient(180deg, #fddde3, #f7a8bc);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 12px 22px rgba(0, 0, 0, .35);
+            overflow: visible;
+        }
+        .cut-mark {
+            position: absolute;
+            left: 50%;
+            top: -50px;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(180deg, var(--gold) 0 6px, transparent 6px 12px);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .cut-mark.show {
+            opacity: 1;
+        }
+        .slice-piece {
+            position: absolute;
+            right: 2px;
+            bottom: 6px;
+            font-size: 30px;
+            opacity: 0;
+            transform: translate(0, 0) rotate(0deg);
+            transition: all .7s cubic-bezier(.34, 1.56, .64, 1);
+        }
+        .slice-piece.out {
+            opacity: 1;
+            transform: translate(64px, 20px) rotate(18deg);
+        }
+        .knife {
+            position: absolute;
+            top: -4px;
+            right: -22px;
+            font-size: 32px;
+            cursor: pointer;
+            transform: rotate(25deg);
+            transition: transform .15s, opacity .2s;
+            z-index: 4;
+        }
+        .knife.disabled {
+            opacity: .3;
+            pointer-events: none;
+        }
+        .knife.swipe {
+            animation: knifeSwipe .55s ease;
+        }
+        @keyframes knifeSwipe {
+            0% {
+                transform: rotate(25deg) translate(0, 0);
+            }
+            45% {
+                transform: rotate(-15deg) translate(-48px, 26px);
+            }
+            100% {
+                transform: rotate(25deg) translate(0, 0);
+            }
+        }
+        .cake-instruction {
+            margin-top: 20px;
+            font-size: 13.5px;
+            color: var(--text-soft);
+            min-height: 18px;
+        }
+        #cakeConfetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        /* ---------- Note ---------- */
+        #note-screen {}
+        .note-card {
+            padding: 36px 28px;
+            max-width: 380px;
+        }
+        .note-line {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 21px;
+            line-height: 1.65;
+            color: var(--text-light);
+        }
+        .note-line .hl {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .continue-btn {
+            margin-top: 26px;
+            border: none;
+            background: none;
+            color: var(--pink);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--pink);
+            padding-bottom: 2px;
+        }
+
+        /* ---------- Passkey ---------- */
+        #pass-screen {}
+        .lock-icon {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+        .pass-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 19px;
+            color: var(--gold);
+            margin: 0 0 18px;
+        }
+        .pass-dots {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+        .pass-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold);
+            transition: all .2s;
+        }
+        .pass-dots span.filled {
+            background: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            gap: 14px;
+        }
+        .keypad button {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(255, 255, 255, .06);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+            font-size: 18px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        .keypad button:active {
+            background: rgba(255, 111, 165, .3);
+        }
+        .keypad button.clear {
+            font-size: 10.5px;
+            color: var(--pink);
+            font-weight: 700;
+            letter-spacing: .05em;
+        }
+        .pass-error {
+            margin-top: 14px;
+            color: var(--pink);
+            font-size: 12.5px;
+            height: 16px;
+        }
+        .pass-hint {
+            margin-top: 14px;
+            color: #7f7aa0;
+            font-size: 11.5px;
+        }
+
+        /* ---------- Unlock ---------- */
+        #unlock-screen {}
+        .unlock-check {
+            font-size: 44px;
+            margin-bottom: 8px;
+            animation: heroPop .7s cubic-bezier(.34, 1.56, .64, 1);
+        }
+        .unlock-mark {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        /* ---------- Photos ---------- */
+        #photo-screen {}
+        .photo-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 26px;
+            margin-bottom: 18px;
+            color: var(--gold);
+        }
+        .photo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            max-width: 390px;
+            max-height: 54vh;
+            overflow-y: auto;
+            padding: 6px;
+        }
+        .taped {
+            background: #fff;
+            padding: 6px;
+            border-radius: 3px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .4);
+            width: 118px;
+            transform: rotate(var(--r, 0deg));
+            position: relative;
+        }
+        .taped:before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-3deg);
+            width: 44px;
+            height: 16px;
+            background: rgba(242, 193, 78, .55);
+        }
+        .taped img {
+            width: 100%;
+            height: 108px;
+            object-fit: cover;
+            display: block;
+        }
+        .no-photos {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--text-soft);
+            font-size: 16px;
+            max-width: 280px;
+        }
+        .photo-continue {
+            margin-top: 22px;
+            border: none;
+            background: none;
+            color: var(--pink);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--pink);
+            padding-bottom: 2px;
+        }
+
+        /* ---------- Letter ---------- */
+        #letter-screen {}
+        .letter-paper {
+            max-width: 400px;
+            width: 100%;
+            padding: 32px 26px;
+            max-height: 62vh;
+            overflow-y: auto;
+            text-align: left;
+            border: 1px solid rgba(242, 193, 78, .35);
+        }
+        .letter-paper .salutation {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 14px;
+        }
+        .letter-paper .body-text {
+            font-size: 15.5px;
+            line-height: 1.8;
+            color: var(--text-light);
+            white-space: pre-wrap;
+        }
+        .letter-paper .sign {
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--pink);
+        }
+        .restart-btn {
+            margin-top: 18px;
+            border: none;
+            background: none;
+            color: #7f7aa0;
+            font-size: 11.5px;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ---------- Scrollbar ---------- */
+        .setup-card::-webkit-scrollbar,
+        .photo-grid::-webkit-scrollbar,
+        .letter-paper::-webkit-scrollbar {
+            width: 4px;
+        }
+        .setup-card::-webkit-scrollbar-track,
+        .photo-grid::-webkit-scrollbar-track,
+        .letter-paper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .setup-card::-webkit-scrollbar-thumb,
+        .photo-grid::-webkit-scrollbar-thumb,
+        .letter-paper::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .2);
+            border-radius: 8px;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media(max-width:440px) {
+            .setup-card {
+                padding: 20px 16px 24px;
+            }
+            .setup-card h1 {
+                font-size: 25px;
+            }
+            .row2 {
+                flex-direction: column;
+                gap: 0;
+            }
+            .keypad {
+                gap: 10px;
+            }
+            .keypad button {
+                width: 56px;
+                height: 56px;
+                font-size: 16px;
+            }
+            .note-line {
+                font-size: 18px;
+            }
+            .letter-paper .body-text {
+                font-size: 14px;
+            }
+            .hero-title {
+                font-size: 24px;
+            }
+            .hero-icon {
+                font-size: 56px;
+            }
+            .env-name {
+                font-size: 22px;
+            }
+            .envelope {
+                width: 150px;
+                height: 100px;
+            }
+            .envelope .letter-peek {
+                height: 58px;
+                top: -12px;
+            }
+            .envelope .flap {
+                height: 54px;
+            }
+            .seal {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+                top: 30px;
+            }
+            .tier-top {
+                width: 90px;
+                height: 42px;
+            }
+            .tier-bottom {
+                width: 150px;
+                height: 58px;
+            }
+            .cake-stage-wrap {
+                width: 190px;
+                height: 140px;
+            }
+            .cake-wrap {
+                width: 150px;
+            }
+            .candle {
+                top: -38px;
+                height: 22px;
+            }
+            .flame {
+                width: 12px;
+                height: 16px;
+                top: -16px;
+            }
+            .knife {
+                font-size: 26px;
+                right: -18px;
+                top: -2px;
+            }
+            .slice-piece {
+                font-size: 24px;
+            }
+            .taped {
+                width: 100px;
+            }
+            .taped img {
+                height: 90px;
+            }
+            .photo-grid {
+                gap: 12px;
+            }
+        }
+        @media(max-width:360px) {
+            .keypad {
+                gap: 8px;
+            }
+            .keypad button {
+                width: 48px;
+                height: 48px;
+                font-size: 14px;
+            }
+            .pass-dots {
+                gap: 8px;
+            }
+            .pass-dots span {
+                width: 10px;
+                height: 10px;
+            }
+            .envelope {
+                width: 130px;
+                height: 88px;
+            }
+            .envelope .letter-peek {
+                height: 50px;
+                top: -10px;
+            }
+            .envelope .flap {
+                height: 46px;
+            }
+            .seal {
+                width: 26px;
+                height: 26px;
+                font-size: 10px;
+                top: 26px;
+            }
+            .cake-stage-wrap {
+                width: 160px;
+                height: 120px;
+            }
+            .cake-wrap {
+                width: 130px;
+            }
+            .tier-top {
+                width: 78px;
+                height: 36px;
+            }
+            .tier-bottom {
+                width: 130px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="stage">
+        <div id="starfield"></div>
+
+        <!-- SETUP -->
+        <div class="screen active" id="setup">
+            <div class="setup-card glass">
+                <h1>Create a Celebration</h1>
+                <p class="sub">Pick the occasion, add your words, and send a surprise that opens like magic.</p>
+
+                <div class="field">
+                    <label for="herName">Their name</label>
+                    <input type="text" id="herName" placeholder="e.g. Ayesha" maxlength="30">
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label for="occasion">Occasion</label>
+                        <select id="occasion">
+                            <option value="birthday">🎂 Birthday</option>
+                            <option value="anniversary">💞 Anniversary</option>
+                            <option value="valentine">💘 Valentine's Day</option>
+                            <option value="mothersday">💐 Mother's Day</option>
+                            <option value="fathersday">🎉 Father's Day</option>
+                            <option value="justbecause">🎁 Just Because</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="occDate">Date</label>
+                        <input type="date" id="occDate">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="purpose">Purpose</label>
+                    <select id="purpose">
+                        <option value="celebration">🎉 Celebration</option>
+                        <option value="apology">🙏 An Apology</option>
+                        <option value="thankyou">💛 A Thank You</option>
+                        <option value="congrats">🎊 Congratulations</option>
+                        <option value="justsaying">💫 Just Saying I Care</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="shortLine">Short note (shown early, keep it brief)</label>
+                    <input type="text" id="shortLine" placeholder="Every year with you feels like a gift." maxlength="90">
+                </div>
+
+                <div class="field">
+                    <label for="letterText">Full message</label>
+                    <textarea id="letterText" placeholder="Write what you really want to say...">Wishing you a day as wonderful as you are. Every moment with you is something I treasure, and today I just want you to know how much you mean to me.</textarea>
+                </div>
+
+                <div class="field">
+                    <label for="passkey">4-digit passkey (they'll enter this to unlock)</label>
+                    <input type="password" id="passkey" maxlength="4" inputmode="numeric" placeholder="1122">
+                    <small>Leave blank to use 1122</small>
+                </div>
+
+                <div class="field">
+                    <label>Photos (optional)</label>
+                    <div class="photo-row">
+                        <label class="upload-btn" for="photoInput">+ Add photos</label>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;">
+                        <div id="photoPreview" class="photo-row"></div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" id="startBtn">Preview It 👀</button>
+                <button class="primary-btn gold" id="exportBtn">📤 Export File to Send</button>
+                <div class="ghost-hint">"Preview" plays it here. "Export" downloads a ready file — send that one, it opens straight to the celebration with no form. Everything stays on this device.</div>
+            </div>
+        </div>
+
+        <!-- ENVELOPE -->
+        <div class="screen" id="envelope-screen">
+            <div class="eyebrow">A little celebration for</div>
+            <div class="env-name" id="toNameDisplay">someone special</div>
+            <div class="envelope" id="envelope">
+                <div class="back"></div>
+                <div class="letter-peek"></div>
+                <div class="flap"></div>
+                <div class="seal">💌</div>
+            </div>
+            <div class="tap-caption">(tap the envelope to open)</div>
+        </div>
+
+        <!-- HERO / occasion animation -->
+        <div class="screen" id="hero-screen">
+            <div id="heroParticles"></div>
+            <div class="hero-icon" id="heroIcon">🎉</div>
+            <div class="hero-title" id="heroTitle">Happy Celebration</div>
+            <div class="hero-sub" id="heroSub"></div>
+            <div class="purpose-badge" id="purposeBadge"></div>
+            <button class="hero-continue" id="toNoteBtn">Continue →</button>
+        </div>
+
+        <!-- CAKE (birthday / anniversary only) -->
+        <div class="screen" id="cake-screen">
+            <div id="cakeConfetti"></div>
+            <div class="eyebrow" id="cakeEyebrow">Make a wish</div>
+            <div class="cake-stage-wrap">
+                <div class="cake-wrap">
+                    <div class="candle">
+                        <div class="flame" id="flame"></div>
+                        <div class="smoke" id="smoke"></div>
+                    </div>
+                    <div class="tier-top"></div>
+                    <div class="tier-bottom">
+                        <div class="cut-mark" id="cutMark"></div>
+                    </div>
+                    <div class="slice-piece" id="slicePiece">🍰</div>
+                </div>
+                <div class="knife disabled" id="knife">🔪</div>
+            </div>
+            <div class="cake-instruction" id="cakeInstruction">Blow the candle 🕯️ — or tap the flame</div>
+            <button class="hero-continue" id="toNoteFromCakeBtn" style="display:none;">Continue →</button>
+        </div>
+
+        <!-- NOTE -->
+        <div class="screen" id="note-screen">
+            <div class="note-card glass">
+                <div class="note-line" id="noteLine">Every year with <span class="hl">you</span> feels like a gift.</div>
+                <button class="continue-btn" id="toPassBtn">Continue →</button>
+            </div>
+        </div>
+
+        <!-- PASSKEY -->
+        <div class="screen" id="pass-screen">
+            <div class="lock-icon">🔒</div>
+            <div class="pass-title">Enter Passkey</div>
+            <div class="pass-dots" id="passDots"><span></span><span></span><span></span><span></span></div>
+            <div class="keypad" id="keypad">
+                <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+                <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+                <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+                <button class="clear" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
+            </div>
+            <div class="pass-error" id="passError"></div>
+            <div class="pass-hint">Hint: the passkey set when creating this</div>
+        </div>
+
+        <!-- UNLOCK -->
+        <div class="screen" id="unlock-screen">
+            <div class="unlock-check">✨</div>
+            <div class="unlock-mark">Unlocked</div>
+        </div>
+
+        <!-- PHOTOS -->
+        <div class="screen" id="photo-screen">
+            <div class="photo-title">Little moments</div>
+            <div class="photo-grid" id="photoGrid"></div>
+            <button class="photo-continue" id="toLetterBtn">Read the letter →</button>
+        </div>
+
+        <!-- LETTER -->
+        <div class="screen" id="letter-screen">
+            <div class="letter-paper glass">
+                <div class="salutation" id="letterSalutation">Dear friend,</div>
+                <div class="body-text" id="letterBody"></div>
+                <div class="sign" id="letterSign">— with love</div>
+          <!--  </div>
+            <button class="restart-btn" id="restartBtn">⟳ Start over</button>
+        </div>-->
+    </div>
+
+    <script>
+        // ─── STARFIELD ───
+        (function makeStars() {
+            const el = document.getElementById('starfield');
+            for (let i = 0; i < 120; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = 1.2 + Math.random() * 2.4;
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.animationDelay = (Math.random() * 5) + 's';
+                s.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+                el.appendChild(s);
+            }
+        })();
+
+        // ─── DOM refs ───
+        const $ = id => document.getElementById(id);
+        const screens = {
+            setup: $('setup'),
+            envelope: $('envelope-screen'),
+            hero: $('hero-screen'),
+            cake: $('cake-screen'),
+            note: $('note-screen'),
+            pass: $('pass-screen'),
+            unlock: $('unlock-screen'),
+            photo: $('photo-screen'),
+            letter: $('letter-screen'),
+        };
+
+        // ─── State ───
+        const state = {
+            name: '',
+            occasion: 'birthday',
+            purpose: 'celebration',
+            shortLine: '',
+            letterText: '',
+            passkey: '1122',
+            photos: [], // array of data URLs
+            currentScreen: 'setup',
+            passEntry: '',
+            envelopeOpened: false,
+            candleBlown: false,
+            cakeSliced: false,
+            unlocked: false,
+            heroDone: false,
+        };
+
+        // ─── Helpers ───
+        function showScreen(id) {
+            Object.keys(screens).forEach(k => {
+                screens[k].classList.toggle('active', k === id);
+            });
+            state.currentScreen = id;
+        }
+
+        function getOccasionIcon(occ) {
+            const map = {
+                birthday: '🎂',
+                anniversary: '💞',
+                valentine: '💘',
+                mothersday: '💐',
+                fathersday: '🎉',
+                justbecause: '🎁'
+            };
+            return map[occ] || '🎉';
+        }
+
+        function getOccasionTitle(occ) {
+            const map = {
+                birthday: 'Happy Birthday',
+                anniversary: 'Happy Anniversary',
+                valentine: 'Happy Valentine\'s Day',
+                mothersday: 'Happy Mother\'s Day',
+                fathersday: 'Happy Father\'s Day',
+                justbecause: 'Just Because'
+            };
+            return map[occ] || 'Celebration';
+        }
+
+        function getPurposeLabel(purp) {
+            const map = {
+                celebration: '🎉 Celebration',
+                apology: '🙏 An Apology',
+                thankyou: '💛 A Thank You',
+                congrats: '🎊 Congratulations',
+                justsaying: '💫 Just Saying I Care'
+            };
+            return map[purp] || '💫 With love';
+        }
+
+        function getDefaultShort(occ, name) {
+            const map = {
+                birthday: `Every year with ${name} feels like a gift.`,
+                anniversary: `${name}, every day with you is a celebration.`,
+                valentine: `My heart beats only for you, ${name}.`,
+                mothersday: `Thank you for everything, ${name}. You're amazing.`,
+                fathersday: `You're my hero, ${name}. Love you always.`,
+                justbecause: `Just because you're you, ${name}. ✨`
+            };
+            return map[occ] || `For you, ${name}. ✨`;
+        }
+
+        // ─── Setup ───
+        const nameInput = $('herName');
+        const occSelect = $('occasion');
+        const purposeSelect = $('purpose');
+        const shortInput = $('shortLine');
+        const letterInput = $('letterText');
+        const passInput = $('passkey');
+        const photoInput = $('photoInput');
+        const photoPreview = $('photoPreview');
+
+        // Auto-fill short line on name/occasion change
+        function autoShort() {
+            const name = nameInput.value.trim() || 'you';
+            const occ = occSelect.value;
+            if (!shortInput.value || shortInput.value === getDefaultShort(occSelect.value, 'you') || shortInput.value ===
+                getDefaultShort(occSelect.value, name)) {
+                shortInput.value = getDefaultShort(occ, name);
+            }
+        }
+        nameInput.addEventListener('input', autoShort);
+        occSelect.addEventListener('change', autoShort);
+
+        // Photo upload
+        const photoData = [];
+        photoInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    photoData.push(ev.target.result);
+                    renderPhotoPreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+            photoInput.value = '';
+        });
+
+        function renderPhotoPreviews() {
+            photoPreview.innerHTML = '';
+            photoData.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.className = 'photo-thumb';
+                img.src = url;
+                img.alt = 'photo';
+                const wrap = document.createElement('span');
+                wrap.style.position = 'relative';
+                wrap.appendChild(img);
+                const del = document.createElement('span');
+                del.textContent = '✕';
+                del.style.cssText =
+                    'position:absolute;top:-6px;right:-6px;background:#ff3b5c;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.3);';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    photoData.splice(i, 1);
+                    renderPhotoPreviews();
+                });
+                wrap.appendChild(del);
+                photoPreview.appendChild(wrap);
+            });
+        }
+
+        // ─── Start / Preview ───
+        $('startBtn').addEventListener('click', function() {
+            const name = nameInput.value.trim() || 'you';
+            const occ = occSelect.value;
+            const purpose = purposeSelect.value;
+            const short = shortInput.value.trim() || getDefaultShort(occ, name);
+            const letter = letterInput.value.trim() || 'Wishing you all the best.';
+            const pass = passInput.value.trim() || '1122';
+
+            state.name = name;
+            state.occasion = occ;
+            state.purpose = purpose;
+            state.shortLine = short;
+            state.letterText = letter;
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            state.photos = [...photoData];
+            state.passEntry = '';
+            state.envelopeOpened = false;
+            state.candleBlown = false;
+            state.cakeSliced = false;
+            state.unlocked = false;
+            state.heroDone = false;
+
+            // update envelope
+            $('toNameDisplay').textContent = name;
+            document.querySelector('.envelope').classList.remove('opened');
+
+            // update hero
+            $('heroIcon').textContent = getOccasionIcon(occ);
+            $('heroTitle').textContent = getOccasionTitle(occ);
+            $('heroSub').textContent = short;
+            $('purposeBadge').textContent = getPurposeLabel(purpose);
+
+            // update note
+            const hl = document.querySelector('#noteLine .hl');
+            if (hl) hl.textContent = name;
+            const noteText = short.replace(/\[name\]/g, name);
+            document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
+                (m) => `<span class="hl">${m}</span>`);
+            // fallback if no "you"
+            if (!document.querySelector('#noteLine .hl')) {
+                document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>') +
+                    ` <span class="hl">${name}</span>`;
+            }
+
+            // update letter
+            $('letterSalutation').textContent = `Dear ${name},`;
+            $('letterBody').textContent = letter;
+            $('letterSign').textContent = `— with love`;
+
+            // passkey
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            $('passError').textContent = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+
+            // photos
+            renderPhotos();
+
+            // reset cake
+            const flame = $('flame');
+            flame.classList.remove('blown');
+            $('smoke').classList.remove('active');
+            $('cutMark').classList.remove('show');
+            $('slicePiece').classList.remove('out');
+            $('knife').classList.add('disabled');
+            $('knife').classList.remove('swipe');
+            $('cakeInstruction').textContent = 'Blow the candle 🕯️ — or tap the flame';
+            $('toNoteFromCakeBtn').style.display = 'none';
+
+            // clear confetti
+            $('cakeConfetti').innerHTML = '';
+
+            // show envelope
+            showScreen('envelope');
+        });
+
+        // ─── Envelope ───
+        const envelope = document.querySelector('.envelope');
+        envelope.addEventListener('click', function() {
+            if (this.classList.contains('opened')) return;
+            this.classList.add('opened');
+            state.envelopeOpened = true;
+            setTimeout(() => {
+                showScreen('hero');
+                spawnHeroParticles();
+                // auto-transition after hero animation
+            }, 500);
+        });
+
+        // ─── Hero particles ───
+        function spawnHeroParticles() {
+            const container = $('heroParticles');
+            container.innerHTML = '';
+            const emojis = ['✨', '🎉', '🎊', '⭐', '💖', '🌸', '🎈', '🌈', '💫', '🌟'];
+            const count = 50;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = (20 + Math.random() * 60) + '%';
+                p.style.fontSize = (16 + Math.random() * 28) + 'px';
+                const dx = (Math.random() - 0.5) * 80;
+                p.style.setProperty('--dx', dx + 'px');
+                const dur = 3 + Math.random() * 4;
+                const delay = Math.random() * 2;
+                const dir = Math.random() > 0.5 ? 'riseUp' : 'fallDown';
+                p.style.animation = `${dir} ${dur}s ease-in ${delay}s forwards`;
+                container.appendChild(p);
+            }
+            // auto remove after animation
+            setTimeout(() => { container.innerHTML = ''; }, 7000);
+        }
+
+        // ─── Hero continue ───
+        $('toNoteBtn').addEventListener('click', function() {
+            state.heroDone = true;
+            // check if we should show cake
+            const cakeOccasions = ['birthday', 'anniversary'];
+            if (cakeOccasions.includes(state.occasion)) {
+                showScreen('cake');
+                // enable knife after a moment
+                setTimeout(() => {
+                    $('knife').classList.remove('disabled');
+                }, 600);
+                // trigger some confetti
+                spawnCakeConfetti(12);
+            } else {
+                showScreen('note');
+            }
+        });
+
+        // ─── Cake screen ───
+        const flame = $('flame');
+        const smoke = $('smoke');
+        const cutMark = $('cutMark');
+        const slicePiece = $('slicePiece');
+        const knife = $('knife');
+        const cakeInstruction = $('cakeInstruction');
+        const toNoteFromCakeBtn = $('toNoteFromCakeBtn');
+
+        // Blow candle
+        function blowCandle() {
+            if (state.candleBlown) return;
+            state.candleBlown = true;
+            flame.classList.add('blown');
+            smoke.classList.add('active');
+            cakeInstruction.textContent = 'Now cut the cake! Tap the knife 🔪';
+            knife.classList.remove('disabled');
+            spawnCakeConfetti(30);
+            // re-enable knife
+            setTimeout(() => {
+                if (!state.cakeSliced) {
+                    cakeInstruction.textContent = 'Go ahead, tap the knife!';
+                }
+            }, 800);
+        }
+
+        flame.addEventListener('click', function(e) {
+            e.stopPropagation();
+            blowCandle();
+        });
+
+        // Blow by tapping anywhere on cake stage (except knife)
+        document.querySelector('.cake-stage-wrap').addEventListener('click', function(e) {
+            if (e.target.closest('.knife') || e.target.closest('.flame')) return;
+            if (!state.candleBlown) {
+                blowCandle();
+            }
+        });
+
+        // Knife cut
+        knife.addEventListener('click', function() {
+            if (this.classList.contains('disabled')) return;
+            if (state.cakeSliced) return;
+            if (!state.candleBlown) {
+                cakeInstruction.textContent = 'Blow the candle first! 🕯️';
+                return;
+            }
+            // swipe animation
+            this.classList.add('swipe');
+            setTimeout(() => this.classList.remove('swipe'), 600);
+
+            // show cut mark
+            cutMark.classList.add('show');
+
+            // slice piece out
+            setTimeout(() => {
+                slicePiece.classList.add('out');
+                state.cakeSliced = true;
+                cakeInstruction.textContent = '🎂 Delicious!';
+                spawnCakeConfetti(40);
+                toNoteFromCakeBtn.style.display = 'inline-block';
+                knife.classList.add('disabled');
+            }, 350);
+        });
+
+        $('toNoteFromCakeBtn').addEventListener('click', function() {
+            showScreen('note');
+        });
+
+        // ─── Cake confetti ───
+        function spawnCakeConfetti(count) {
+            const container = $('cakeConfetti');
+            const colors = ['#ff6fa5', '#f2c14e', '#5ec6ff', '#ff9d3a', '#a8e6cf', '#ffd3b4', '#dcedc1', '#ff8a8a', '#b8a9c9'];
+            const emojis = ['🎉', '✨', '🎊', '💖', '⭐', '🌸', '🎈', '🌈'];
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.style.position = 'absolute';
+                p.style.left = (10 + Math.random() * 80) + '%';
+                p.style.top = (10 + Math.random() * 60) + '%';
+                p.style.fontSize = (18 + Math.random() * 30) + 'px';
+                p.style.pointerEvents = 'none';
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                p.style.opacity = '0.95';
+                p.style.transform = `rotate(${Math.random()*360}deg)`;
+                const dur = 2 + Math.random() * 3;
+                const dx = (Math.random() - 0.5) * 100;
+                const dy = -80 - Math.random() * 120;
+                p.style.transition = `all ${dur}s cubic-bezier(.34,1.56,.64,1)`;
+                container.appendChild(p);
+                requestAnimationFrame(() => {
+                    p.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`;
+                    p.style.opacity = '0';
+                });
+                setTimeout(() => p.remove(), dur * 1000 + 200);
+            }
+        }
+
+        // ─── Note to Passkey ───
+        $('toPassBtn').addEventListener('click', function() {
+            showScreen('pass');
+            state.passEntry = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+            $('passError').textContent = '';
+        });
+
+        // ─── Passkey keypad ───
+        const passDots = document.querySelectorAll('#passDots span');
+        const passError = $('passError');
+
+        function updatePassDots() {
+            const len = state.passEntry.length;
+            passDots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < len);
+            });
+        }
+
+        document.querySelectorAll('#keypad button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const key = this.dataset.k;
+                if (key === 'clear') {
+                    state.passEntry = '';
+                    passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (key === 'back') {
+                    state.passEntry = state.passEntry.slice(0, -1);
+                    passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += key;
+                updatePassDots();
+                passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    // check
+                    if (state.passEntry === state.passkey) {
+                        // correct!
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos.length > 0) {
+                                    showScreen('photo');
+                                } else {
+                                    showScreen('letter');
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        passError.textContent = '❌ Wrong passkey, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            });
+        });
+
+        // ─── Photos ───
+        function renderPhotos() {
+            const grid = $('photoGrid');
+            grid.innerHTML = '';
+            if (!state.photos || state.photos.length === 0) {
+                grid.innerHTML =
+                    '<div class="no-photos">No photos added — but that\'s okay. The words matter most.</div>';
+                return;
+            }
+            state.photos.forEach((url, i) => {
+                const div = document.createElement('div');
+                div.className = 'taped';
+                const rot = (Math.random() - 0.5) * 8;
+                div.style.setProperty('--r', rot + 'deg');
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'memory';
+                div.appendChild(img);
+                grid.appendChild(div);
+            });
+        }
+
+        $('toLetterBtn').addEventListener('click', function() {
+            showScreen('letter');
+        });
+
+        // ─── Restart ───
+        $('restartBtn').addEventListener('click', function() {
+            showScreen('setup');
+        });
+
+        // ─── EXPORT FIX ───
+        $('exportBtn').addEventListener('click', function() {
+            const name = nameInput.value.trim() || 'you';
+            const occ = occSelect.value;
+            const purpose = purposeSelect.value;
+            const short = shortInput.value.trim() || getDefaultShort(occ, name);
+            const letter = letterInput.value.trim() || 'Wishing you all the best.';
+            const pass = passInput.value.trim() || '1122';
+
+            const data = {
+                name,
+                occasion: occ,
+                purpose,
+                shortLine: short,
+                letterText: letter,
+                passkey: pass.padStart(4, '0').slice(0, 4),
+                photos: photoData,
+            };
+
+            const htmlContent = generateStandaloneHTML(data);
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `celebration_${name.replace(/\s/g,'_')}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        function generateStandaloneHTML(data) {
+            // Get current HTML content
+            const doctype = '<!DOCTYPE html>\n';
+            const html = document.documentElement.outerHTML;
+
+            // Create script that loads data and jumps directly to celebration
+            const dataScript = `
+        <script>
+        // Wait for page to load and main script to initialize
+        (function() {
+            function waitForLoad() {
+                if (typeof loadFromData !== 'undefined' && typeof showScreen !== 'undefined') {
+                    loadFromData(${JSON.stringify(data)});
+                } else {
+                    setTimeout(waitForLoad, 100);
+                }
+            }
+            window.addEventListener('DOMContentLoaded', waitForLoad);
+        })();
+        <\/script>
+        `;
+
+            // Insert before </body>
+            const modifiedHtml = html.replace('</body>', dataScript + '\n</body>');
+
+            return doctype + modifiedHtml;
+        }
+
+        // ─── Import data (for standalone HTML) ───
+        function loadFromData(data) {
+            state.name = data.name || 'you';
+            state.occasion = data.occasion || 'birthday';
+            state.purpose = data.purpose || 'celebration';
+            state.shortLine = data.shortLine || getDefaultShort(state.occasion, state.name);
+            state.letterText = data.letterText || 'Wishing you all the best.';
+            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+            state.photos = data.photos || [];
+            state.passEntry = '';
+            state.envelopeOpened = false;
+            state.candleBlown = false;
+            state.cakeSliced = false;
+            state.unlocked = false;
+            state.heroDone = false;
+
+            // Fill form for reference
+            nameInput.value = state.name;
+            occSelect.value = state.occasion;
+            purposeSelect.value = state.purpose;
+            shortInput.value = state.shortLine;
+            letterInput.value = state.letterText;
+            passInput.value = state.passkey;
+            // photos
+            photoData.length = 0;
+            state.photos.forEach(url => photoData.push(url));
+            renderPhotoPreviews();
+
+            // Jump to envelope
+            $('toNameDisplay').textContent = state.name;
+            document.querySelector('.envelope').classList.remove('opened');
+            $('heroIcon').textContent = getOccasionIcon(state.occasion);
+            $('heroTitle').textContent = getOccasionTitle(state.occasion);
+            $('heroSub').textContent = state.shortLine;
+            $('purposeBadge').textContent = getPurposeLabel(state.purpose);
+            const noteText = state.shortLine.replace(/\[name\]/g, state.name);
+            document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
+                (m) => `<span class="hl">${m}</span>`);
+            if (!document.querySelector('#noteLine .hl')) {
+                document.querySelector('#noteLine').innerHTML = noteText.replace(/\n/g, '<br>') +
+                    ` <span class="hl">${state.name}</span>`;
+            }
+            $('letterSalutation').textContent = `Dear ${state.name},`;
+            $('letterBody').textContent = state.letterText;
+            $('letterSign').textContent = `— with love`;
+            renderPhotos();
+
+            // reset cake
+            const flameEl = $('flame');
+            if (flameEl) flameEl.classList.remove('blown');
+            const smokeEl = $('smoke');
+            if (smokeEl) smokeEl.classList.remove('active');
+            const cutMarkEl = $('cutMark');
+            if (cutMarkEl) cutMarkEl.classList.remove('show');
+            const slicePieceEl = $('slicePiece');
+            if (slicePieceEl) slicePieceEl.classList.remove('out');
+            const knifeEl = $('knife');
+            if (knifeEl) {
+                knifeEl.classList.add('disabled');
+                knifeEl.classList.remove('swipe');
+            }
+            const cakeInstr = $('cakeInstruction');
+            if (cakeInstr) cakeInstr.textContent = 'Blow the candle 🕯️ — or tap the flame';
+            const toNoteBtn = $('toNoteFromCakeBtn');
+            if (toNoteBtn) toNoteBtn.style.display = 'none';
+            const confettiContainer = $('cakeConfetti');
+            if (confettiContainer) confettiContainer.innerHTML = '';
+
+            showScreen('envelope');
+        }
+
+        // ─── Handle import via URL param ───
+        const params = new URLSearchParams(window.location.search);
+        const importData = params.get('data');
+        if (importData) {
+            try {
+                const parsed = JSON.parse(decodeURIComponent(importData));
+                // Wait for script to load
+                setTimeout(() => loadFromData(parsed), 300);
+            } catch (e) { /* ignore */ }
+        }
+
+        // ─── Initial setup ───
+        const today = new Date().toISOString().split('T')[0];
+        $('occDate').value = today;
+        setTimeout(autoShort, 100);
+
+        // ─── Keyboard support for passkey ───
+        document.addEventListener('keydown', function(e) {
+            if (state.currentScreen !== 'pass') return;
+            if (e.key >= '0' && e.key <= '9') {
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += e.key;
+                updatePassDots();
+                passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos.length > 0) {
+                                    showScreen('photo');
+                                } else {
+                                    showScreen('letter');
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        passError.textContent = '❌ Wrong passkey, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            }
+            if (e.key === 'Backspace') {
+                state.passEntry = state.passEntry.slice(0, -1);
+                passError.textContent = '';
+                updatePassDots();
+            }
+            if (e.key === 'Escape' || e.key === 'c') {
+                state.passEntry = '';
+                passError.textContent = '';
+                updatePassDots();
+            }
+        });
+
+        console.log('✨ A Little Celebration ready!');
+        console.log('📤 Use "Export" to save a shareable HTML file.');
+        console.log('📥 Drop a .json file on the page to import.');
+    </script>
+</body>
+</html>

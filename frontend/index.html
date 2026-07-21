@@ -131,10 +131,42 @@
         @keyframes confettiFall{0%{opacity:1;transform:translateY(-10vh) rotate(0deg) scale(1);}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.5);}}
         .debug-console{position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,0.8);color:#0f0;padding:8px 12px;border-radius:8px;font-size:11px;font-family:monospace;z-index:999;max-width:300px;max-height:100px;overflow-y:auto;display:none;}
         @media(max-width:480px){.setup-card{padding:28px 20px 24px;}.gift-box-3d{width:160px;height:160px;}.keypad{grid-template-columns:repeat(3,58px);gap:10px;}.keypad button{width:58px;height:58px;font-size:18px;}.progress-bar{padding:6px 14px;gap:8px;top:16px;}}
+    a {
+        text-decoration: none;
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: white;
+        background: linear-gradient(135deg, #ff7eb3, #ff758c);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    /* Hover effect */
+    a:hover {
+        background: linear-gradient(135deg, #ff4e8a, #ff2e63);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    /* Active (click) effect */
+    a:active {
+        transform: translateY(0);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    /* Responsive font size */
+    @media (max-width: 600px) {
+        a {
+            font-size: 0.9rem;
+            padding: 10px 18px;
+        }
+    }
     </style>
 </head>
 <body>
-<a href="birthday.html">Birthday</a>
+<a style="border: none; border-radius: 10px;" href="birthday.html">Birthday</a>
+<a href="1.html">Style 1</a>
 
 <div class="cursor-glow" id="cursorGlow"></div>
 <div class="confetti-container" id="confettiContainer"></div>
@@ -285,9 +317,9 @@
             <div class="salutation" id="salutation">To My Dearest,</div>
             <div class="body-text" id="letterBody"></div>
             <div class="sign">— always yours</div>
-        </div>
+       <!-- </div>
         <button class="restart-btn" id="restartBtn">create another gift</button>
-    </div>
+    </div>-->
 
 </div>
 
