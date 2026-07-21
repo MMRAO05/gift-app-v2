@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Special Surprise Theme</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
+    </script>
+
+    <style>
+        /* ── reset & base ── */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: #ffb6c1;
+            color: #592532;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --bg-pink: linear-gradient(180deg, #ffb6c1 0%, #ffc0cb 50%, #ffe4e1 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --primary-pink: #ff4d6d;
+            --text-color: #592532;
+            --shadow: 0 8px 25px rgba(255, 77, 109, 0.15);
+        }
+
+        /* ── app shell ── */
+        .app-container {
+            min-height: 100vh;
+            background: var(--bg-pink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            position: relative;
+        }
+
+        /* ── floating hearts ── */
+        .floating-heart {
+            position: fixed;
+            color: rgba(255, 77, 109, 0.35);
+            font-size: 18px;
+            user-select: none;
+            pointer-events: none;
+            animation: float 7s linear infinite;
+            z-index: 1;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0.6) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.3) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        /* ── screens ── */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            z-index: 2;
+        }
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── cards ── */
+        .pink-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 26px 22px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .script-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: var(--primary-pink);
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #884455;
+            margin-bottom: 18px;
+            font-weight: 300;
+        }
+
+        /* ── buttons ── */
+        .btn-pink {
+            background: linear-gradient(135deg, #ff4d6d, #ff758f);
+            color: white;
+            border: none;
+            padding: 13px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(255, 77, 109, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: .02em;
+        }
+        .btn-pink:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(255, 77, 109, 0.25);
+        }
+        .btn-pink--outline {
+            background: transparent;
+            color: var(--primary-pink);
+            border: 2px solid var(--primary-pink);
+            box-shadow: none;
+        }
+        .btn-pink--outline:active {
+            background: #fff0f2;
+        }
+
+        /* ── form fields ── */
+        .field {
+            text-align: left;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+        .field label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #773344;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: .02em;
+        }
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1.5px solid #ffccd5;
+            background: #fffcfc;
+            font-family: inherit;
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.12);
+        }
+        .field small {
+            display: block;
+            margin-top: 4px;
+            color: #a97788;
+            font-size: 10.5px;
+        }
+
+        /* ── hero image ── */
+        .hero-img-box {
+            width: 100%;
+            height: 220px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin: 14px 0;
+            box-shadow: 0 4px 20px rgba(255, 77, 109, 0.13);
+        }
+        .hero-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ── timeline ── */
+        .timeline {
+            width: 100%;
+            text-align: left;
+            position: relative;
+            padding-left: 20px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 2.5px;
+            background: var(--primary-pink);
+            opacity: 0.25;
+            border-radius: 4px;
+        }
+        .tl-item {
+            position: relative;
+            margin-bottom: 18px;
+            background: white;
+            padding: 16px 18px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .tl-item::before {
+            content: '💖';
+            position: absolute;
+            left: -24px;
+            top: 16px;
+            font-size: 13px;
+        }
+        .tl-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary-pink);
+        }
+        .tl-desc {
+            font-size: 12.5px;
+            color: #5a4a4f;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        /* ── letter paper ── */
+        .letter-paper {
+            background: #fffdfa;
+            border-radius: 18px;
+            padding: 22px 20px;
+            width: 100%;
+            background-image: linear-gradient(#f1e4e4 1px, transparent 1px);
+            background-size: 100% 26px;
+            line-height: 26px;
+            font-size: 13.5px;
+            text-align: left;
+            box-shadow: var(--shadow);
+            white-space: pre-wrap;
+            border: 1px solid #f5e6e6;
+            min-height: 120px;
+            color: #3d2a2f;
+        }
+
+        /* ── secret cards (flip) ── */
+        .secret-card {
+            perspective: 1200px;
+            width: 100%;
+            margin-bottom: 14px;
+            cursor: pointer;
+            min-height: 110px;
+        }
+        .secret-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 110px;
+            transition: transform 0.6s cubic-bezier(.4, .2, .2, 1);
+            transform-style: preserve-3d;
+        }
+        .secret-card.revealed .secret-card-inner {
+            transform: rotateY(180deg);
+        }
+        .secret-card-front,
+        .secret-card-back {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            text-align: center;
+        }
+        .secret-card-front {
+            background: linear-gradient(135deg, #ff9eb5, #ff4d6d);
+            color: #fff;
+            gap: 6px;
+        }
+        .secret-card-front .front-icon {
+            font-size: 28px;
+        }
+        .secret-card-front .front-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: .03em;
+            opacity: .9;
+        }
+        .secret-card-back {
+            background: #fffdfa;
+            transform: rotateY(180deg);
+            border: 2px solid #ffccd5;
+        }
+        .secret-card-back .quote-mark {
+            font-size: 26px;
+            color: var(--primary-pink);
+            opacity: .4;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .secret-card-back p {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        /* ── passkey screen ── */
+        .lock-icon {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+        .pass-dots {
+            display: flex;
+            gap: 14px;
+            margin: 16px 0 20px;
+            justify-content: center;
+        }
+        .pass-dots span {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-pink);
+            display: inline-block;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .pass-dots span.filled {
+            background: var(--primary-pink);
+            box-shadow: 0 0 14px rgba(255, 77, 109, .45);
+            transform: scale(1.1);
+        }
+        @keyframes shakePass {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            20% {
+                transform: translateX(-8px);
+            }
+            60% {
+                transform: translateX(8px);
+            }
+        }
+        .keypad-pink {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 12px;
+            justify-content: center;
+            margin: 4px 0 8px;
+        }
+        .keypad-pink button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .keypad-pink button:active {
+            background: #ffe0e6;
+            transform: scale(0.92);
+        }
+        .keypad-pink button.clear-key {
+            font-size: 11px;
+            color: var(--primary-pink);
+            font-weight: 700;
+        }
+        .pass-error {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--primary-pink);
+            min-height: 18px;
+            font-weight: 500;
+        }
+        .pass-hint {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #a97788;
+        }
+
+        /* ── gift box ── */
+        .gift-box {
+            font-size: 72px;
+            cursor: pointer;
+            animation: pulse 1.8s infinite;
+            transition: transform 0.2s;
+            display: inline-block;
+            user-select: none;
+        }
+        .gift-box:active {
+            transform: scale(0.92);
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        .gift-message-wrap {
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 77, 109, 0.15);
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease;
+        }
+        .gift-message-wrap.show {
+            display: block;
+        }
+
+        /* ── misc ── */
+        .restart-link {
+            margin-top: 14px;
+            background: none;
+            border: none;
+            color: #a97788;
+            font-size: 12px;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            padding: 6px 12px;
+            border-radius: 30px;
+            transition: background 0.2s;
+        }
+        .restart-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .flex-row .btn-pink {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* ── responsive tweaks ── */
+        @media (max-width: 420px) {
+            .pink-card {
+                padding: 20px 16px;
+            }
+            .script-title {
+                font-size: 27px;
+            }
+            .keypad-pink {
+                gap: 10px;
+            }
+            .keypad-pink button {
+                width: 54px;
+                height: 54px;
+                font-size: 16px;
+            }
+            .hero-img-box {
+                height: 170px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- ─── SETUP SCREEN ─── -->
+        <div class="screen active" id="scr-setup">
+            <div class="pink-card">
+                <h2 class="script-title">✨ Create Your Surprise</h2>
+                <p class="subtitle">Fill in the details below, then preview or export</p>
+
+                <div class="field">
+                    <label>💕 Title Text</label>
+                    <input type="text" id="inpTitle" value="My Love, My Special Someone">
+                </div>
+                <div class="field">
+                    <label>🖼️ Main Image</label>
+                    <input type="file" id="inpMainImg" accept="image/*">
+                    <small id="imgHint">Optional — a default photo will show if you skip this</small>
+                </div>
+                <div class="field">
+                    <label>📖 Memory 1 Title</label>
+                    <input type="text" id="inpTl1" value="Two Months Ago: The day we first met.">
+                </div>
+                <div class="field">
+                    <label>📖 Memory 2 Title</label>
+                    <input type="text" id="inpTl2" value="Countless Conversations: Late night chats and laughter.">
+                </div>
+                <div class="field">
+                    <label>💌 Heart Note (Letter)</label>
+                    <textarea id="inpLetter" rows="3">These past few months have been amazing just because of you! Every moment feels brighter when I think of you. 💕</textarea>
+                </div>
+                <div class="field">
+                    <label>💭 Secret Cards (comma separated)</label>
+                    <input type="text" id="inpThoughts" value="I Love You ❤️, You make me smile endlessly 😊, Everyday with you is special ✨">
+                </div>
+                <div class="field">
+                    <label>🎁 Final Gift Message</label>
+                    <textarea id="inpGiftMsg" rows="2">No matter how far we are, you will always have a special place in my heart. ❤️</textarea>
+                </div>
+                <div class="field">
+                    <label>🔑 4‑Digit Passkey</label>
+                    <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="e.g. 1122">
+                    <small>Leave blank to use 1122</small>
+                </div>
+
+                <div class="flex-row">
+                    <button class="btn-pink" id="btnPreview">👀 Preview</button>
+                    <button class="btn-pink" id="btnExport" style="background:#4a4e69;">📤 Export HTML</button>
+                </div>
+                <small style="display:block;margin-top:12px;color:#a97788;">Export downloads a ready‑to‑send file that skips straight to the surprise.</small>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 1 : HERO ─── -->
+        <div class="screen" id="scr-1">
+            <div class="pink-card">
+                <div style="font-size:22px; letter-spacing:4px;">🎀 ✨ 🎀</div>
+                <h2 id="dispTitle" class="script-title" style="margin-top:6px;">My Love</h2>
+                <div class="hero-img-box">
+                    <img id="dispMainImg" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" alt="Love">
+                </div>
+                <button class="btn-pink" onclick="nav('scr-2')">Open Memories 🎁</button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 2 : TIMELINE ─── -->
+        <div class="screen" id="scr-2">
+            <h2 class="script-title">Our Journey ❤️</h2>
+            <div class="pink-card" style="padding:16px 14px;">
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-title">Memory #1</div>
+                        <div class="tl-desc" id="dispTl1">A simple connection that changed everything.</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-title">Memory #2</div>
+                        <div class="tl-desc" id="dispTl2">Late-night chats &amp; endless smiles.</div>
+                    </div>
+                </div>
+                <button class="btn-pink" onclick="nav('scr-3')" style="margin-top:12px;">Read My Letter ➔</button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 3 : LETTER ─── -->
+        <div class="screen" id="scr-3">
+            <h2 class="script-title">A Letter From The Heart 💌</h2>
+            <div class="pink-card" style="padding:10px 14px 14px;">
+                <div class="letter-paper" id="dispLetter">These past months have been amazing...</div>
+                <button class="btn-pink" onclick="nav('scr-4')" style="margin-top:18px;">See Special Cards ➔</button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 4 : SECRET CARDS ─── -->
+        <div class="screen" id="scr-4">
+            <h2 class="script-title">A Little Surprise ❤️</h2>
+            <p class="subtitle">Tap each card to reveal a secret thought…</p>
+            <div class="pink-card" style="padding:14px 12px;">
+                <div id="cardsContainer" style="width:100%;"></div>
+                <button class="btn-pink" onclick="nav('scr-pass')" style="margin-top:12px;">The Real Gift ➔</button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN PASS : PASSKEY ─── -->
+        <div class="screen" id="scr-pass">
+            <div class="pink-card">
+                <div class="lock-icon">🔒</div>
+                <h2 class="script-title" style="font-size:24px;">Enter Passkey</h2>
+                <p class="subtitle" style="margin-bottom:2px;">One last step before your gift</p>
+                <div class="pass-dots" id="passDots">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="keypad-pink" id="keypad">
+                    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+                    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+                    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+                    <button class="clear-key" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
+                </div>
+                <div class="pass-error" id="passError"></div>
+                <div class="pass-hint">💡 Hint: the passkey you set when creating this</div>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 5 : GIFT ─── -->
+        <div class="screen" id="scr-5">
+            <h2 class="script-title">Open Your Present 🎁</h2>
+            <div class="pink-card">
+                <div class="gift-box" id="giftBox" role="button" aria-label="Open gift">🎁</div>
+                <div class="gift-message-wrap" id="giftMessageWrap">
+                    <span id="giftMessage">You mean everything to me. ❤️</span>
+                </div>
+            </div>
+            <button class="restart-link" id="restartBtn">🔄 create another one</button>
+        </div>
+
+    </div>
+
+    <script>
+        /* ──────────────────────────────────────────────
+           PRISTINE HTML — captured once at load
+           ────────────────────────────────────────────── */
+        const PRISTINE_HTML = document.documentElement.outerHTML;
+        const DEFAULT_IMG = 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500';
+
+        /* ─── state ─── */
+        let state = {
+            title: '',
+            mainImg: DEFAULT_IMG,
+            tl1: '',
+            tl2: '',
+            letter: '',
+            thoughts: '',
+            giftMsg: '',
+            passkey: '1122'
+        };
+        let enteredPass = '';
+
+        /* ─── floating hearts ─── */
+        (function createFloatingHearts() {
+            const symbols = ['💖', '💗', '💕', '🌸', '✨'];
+            for (let i = 0; i < 18; i++) {
+                const h = document.createElement('div');
+                h.className = 'floating-heart';
+                h.textContent = symbols[i % symbols.length];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.animationDelay = (Math.random() * 6) + 's';
+                h.style.fontSize = (14 + Math.random() * 14) + 'px';
+                h.style.opacity = 0.25 + Math.random() * 0.3;
+                document.body.appendChild(h);
+            }
+        })();
+
+        /* ─── helpers ─── */
+        function nav(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const el = document.getElementById(screenId);
+            if (el) el.classList.add('active');
+
+            // reset passkey entry when entering the pass screen
+            if (screenId === 'scr-pass') {
+                enteredPass = '';
+                updatePassDots();
+                document.getElementById('passError').textContent = '';
+            }
+        }
+
+        function updatePassDots() {
+            document.querySelectorAll('#passDots span').forEach((el, i) => {
+                el.classList.toggle('filled', i < enteredPass.length);
+            });
+        }
+
+        /* ─── read form → state ─── */
+        function readFormIntoState() {
+            state.title = document.getElementById('inpTitle').value.trim() || 'My Love';
+            state.tl1 = document.getElementById('inpTl1').value.trim() || 'A beautiful memory...';
+            state.tl2 = document.getElementById('inpTl2').value.trim() || 'Another precious moment.';
+            state.letter = document.getElementById('inpLetter').value.trim() || 'You are amazing.';
+            state.thoughts = document.getElementById('inpThoughts').value.trim() || 'I Love You ❤️';
+            state.giftMsg = document.getElementById('inpGiftMsg').value.trim() || 'You mean everything to me. ❤️';
+            const pk = document.getElementById('inpPasskey').value.trim();
+            state.passkey = /^\d{4}$/.test(pk) ? pk : '1122';
+        }
+
+        /* ─── apply state to UI ─── */
+        function applyState() {
+            document.getElementById('dispTitle').textContent = state.title;
+            document.getElementById('dispMainImg').src = state.mainImg;
+            document.getElementById('dispTl1').textContent = state.tl1;
+            document.getElementById('dispTl2').textContent = state.tl2;
+            document.getElementById('dispLetter').textContent = state.letter;
+            document.getElementById('giftMessage').textContent = state.giftMsg;
+
+            // build secret cards
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            const items = state.thoughts.split(',').map(s => s.trim()).filter(Boolean);
+            if (!items.length) items.push('You are wonderful ❤️');
+
+            items.forEach(text => {
+                const card = document.createElement('div');
+                card.className = 'secret-card';
+
+                const inner = document.createElement('div');
+                inner.className = 'secret-card-inner';
+
+                const front = document.createElement('div');
+                front.className = 'secret-card-front';
+                front.innerHTML =
+                    '<div class="front-icon">💌</div><div class="front-label">Tap to reveal</div>';
+
+                const back = document.createElement('div');
+                back.className = 'secret-card-back';
+                const quote = document.createElement('div');
+                quote.className = 'quote-mark';
+                quote.textContent = '❝';
+                const p = document.createElement('p');
+                p.textContent = text;
+                back.appendChild(quote);
+                back.appendChild(p);
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                card.appendChild(inner);
+                card.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.classList.toggle('revealed');
+                });
+                container.appendChild(card);
+            });
+        }
+
+        /* ─── image upload ─── */
+        document.getElementById('inpMainImg').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                state.mainImg = evt.target.result;
+                document.getElementById('imgHint').textContent = '✅ Photo selected';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        /* ─── preview ─── */
+        document.getElementById('btnPreview').addEventListener('click', function() {
+            readFormIntoState();
+            applyState();
+            document.getElementById('giftMessageWrap').classList.remove('show');
+            nav('scr-1');
+        });
+
+        /* ─── gift open ─── */
+        document.getElementById('giftBox').addEventListener('click', function() {
+            const wrap = document.getElementById('giftMessageWrap');
+            wrap.classList.add('show');
+            // confetti
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 75, origin: { y: 0.55 } });
+                setTimeout(() => {
+                    confetti({ particleCount: 60, spread: 50, origin: { y: 0.5, x: 0.3 } });
+                }, 200);
+                setTimeout(() => {
+                    confetti({ particleCount: 60, spread: 50, origin: { y: 0.5, x: 0.7 } });
+                }, 400);
+            }
+        });
+
+        /* ─── passkey keypad ─── */
+        document.getElementById('keypad').addEventListener('click', function(e) {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const k = btn.dataset.k;
+            const errorEl = document.getElementById('passError');
+            errorEl.textContent = '';
+
+            if (k === 'clear') { enteredPass = ''; updatePassDots(); return; }
+            if (k === 'back') { enteredPass = enteredPass.slice(0, -1); updatePassDots(); return; }
+            if (enteredPass.length >= 4) return;
+
+            enteredPass += k;
+            updatePassDots();
+
+            if (enteredPass.length === 4) {
+                setTimeout(() => {
+                    if (enteredPass === state.passkey) {
+                        nav('scr-5');
+                        // auto-open gift after a moment
+                        setTimeout(() => {
+                            document.getElementById('giftBox').click();
+                        }, 400);
+                    } else {
+                        errorEl.textContent = '❌ Incorrect passkey, try again';
+                        const dots = document.getElementById('passDots');
+                        dots.style.animation = 'shakePass .4s';
+                        setTimeout(() => dots.style.animation = '', 400);
+                        enteredPass = '';
+                        updatePassDots();
+                    }
+                }, 280);
+            }
+        });
+
+        /* ─── restart ─── */
+        document.getElementById('restartBtn').addEventListener('click', function() {
+            document.getElementById('giftMessageWrap').classList.remove('show');
+            document.querySelectorAll('.secret-card').forEach(c => c.classList.remove('revealed'));
+            nav('scr-setup');
+        });
+
+        /* ─── EXPORT ─── */
+        document.getElementById('btnExport').addEventListener('click', function() {
+            readFormIntoState();
+            if (!state.letter) {
+                alert('💌 Please write a letter before exporting!');
+                return;
+            }
+
+            // escape state for safe injection
+            const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+            const injected =
+                `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};<\/` +
+                `script>`;
+
+            // insert after <body> opening
+            const bodyIdx = PRISTINE_HTML.indexOf('<body');
+            const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+            const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(
+            closeIdx);
+
+            const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
+            a.download = `${safeName}-surprise.html`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+        });
+
+        /* ─── AUTO-START if opened from exported file ─── */
+        if (window.__PRESET__) {
+            state = Object.assign(state, window.__PRESET__);
+            applyState();
+            document.getElementById('giftMessageWrap').classList.remove('show');
+            nav('scr-1');
+        }
+
+        // small fix: if user hits Enter on form fields, don't submit
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+        });
+    </script>
+
+</body>
+</html>

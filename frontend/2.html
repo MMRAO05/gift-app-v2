@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>The Ultimate Premium Celebration Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root {
+    --bg-deep: #050510;
+    --bg-mid: #0f1126;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-brd: rgba(255, 255, 255, 0.1);
+    --gold: #f39c12;
+    --gold-glow: rgba(243, 156, 18, 0.3);
+    --pink: #ff4757;
+    --pink-glow: rgba(255, 71, 87, 0.4);
+    --neon-blue: #00d2d3;
+    --text-light: #f1f2f6;
+    --text-soft: #a4b0be;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg-deep); font-family: 'Poppins', sans-serif; color: var(--text-light); overflow: hidden; }
+
+  #stage { position: relative; width: 100%; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 30%, #14193a 0%, #080a1c 60%, var(--bg-deep) 100%); }
+  .star { position: absolute; background: #fff; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite ease-in-out; }
+  @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.9; transform: scale(1.2); } }
+
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; opacity: 0; pointer-events: none; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: scale(0.95) translateY(15px); z-index: 2; }
+  .screen.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+  .glass { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--glass-brd); border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+
+  .setup-container { width: 100%; max-width: 480px; padding: 30px; max-height: 92vh; overflow-y: auto; scrollbar-width: none; }
+  .setup-container::-webkit-scrollbar { display: none; }
+  .setup-container h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 34px; margin: 0 0 8px; background: linear-gradient(135deg, #fff, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .setup-container p.subtitle { font-size: 13px; color: var(--text-soft); margin: 0 0 24px; font-weight: 300; }
+  
+  .field { text-align: left; margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; letter-spacing: .05em; text-transform: uppercase; }
+  .field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); border-radius: 12px; padding: 11px 14px; font-family: 'Poppins', sans-serif; font-size: 13px; color: #fff; transition: all 0.3s; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 12px var(--pink-glow); }
+  .field small { display:block; margin-top:5px; color:#6b7383; font-size:10.5px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 8px; }
+  .btn-primary { background: linear-gradient(135deg, var(--pink), #ff6b81); color: white; box-shadow: 0 8px 25px var(--pink-glow); }
+  .btn-secondary { background: linear-gradient(135deg, var(--gold), #f1c40f); color: #1e1e1e; box-shadow: 0 8px 25px var(--gold-glow); margin-top: 12px; }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+  .music-widget { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--glass-brd); margin: 20px 0; }
+  .v-bar-container { display: flex; gap: 3px; height: 20px; align-items: center; }
+  .v-bar { width: 3px; height: 5px; background: var(--pink); border-radius: 2px; animation: bounce 0.5s ease infinite alternate; transform-origin: bottom; }
+  @keyframes bounce { 0% { transform: scaleY(1); } 100% { transform: scaleY(3.5); } }
+  .v-bar:nth-child(2) { animation-delay: 0.15s; background: var(--gold); }
+  .v-bar:nth-child(3) { animation-delay: 0.3s; background: var(--neon-blue); }
+
+  .envelope { width: 180px; height: 120px; background: linear-gradient(135deg, #2c3e50, #34495e); border-radius: 8px; position: relative; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: 0.4s; }
+  .envelope:after { content: '💌'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+  .envelope.opened { transform: scale(0) rotate(50deg); opacity: 0; }
+  
+  .cake { position: relative; width: 140px; height: 90px; background: #ff4757; border-radius: 12px 12px 0 0; margin-top: 40px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+  .cake:before { content:''; position: absolute; top: 30px; left: 0; width: 100%; height: 15px; background: #fff; opacity: 0.4; }
+  .candle { position: absolute; top: -20px; left: calc(50% - 4px); width: 8px; height: 20px; background: #f1c40f; border-radius: 3px; }
+  .flame { position: absolute; top: -14px; left: calc(50% - 6px); width: 12px; height: 16px; background: #e67e22; border-radius: 50% 50% 50% 50%/60% 60% 40% 40%; animation: flare 0.5s infinite alternate; cursor: pointer; }
+  .flame.blown { display: none; }
+  @keyframes flare { 0% { transform: scale(0.9) rotate(-2deg); } 100% { transform: scale(1.1) rotate(2deg); } }
+
+  .timeline-container { width: 100%; max-width: 360px; text-align: left; position: relative; padding-left: 20px; border-left: 2px dashed var(--glass-brd); margin: 20px 0; max-height: 45vh; overflow-y: auto; }
+  .tl-item { position: relative; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); animation: slideIn 0.5s forwards; }
+  .tl-item:before { content: '✨'; position: absolute; left: -29px; top: 2px; background: var(--bg-deep); width: 16px; height: 16px; font-size: 12px; }
+  .tl-date { font-size: 11px; color: var(--gold); font-weight: 600; }
+  .tl-title { font-size: 14px; font-weight: 500; color: #fff; }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+  .scratch-container { position: relative; width: 280px; height: 160px; margin: 20px 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+  .scratch-secret { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #111, #222); color: var(--gold); padding: 10px; text-align: center; }
+  .scratch-secret h4 { margin: 0; font-size: 12px; color: var(--text-soft); text-transform: uppercase; }
+  .scratch-secret p { margin: 5px 0 0; font-size: 18px; font-weight: 600; font-family: 'Playfair Display', serif; }
+  canvas#scratchCanvas { position: absolute; inset: 0; cursor: crosshair; z-index: 3; touch-action: none; }
+
+  .game-area { width: 100%; height: 220px; position: relative; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px dashed var(--glass-brd); overflow: hidden; margin: 15px 0; }
+  .game-heart { position: absolute; font-size: 28px; cursor: pointer; animation: floatUp 4s linear infinite; user-select: none; }
+  @keyframes floatUp { 0% { transform: translateY(240px) scale(0.8); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-40px) scale(1.2); opacity: 0; } }
+
+  .pass-dots { display: flex; gap: 12px; margin: 20px 0; }
+  .pass-dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--text-soft); }
+  .pass-dots span.filled { background: var(--pink); border-color: var(--pink); box-shadow: 0 0 10px var(--pink); }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .grid-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 12px; margin-top: 15px; }
+  .grid-pad button { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--glass-brd); background: rgba(255,255,255,0.03); color: #fff; font-size: 18px; cursor: pointer; }
+  .grid-pad button:active { background: rgba(255,255,255,0.1); }
+  .pass-error { min-height: 16px; font-size: 12px; color: var(--pink); margin-top: 10px; }
+
+  .photo-wall { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-height: 40vh; overflow-y: auto; padding: 10px; }
+  .polaroid { background: white; padding: 6px 6px 18px; border-radius: 4px; width: 105px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transform: rotate(var(--r, 0deg)); }
+  .polaroid img { width: 100%; height: 90px; object-fit: cover; }
+
+  .next-btn-link { margin-top: 25px; background: none; border: none; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .restart-link { margin-top: 16px; background: none; border: none; color: var(--text-soft); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: 'Poppins', sans-serif; }
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop src="https://assets.mixkit.co/music/preview/mixkit-serene-view-1070.mp3"></audio>
+
+<div id="stage">
+  <div id="starfield"></div>
+
+  <div class="screen active" id="scr-setup">
+    <div class="setup-container glass">
+      <h1>Create Celebration v2</h1>
+      <p class="subtitle">Clean standalone export optimization engine</p>
+      
+      <div class="field">
+        <label>Recipient's Name</label>
+        <input type="text" id="inpName" value="Ayesha">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Occasion</label>
+          <select id="inpOccasion">
+            <option value="birthday">🎂 Birthday</option>
+            <option value="anniversary">💞 Anniversary</option>
+            <option value="love">💖 Love Surprise</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Passkey (4 Digits)</label>
+          <input type="password" id="inpPasskey" maxlength="4" value="1432">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Date (Birthday / Anniversary)</label>
+          <input type="date" id="inpDate">
+        </div>
+        <div class="field">
+          <label>Short Wish (shown with the date)</label>
+          <input type="text" id="inpWish" value="Wishing you a day as wonderful as you are.">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Scratch Card Voucher</label>
+        <input type="text" id="inpScratch" value="Valid for One Free Long Drive 🚗">
+      </div>
+
+      <div class="field">
+        <label>Heart Note (Short)</label>
+        <input type="text" id="inpShort" value="You make my world infinitely brighter.">
+      </div>
+
+      <div class="field">
+        <label>Main Letter Content</label>
+        <textarea id="inpLetter" rows="3">I wanted to create something completely unique for you. You are the most wonderful person in my life, and every moment shared with you is a treasure. Thank you for being you!</textarea>
+      </div>
+
+      <div class="field">
+        <label>Photos (Will be baked instantly)</label>
+        <input type="file" id="inpFiles" accept="image/*" multiple>
+        <small id="photoCountHint"></small>
+      </div>
+
+      <button class="btn btn-primary" id="btnPreview">Live Preview 👀</button>
+      <button class="btn btn-secondary" id="btnExport">Export Standalone HTML 📤</button>
+      <small style="display:block;margin-top:10px;color:#6b7383;">Export downloads a ready file — send that one to them, it skips straight to the surprise.</small>
+    </div>
+  </div>
+
+  <div class="screen" id="scr-envelope">
+    <div style="font-size: 12px; text-transform: uppercase; color: var(--text-soft); letter-spacing: 0.2em; margin-bottom: 15px;">A Premium Parcel For</div>
+    <h2 id="displayEncName" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 28px; margin: 0 0 40px;"></h2>
+    <div class="envelope" id="envelopeTap"></div>
+    <p style="font-size: 12px; color: var(--text-soft); margin-top: 30px;">(Tap to unlock container)</p>
+  </div>
+
+  <div class="screen" id="scr-hero">
+    <h1 id="heroTitle" style="font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 10px;">Happy Day</h1>
+    
+    <div class="music-widget">
+      <div class="v-bar-container">
+        <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
+      </div>
+      <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft)">Ambient Audio Sync Active</span>
+    </div>
+
+    <div class="cake" id="cakeContainer">
+      <div class="candle"><div class="flame" id="flameTap"></div></div>
+    </div>
+    <p id="cakeHint" style="font-size: 13px; color: var(--text-soft); margin-top: 20px;">Tap the flame to blow the candle 🕯️</p>
+    <button class="next-btn-link" id="toTimeline" style="display:none;">See the Date →</button>
+  </div>
+
+  <div class="screen" id="scr-timeline">
+    <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0;">The Date</h2>
+    <p style="font-size: 12px; color: var(--text-soft); margin-bottom: 15px;">A moment worth celebrating</p>
+    <div style="display:flex;flex-direction:column;align-items:center;max-width:320px;">
+      <div id="dateIcon" style="font-size: 46px;">🎂</div>
+      <div id="dateLine" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 20px; margin-top: 12px;"></div>
+      <div id="wishLine" style="margin-top: 16px; font-size: 15px; color: #e1e2eb; line-height: 1.6;"></div>
+    </div>
+    <button class="next-btn-link" id="toScratch">Reveal Next Layer →</button>
+  </div>
+
+  <div class="screen" id="scr-scratch">
+    <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Scratch Voucher</h2>
+    <p style="font-size: 12px; color: var(--text-soft); max-width: 260px;">Swipe with finger on the layer to scrape and unlock your premium gift code!</p>
+    <div class="scratch-container">
+      <div class="scratch-secret">
+        <h4>Special Voucher</h4>
+        <p id="scratchRewardText">Voucher</p>
+      </div>
+      <canvas id="scratchCanvas"></canvas>
+    </div>
+    <button class="next-btn-link" id="toGame" style="display:none;">Unlock Final Mini-Game →</button>
+  </div>
+
+  <div class="screen" id="scr-game">
+    <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Pop the Hearts 💖</h2>
+    <p style="font-size: 12px; color: var(--text-soft);">Pop <span id="gameTarget" style="color:var(--pink); font-weight:600;">5</span> interactive hearts to break encryption!</p>
+    <div class="game-area" id="gameArea"></div>
+  </div>
+
+  <div class="screen" id="scr-pass">
+    <div style="font-size: 26px;">🔒</div>
+    <h3 style="font-family: 'Playfair Display', serif; margin: 10px 0 5px;">Decryption Verification</h3>
+    <p style="font-size: 11px; color: var(--text-soft); margin: 0;">Enter the private key to read the final ledger</p>
+    <div class="pass-dots" id="pDots"><span></span><span></span><span></span><span></span></div>
+    <div class="grid-pad" id="keyboard">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button style="color:var(--pink); font-size:12px;">C</button><button>0</button><button>⌫</button>
+    </div>
+    <div class="pass-error" id="passError"></div>
+  </div>
+
+  <div class="screen" id="scr-final" style="overflow-y:auto; justify-content:flex-start; padding-top:40px;">
+    <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0 0 20px;">Memories Decrypted</h2>
+    <div class="photo-wall" id="galleryWall"></div>
+    
+    <div class="glass" style="width:100%; max-width:380px; padding:30px; text-align:left; margin-top:30px; border:1px solid rgba(243,156,18,0.2)">
+      <h3 id="letterDear" style="font-family: 'Playfair Display', serif; color:var(--gold); margin-top:0;">Dear</h3>
+      <p id="letterBody" style="font-size:14px; line-height:1.7; color:#e1e2eb; white-space:pre-wrap;"></p>
+      <div style="margin-top:25px; font-family:'Playfair Display', serif; font-style:italic; color:var(--pink); text-align:right;">— Yours Forever ✨</div>
+    </div>
+    <button class="restart-link" id="restartBtn">create another one</button>
+  </div>
+
+</div>
+
+<script>
+  // Shared memory architecture
+  let state = { name: '', occasion: '', passkey: '', date: '', wish: '', scratch: '', short: '', letter: '', photos: [] };
+  let currentPin = '';
+  let poppedCount = 0;
+  const TARGET_POPS = 5;
+  let heartSpawnInterval = null;
+
+  // Starfield Engine
+  const sf = document.getElementById('starfield');
+  for(let i=0; i<45; i++){
+    let s = document.createElement('div'); s.className = 'star';
+    s.style.width = s.style.height = (Math.random()*2 + 1) + 'px';
+    s.style.top = Math.random()*100 + 'vh'; s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDelay = Math.random()*3 + 's'; sf.appendChild(s);
+  }
+
+  // Base64 Image Processing Pipeline
+  document.getElementById('inpFiles').addEventListener('change', function(e) {
+    state.photos = [];
+    const files = Array.from(e.target.files);
+    document.getElementById('photoCountHint').innerText = files.length ? `${files.length} photo(s) selected` : '';
+    files.forEach(file => {
+      let r = new FileReader();
+      r.onload = (evt) => state.photos.push(evt.target.result);
+      r.readAsDataURL(file);
+    });
+  });
+
+  function formatDateLine(dateStr, occasion){
+    if(!dateStr) return '';
+    const d = new Date(dateStr+'T00:00:00');
+    if(isNaN(d)) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const nice = d.toLocaleDateString('en-US', {month:'long', day:'numeric'});
+    if(occasion === 'anniversary'){
+      let years = today.getFullYear() - d.getFullYear();
+      const passedThisYear = (today.getMonth() > d.getMonth()) || (today.getMonth()===d.getMonth() && today.getDate()>=d.getDate());
+      if(!passedThisYear) years -= 1;
+      if(years >= 1) return `${years} year${years>1?'s':''} of us — since ${nice}`;
+      return `Since ${nice}`;
+    }
+    const diffDays = Math.round((d - today)/86400000);
+    if(diffDays === 0) return `Today, ${nice} 🎉`;
+    if(diffDays > 0) return `${nice} — ${diffDays} day${diffDays>1?'s':''} to go`;
+    return nice;
+  }
+
+  function nav(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'scr-scratch') initScratchCard();
+    if(id === 'scr-game') initHeartGame();
+  }
+
+  function applyStateData() {
+    document.getElementById('displayEncName').innerText = state.name;
+    document.getElementById('scratchRewardText').innerText = state.scratch;
+    document.getElementById('letterDear').innerText = `Dear ${state.name},`;
+    document.getElementById('letterBody').innerText = state.letter;
+    let titles = { birthday: '🎂 Happy Birthday!', anniversary: '💞 Happy Anniversary!', love: '💖 For You, My Love' };
+    document.getElementById('heroTitle').innerText = titles[state.occasion] || 'Celebration!';
+  }
+
+  function readFormIntoState(){
+    state.name = document.getElementById('inpName').value.trim() || 'you';
+    state.occasion = document.getElementById('inpOccasion').value;
+    state.passkey = /^\d{4}$/.test(document.getElementById('inpPasskey').value.trim()) ? document.getElementById('inpPasskey').value.trim() : '1234';
+    state.date = document.getElementById('inpDate').value;
+    state.wish = document.getElementById('inpWish').value.trim();
+    state.scratch = document.getElementById('inpScratch').value;
+    state.short = document.getElementById('inpShort').value;
+    state.letter = document.getElementById('inpLetter').value.trim();
+  }
+
+  document.getElementById('btnPreview').addEventListener('click', () => {
+    readFormIntoState();
+    applyStateData();
+    resetExperience();
+    nav('scr-envelope');
+  });
+
+  document.getElementById('envelopeTap').addEventListener('click', function() {
+    this.classList.add('opened');
+    document.getElementById('bgMusic').play().catch(() => console.log("Audio waiting trigger"));
+    setTimeout(() => {
+      nav('scr-hero');
+      confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+    }, 600);
+  });
+
+  document.getElementById('flameTap').addEventListener('click', function() {
+    if(this.classList.contains('blown')) return;
+    this.classList.add('blown');
+    document.getElementById('cakeHint').style.color = 'var(--gold)';
+    document.getElementById('cakeHint').innerText = state.short;
+    document.getElementById('toTimeline').style.display = 'inline-block';
+    confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+    confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+  });
+
+  const OCC_ICONS = { birthday: '🎂', anniversary: '💞', love: '💖' };
+
+  document.getElementById('toTimeline').addEventListener('click', () => {
+    document.getElementById('dateIcon').innerText = OCC_ICONS[state.occasion] || '🎉';
+    const dateLine = formatDateLine(state.date, state.occasion);
+    document.getElementById('dateLine').innerText = dateLine || 'A day made just for you';
+    document.getElementById('wishLine').innerText = state.wish || '';
+    nav('scr-timeline');
+  });
+
+  document.getElementById('toScratch').addEventListener('click', () => nav('scr-scratch'));
+
+  function initScratchCard() {
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 280; canvas.height = 160;
+    canvas.style.opacity = '1';
+    canvas.style.display = 'block';
+
+    ctx.fillStyle = '#7f8c8d'; ctx.fillRect(0, 0, 280, 160);
+    ctx.font = '11px Poppins'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+    ctx.fillText('SCRATCH HERE WITH YOUR FINGER', 140, 85);
+
+    let isDown = false;
+    let revealed = false;
+
+    function getPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - rect.left) * (canvas.width/rect.width), y: (clientY - rect.top) * (canvas.height/rect.height) };
+    }
+
+    function scratchAt(x,y){
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 18, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    function checkRevealAmount(){
+      if(revealed) return;
+      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let cleared = 0, sampled = 0;
+      for(let i=3;i<imgData.length;i+=4*20){
+        sampled++;
+        if(imgData[i] === 0) cleared++;
+      }
+      const ratio = cleared / sampled;
+      if(ratio > 0.55){
+        revealed = true;
+        canvas.style.transition = 'opacity .5s ease';
+        canvas.style.opacity = '0';
+        setTimeout(()=> canvas.style.display='none', 500);
+        document.getElementById('toGame').style.display = 'inline-block';
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+    function start(e){ isDown = true; const p = getPos(e); scratchAt(p.x,p.y); }
+    function move(e){ if(!isDown) return; e.preventDefault(); const p = getPos(e); scratchAt(p.x,p.y); checkRevealAmount(); }
+    function end(){ isDown = false; }
+
+    canvas.onmousedown = start;
+    canvas.onmousemove = move;
+    window.onmouseup = end;
+    canvas.ontouchstart = start;
+    canvas.ontouchmove = move;
+    canvas.ontouchend = end;
+  }
+
+  document.getElementById('toGame').addEventListener('click', () => nav('scr-game'));
+
+  function initHeartGame(){
+    poppedCount = 0;
+    document.getElementById('gameTarget').innerText = TARGET_POPS;
+    const area = document.getElementById('gameArea');
+    area.innerHTML = '';
+    if(heartSpawnInterval) clearInterval(heartSpawnInterval);
+    heartSpawnInterval = setInterval(()=>{
+      if(poppedCount >= TARGET_POPS) { clearInterval(heartSpawnInterval); return; }
+      const heart = document.createElement('div');
+      heart.className = 'game-heart';
+      heart.innerText = ['💖','💗','💕','❤️','💘'][Math.floor(Math.random()*5)];
+      heart.style.left = (Math.random()*80+5) + '%';
+      heart.style.animationDuration = (3 + Math.random()*2) + 's';
+      heart.addEventListener('click', function(){
+        poppedCount++;
+        document.getElementById('gameTarget').innerText = Math.max(TARGET_POPS - poppedCount, 0);
+        confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } });
+        this.remove();
+        if(poppedCount >= TARGET_POPS){
+          clearInterval(heartSpawnInterval);
+          setTimeout(()=> nav('scr-pass'), 500);
+        }
+      });
+      heart.addEventListener('animationend', function(){ this.remove(); });
+      area.appendChild(heart);
+    }, 700);
+  }
+
+  // Passkey keypad
+  const pDots = document.querySelectorAll('#pDots span');
+  function updateDots(){ pDots.forEach((d,i)=> d.classList.toggle('filled', i < currentPin.length)); }
+  document.getElementById('keyboard').addEventListener('click', function(e){
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const val = btn.innerText;
+    document.getElementById('passError').innerText = '';
+    if(val === 'C'){ currentPin = ''; updateDots(); return; }
+    if(val === '⌫'){ currentPin = currentPin.slice(0,-1); updateDots(); return; }
+    if(currentPin.length >= 4) return;
+    currentPin += val;
+    updateDots();
+    if(currentPin.length === 4){
+      setTimeout(()=>{
+        if(currentPin === state.passkey){
+          buildGallery();
+          nav('scr-final');
+          confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+        } else {
+          document.getElementById('passError').innerText = 'Incorrect key, try again';
+          currentPin = '';
+          updateDots();
+          const wrap = document.getElementById('pDots');
+          wrap.style.animation = 'shake .4s';
+          setTimeout(()=> wrap.style.animation = '', 400);
+        }
+      }, 200);
+    }
+  });
+
+  function buildGallery(){
+    const wall = document.getElementById('galleryWall');
+    wall.innerHTML = '';
+    if(!state.photos || state.photos.length === 0){
+      wall.innerHTML = '<p style="font-size:13px;color:var(--text-soft);font-style:italic;">More memories coming soon.</p>';
+      return;
+    }
+    state.photos.forEach(src=>{
+      const div = document.createElement('div');
+      div.className = 'polaroid';
+      div.style.setProperty('--r', (Math.random()*12-6)+'deg');
+      const img = document.createElement('img');
+      img.src = src;
+      div.appendChild(img);
+      wall.appendChild(div);
+    });
+  }
+
+  function resetExperience(){
+    document.getElementById('envelopeTap').classList.remove('opened');
+    document.getElementById('flameTap').classList.remove('blown');
+    document.getElementById('cakeHint').innerText = 'Tap the flame to blow the candle 🕯️';
+    document.getElementById('cakeHint').style.color = 'var(--text-soft)';
+    document.getElementById('toTimeline').style.display = 'none';
+    document.getElementById('toGame').style.display = 'none';
+    currentPin = ''; updateDots();
+    poppedCount = 0;
+    if(heartSpawnInterval) clearInterval(heartSpawnInterval);
+  }
+
+  document.getElementById('restartBtn').addEventListener('click', ()=>{
+    if(heartSpawnInterval) clearInterval(heartSpawnInterval);
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    resetExperience();
+    document.getElementById('scr-setup').classList.add('active');
+  });
+
+  // Export standalone file with data baked in
+  const PRISTINE_HTML = document.documentElement.outerHTML;
+  document.getElementById('btnExport').addEventListener('click', function(){
+    readFormIntoState();
+    if(!state.letter){ alert('Pehle letter likh do, phir export karo :)'); return; }
+
+    const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+    const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+    const bodyIdx = PRISTINE_HTML.indexOf('<body');
+    const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+    const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+    const blob = new Blob([newHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const safeName = (state.name || 'you').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'');
+    a.download = `celebration-v2-${safeName || 'you'}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 3000);
+  });
+
+  // Auto-start if opened from an exported/preset file
+  if(window.__PRESET__){
+    state = Object.assign(state, window.__PRESET__);
+    applyStateData();
+    nav('scr-envelope');
+  }
+</script>
+</body>
+</html>
