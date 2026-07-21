@@ -12,7 +12,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ===== MIDDLEWARE =====
+// Helmet with CSP that allows inline scripts and styles for the frontend
 app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "blob:"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            connectSrc: ["'self'", "https://api.github.com"], // optional, for GitHub API
+        },
+    },
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(compression());
