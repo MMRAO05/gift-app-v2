@@ -3,294 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>✨ A Gift For You</title>
+    <title>🎂 Happy Birthday!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        html,body{height:100%;font-family:'Inter',sans-serif;background:#1a1410;color:#fff;overflow:hidden;}
-        .cursor-glow{position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,108,0.08) 0%,transparent 70%);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
-        #stage{position:relative;width:100%;height:100vh;overflow:hidden;background:#1a1410;}
-        .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.8s ease,transform 0.8s ease;transform:scale(0.95);z-index:1;}
-        .screen.active{opacity:1;pointer-events:auto;transform:scale(1);}
-        .progress-bar{position:absolute;top:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:10;padding:6px 16px;background:rgba(0,0,0,0.4);backdrop-filter:blur(10px);border-radius:50px;border:1px solid rgba(255,255,255,0.1);}
-        .progress-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);}
-        .progress-dot.active{background:#c9a86c;box-shadow:0 0 20px rgba(201,168,108,0.3);transform:scale(1.2);}
-        .progress-dot.done{background:#a8894a;}
-        #setup{background:linear-gradient(135deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .setup-card{width:100%;max-width:440px;background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:24px;padding:40px 32px 36px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-        .setup-card .logo{font-family:'Great Vibes',cursive;font-size:42px;color:#c9a86c;}
-        .setup-card h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:4px;}
-        .setup-card .subtitle{color:rgba(255,255,255,0.4);font-size:13px;font-weight:300;margin-bottom:28px;}
-        .field{text-align:left;margin-bottom:16px;}
-        .field label{display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;}
-        .field input,.field textarea,.field input[type="password"]{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;transition:all 0.3s ease;outline:none;}
-        .field input:focus,.field textarea:focus{border-color:#c9a86c;background:rgba(255,255,255,0.08);}
-        .field textarea{min-height:80px;resize:vertical;}
-        .field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.2);}
-        .field small{display:block;margin-top:4px;color:rgba(255,255,255,0.2);font-size:10px;}
-        .photo-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-        .photo-thumb{width:48px;height:48px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,0.1);}
-        .upload-btn{border:1px dashed rgba(255,255,255,0.2);border-radius:12px;padding:10px 18px;font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;background:rgba(255,255,255,0.03);transition:all 0.3s ease;font-weight:500;display:inline-block;}
-        .upload-btn:hover{background:rgba(255,255,255,0.08);border-color:#c9a86c;color:#fff;}
-        .primary-btn{width:100%;margin-top:12px;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#c9a86c,#a8894a);color:#1a1410;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.3s ease;box-shadow:0 8px 30px rgba(201,168,108,0.2);}
-        .primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(201,168,108,0.3);}
-        .primary-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-        .loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid #1a1410;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
-        @keyframes spin{to{transform:rotate(360deg);}}
-        .ghost-hint{margin-top:14px;font-size:11px;color:rgba(255,255,255,0.15);}
-        #share-screen{background:linear-gradient(135deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .share-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:24px;padding:40px 32px;max-width:440px;width:100%;border:1px solid rgba(255,255,255,0.1);}
-        .share-card .success-icon{font-size:56px;margin-bottom:8px;animation:bounceIn 0.8s ease;}
-        @keyframes bounceIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
-        .share-card h2{font-family:'Playfair Display',serif;font-size:26px;color:#c9a86c;}
-        .share-card .sub{color:rgba(255,255,255,0.4);font-size:13px;margin-bottom:24px;}
-        .share-link-box{background:rgba(255,255,255,0.05);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;margin-bottom:18px;border:1px solid rgba(255,255,255,0.05);}
-        .share-link-box input{flex:1;border:none;background:transparent;font-size:13px;color:#fff;outline:none;font-family:'Inter',sans-serif;min-width:0;}
-        .copy-btn{background:#c9a86c;color:#1a1410;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;transition:all 0.3s ease;}
-        .copy-btn:hover{background:#e8d5b5;}
-        .copy-btn.copied{background:#27ae60;color:#fff;}
-        .share-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
-        .share-actions button{padding:10px 20px;border:none;border-radius:12px;font-size:12px;cursor:pointer;font-weight:600;transition:all 0.3s ease;flex:1;min-width:80px;}
-        .share-actions button:hover{transform:translateY(-2px);}
-        .share-actions button.whatsapp{background:#25D366;color:#fff;}
-        .share-actions button.whatsapp:hover{background:#1da851;}
-        .share-actions button.email{background:#EA4335;color:#fff;}
-        .share-actions button.email:hover{background:#c62828;}
-        .share-actions button.continue-gift{background:linear-gradient(135deg,#c9a86c,#a8894a);color:#1a1410;flex:1.5;}
-        #box-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .box-header{margin-bottom:20px;}
-        .box-header .eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-weight:300;}
-        .box-header .name-display{font-family:'Great Vibes',cursive;font-size:36px;color:#c9a86c;margin-top:4px;}
-        .gift-box-3d{width:200px;height:200px;cursor:pointer;perspective:600px;position:relative;}
-        .gift-box-3d .box-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1);}
-        .gift-box-3d:hover .box-inner{transform:rotateY(15deg) rotateX(5deg);}
-        .gift-box-3d .box-face{position:absolute;border-radius:6px;backface-visibility:visible;}
-        .gift-box-3d .box-front{width:100%;height:100%;background:linear-gradient(135deg,#c0395e,#8a2540);box-shadow:0 20px 60px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;}
-        .gift-box-3d .box-front .ribbon{position:absolute;background:#c9a86c;}
-        .gift-box-3d .box-front .ribbon-h{width:80%;height:8px;top:50%;left:10%;transform:translateY(-50%);border-radius:4px;}
-        .gift-box-3d .box-front .ribbon-v{width:8px;height:80%;top:10%;left:50%;transform:translateX(-50%);border-radius:4px;}
-        .gift-box-3d .box-front .bow{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:30px;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));transition:transform 0.6s ease;}
-        .gift-box-3d .box-lid{position:absolute;top:-20px;left:-10px;width:calc(100% + 20px);height:30px;background:linear-gradient(135deg,#a8894a,#c9a86c);border-radius:6px 6px 0 0;transform-origin:bottom center;transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
-        .gift-box-3d.opened .box-lid{transform:translateY(-30px) rotateX(60deg) translateZ(20px);}
-        .tap-caption{margin-top:30px;color:rgba(255,255,255,0.4);font-size:14px;font-weight:300;}
-        .tap-caption small{display:block;font-size:11px;color:rgba(255,255,255,0.15);margin-top:6px;}
-        #flower-screen{background:radial-gradient(ellipse at center,#2a1f18 0%,#1a1410 70%);}
-        .flower-container{position:relative;width:260px;height:260px;animation:floatFlower 4s ease-in-out infinite;}
-        @keyframes floatFlower{0%,100%{transform:translateY(0px);}50%{transform:translateY(-10px);}}
-        .flower-petal{position:absolute;left:50%;top:50%;width:70px;height:100px;background:linear-gradient(160deg,#e8b4c4,#c0395e);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform-origin:50% 100%;opacity:0.9;box-shadow:inset 0 0 20px rgba(192,57,94,0.3);animation:bloomPetal 1.4s ease forwards;}
-        @keyframes bloomPetal{0%{transform:translate(-50%,-100%) rotate(calc(var(--angle) * 1deg)) scale(0);opacity:0;}60%{transform:translate(-50%,-100%) rotate(calc(var(--angle) * 1deg)) scale(1.1);opacity:1;}100%{transform:translate(-50%,-100%) rotate(calc(var(--angle) * 1deg)) scale(1);opacity:0.9;}}
-        .flower-center{position:absolute;left:50%;top:50%;width:40px;height:40px;background:radial-gradient(circle,#c9a86c,#a8894a);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 40px rgba(201,168,108,0.3);animation:pulseCenter 2s ease-in-out infinite;}
-        @keyframes pulseCenter{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.1);}}
-        .flower-caption{margin-top:32px;color:rgba(255,255,255,0.4);font-family:'Playfair Display',serif;font-style:italic;font-size:18px;}
-        #note-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .note-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:16px;padding:40px 32px;max-width:380px;border:1px solid rgba(255,255,255,0.1);}
-        .note-line{font-family:'Playfair Display',serif;font-size:22px;line-height:1.7;color:#fff;font-style:italic;}
-        .note-line .highlight{background:linear-gradient(135deg,rgba(201,168,108,0.2),rgba(201,168,108,0.05));padding:0 6px;border-radius:4px;color:#c9a86c;}
-        .continue-btn{margin-top:28px;border:none;background:none;color:#c9a86c;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding-bottom:4px;border-bottom:2px solid #c9a86c;transition:all 0.3s ease;}
-        .continue-btn:hover{opacity:0.7;transform:translateX(4px);}
-        #pass-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .pass-lock{font-size:40px;margin-bottom:8px;animation:floatLock 3s ease-in-out infinite;}
-        @keyframes floatLock{0%,100%{transform:translateY(0px) rotate(-5deg);}50%{transform:translateY(-8px) rotate(5deg);}}
-        .pass-title{font-family:'Playfair Display',serif;font-size:22px;color:#fff;}
-        .pass-sub{color:rgba(255,255,255,0.3);font-size:13px;margin-bottom:24px;}
-        .pass-dots{display:flex;gap:14px;margin-bottom:30px;}
-        .pass-dots span{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);transition:all 0.3s ease;}
-        .pass-dots span.filled{background:#c9a86c;border-color:#c9a86c;box-shadow:0 0 20px rgba(201,168,108,0.3);}
-        .keypad{display:grid;grid-template-columns:repeat(3,68px);gap:12px;}
-        .keypad button{width:68px;height:68px;border-radius:50%;border:none;background:rgba(255,255,255,0.05);box-shadow:0 4px 15px rgba(0,0,0,0.2);font-size:20px;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;font-weight:300;transition:all 0.2s ease;border:1px solid rgba(255,255,255,0.05);}
-        .keypad button:hover{background:rgba(255,255,255,0.1);transform:scale(1.05);}
-        .keypad button:active{transform:scale(0.95);background:#c9a86c;color:#1a1410;}
-        .keypad button.clear{font-size:10px;color:rgba(255,255,255,0.3);font-weight:600;}
-        .pass-error{margin-top:16px;color:#e74c3c;font-size:12px;height:18px;}
-        .pass-hint{margin-top:16px;color:rgba(255,255,255,0.15);font-size:11px;}
-        #unlock-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .unlock-check{font-size:60px;animation:successBounce 0.8s ease;}
-        @keyframes successBounce{0%{transform:scale(0) rotate(-30deg);opacity:0;}60%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0deg);opacity:1;}}
-        .unlock-mark{font-family:'Playfair Display',serif;font-size:24px;color:#c9a86c;}
-        #photo-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .photo-title{font-family:'Great Vibes',cursive;font-size:30px;color:#c9a86c;margin-bottom:20px;}
-        .photo-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;max-width:400px;max-height:55vh;overflow-y:auto;padding:4px;}
-        .photo-grid::-webkit-scrollbar{width:4px;}
-        .photo-grid::-webkit-scrollbar-thumb{background:#c9a86c;border-radius:10px;}
-        .polaroid{background:rgba(255,255,255,0.05);padding:8px 8px 24px;border-radius:4px;box-shadow:0 8px 30px rgba(0,0,0,0.3);transform:rotate(var(--r,0deg));width:120px;border:1px solid rgba(255,255,255,0.05);transition:transform 0.3s ease;}
-        .polaroid:hover{transform:rotate(0deg) scale(1.05)!important;}
-        .polaroid img{width:100%;height:110px;object-fit:cover;display:block;border-radius:2px;}
-        .no-photos{font-family:'Playfair Display',serif;font-style:italic;color:rgba(255,255,255,0.2);font-size:17px;max-width:280px;}
-        #letter-screen{background:linear-gradient(180deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
-        .letter-paper{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:16px;padding:40px 32px;max-width:400px;width:100%;max-height:60vh;overflow-y:auto;border:1px solid rgba(255,255,255,0.1);text-align:left;}
-        .letter-paper::-webkit-scrollbar{width:4px;}
-        .letter-paper::-webkit-scrollbar-thumb{background:#c9a86c;border-radius:10px;}
-        .letter-paper .salutation{font-family:'Great Vibes',cursive;font-size:24px;color:#c9a86c;margin-bottom:16px;}
-        .letter-paper .body-text{font-family:'Playfair Display',serif;font-size:17px;line-height:1.8;color:rgba(255,255,255,0.8);white-space:pre-wrap;}
-        .letter-paper .sign{margin-top:24px;font-family:'Great Vibes',cursive;font-size:28px;color:#c9a86c;text-align:right;}
-        .restart-btn{margin-top:24px;border:none;background:none;color:rgba(255,255,255,0.2);font-size:12px;text-decoration:underline;cursor:pointer;font-family:'Inter',sans-serif;transition:color 0.3s ease;}
-        .restart-btn:hover{color:#c9a86c;}
-        .confetti-container{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
-        .confetti-piece{position:absolute;width:10px;height:10px;opacity:0;animation:confettiFall linear forwards;}
-        @keyframes confettiFall{0%{opacity:1;transform:translateY(-10vh) rotate(0deg) scale(1);}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.5);}}
-        .debug-console{position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,0.8);color:#0f0;padding:8px 12px;border-radius:8px;font-size:11px;font-family:monospace;z-index:999;max-width:300px;max-height:100px;overflow-y:auto;display:none;}
-        @media(max-width:480px){.setup-card{padding:28px 20px 24px;}.gift-box-3d{width:160px;height:160px;}.keypad{grid-template-columns:repeat(3,58px);gap:10px;}.keypad button{width:58px;height:58px;font-size:18px;}.progress-bar{padding:6px 14px;gap:8px;top:16px;}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: #1a1410;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* ===== BACKGROUND PARTICLES ===== */
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #c9a86c;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle linear infinite;
+        }
+        @keyframes floatParticle {
+            0% { opacity: 0; transform: translateY(100vh) rotate(0deg); }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { opacity: 0; transform: translateY(-10vh) rotate(720deg); }
+        }
+
+        /* ===== CURSOR GLOW ===== */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201,168,108,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        /* ===== BIRTHDAY CARD ===== */
+        .card {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px 36px 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeUp 0.8s ease;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .card .emoji {
+            font-size: 72px;
+            display: block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .card h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 44px;
+            color: #c9a86c;
+            margin: 8px 0 6px;
+        }
+        .card .sub {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-style: italic;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 20px;
+        }
+        .card .message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
+        .card .signature {
+            font-family: 'Great Vibes', cursive;
+            font-size: 28px;
+            color: #c9a86c;
+            margin-bottom: 28px;
+        }
+
+        .card .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a86c, transparent);
+            margin: 16px auto 24px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #c9a86c, #a8894a);
+            color: #1a1410;
+            box-shadow: 0 8px 30px rgba(201,168,108,0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(201,168,108,0.3);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ===== CONFETTI ===== */
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translateY(-10vh) rotate(0deg) scale(1); }
+            100% { opacity: 0; transform: translateY(110vh) rotate(720deg) scale(0.5); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .card { padding: 32px 20px 28px; }
+            .card h1 { font-size: 34px; }
+            .card .emoji { font-size: 56px; }
+            .btn { font-size: 14px; padding: 12px 20px; }
+        }
     </style>
 </head>
 <body>
-<a href="birthday.html">Birthday</a>
 
-<div class="cursor-glow" id="cursorGlow"></div>
-<div class="confetti-container" id="confettiContainer"></div>
-<div class="debug-console" id="debugConsole">🐛 Debug: Ready</div>
+    <!-- CURSOR GLOW -->
+    <div class="cursor-glow" id="cursorGlow"></div>
 
-<div id="stage">
+    <!-- BACKGROUND PARTICLES -->
+    <div class="bg-particles" id="bgParticles"></div>
 
-    <!-- PROGRESS BAR -->
-    <div class="progress-bar" id="progressBar" style="display:none;">
-        <div class="progress-dot" data-step="0"></div>
-        <div class="progress-dot" data-step="1"></div>
-        <div class="progress-dot" data-step="2"></div>
-        <div class="progress-dot" data-step="3"></div>
-        <div class="progress-dot" data-step="4"></div>
-    </div>
+    <!-- CONFETTI CONTAINER -->
+    <div class="confetti-container" id="confettiContainer"></div>
 
-    <!-- SETUP -->
-    <div class="screen active" id="setup">
-        <div class="setup-card">
-            <div class="logo">✨</div>
-            <h1>Create Her Gift</h1>
-            <p class="subtitle">A premium experience crafted with love</p>
-
-            <div class="field">
-                <label>Her Name</label>
-                <input type="text" id="herName" placeholder="Enter her name" maxlength="30" value="-----">
-            </div>
-
-            <div class="field">
-                <label>Short Note</label>
-                <input type="text" id="shortLine" placeholder="A beautiful thought..." maxlength="90" value="In your smile, I found my peace.">
-            </div>
-
-            <div class="field">
-                <label>Your Letter</label>
-                <textarea id="letterText" placeholder="Write from the heart...">To my dearest, I am writing this little note just because you have been on my mind all day. Every time I think about your smile, my heart does a tiny happy dance. Being with you is the happiest thing that has ever happened to me.</textarea>
-            </div>
-
-            <div class="field">
-                <label>Passkey (4 digits)</label>
-                <input type="password" id="passkey" maxlength="4" inputmode="numeric" placeholder="8274" value="8274">
-                <small>Leave blank to use: 8274</small>
-            </div>
-
-            <div class="field">
-                <label>Photos</label>
-                <div class="photo-row">
-                    <button class="upload-btn" id="uploadBtn">+ Add Memories</button>
-                    <input type="file" id="photoInput" accept="image/*" multiple style="display:none;">
-                    <div id="photoPreview" class="photo-row"></div>
-                </div>
-                <small id="photoCount">📸 No photos added yet (Click "+ Add Memories")</small>
-                <small id="photoDebug" style="color:#f1c40f;font-size:10px;"></small>
-            </div>
-
-            <button class="primary-btn" id="startBtn">Create Gift ✨</button>
-            <div class="ghost-hint">All data stays on this device</div>
-        </div>
-    </div>
-
-    <!-- SHARE -->
-    <div class="screen" id="share-screen">
-        <div class="share-card">
-            <div class="success-icon">🎉</div>
-            <h2>Gift Created!</h2>
-            <p class="sub">Share this exclusive link with her</p>
-            <div class="share-link-box">
-                <input type="text" id="shareLinkInput" readonly>
-                <button class="copy-btn" id="copyLinkBtn">Copy</button>
-            </div>
-            <div class="share-actions">
-                <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
-                <button class="email" id="emailBtn">✉️ Email</button>
-                <button class="continue-gift" id="continueGiftBtn">Open Gift →</button>
+    <!-- MAIN -->
+    <div class="container">
+        <div class="card">
+            <span class="emoji">🎂</span>
+            <h1>Happy Birthday!</h1>
+            <p class="sub">— A special day for a special soul —</p>
+            <div class="divider"></div>
+            <p class="message">
+                Wishing you a day filled with love, joy, and everything that makes you smile.
+                May this year bring you countless beautiful moments and endless happiness.
+            </p>
+            <p class="signature">— with love, always</p>
+            <div class="divider"></div>
+            <div class="btn-group">
+                <a href="index.html" class="btn btn-primary">🎁 Back to Gift</a>
+                <a href="index.html" class="btn btn-secondary">✨ Open Your Surprise</a>
             </div>
         </div>
     </div>
 
-    <!-- BOX -->
-    <div class="screen" id="box-screen">
-        <div class="box-header">
-            <div class="eyebrow">A Little Something</div>
-            <div class="name-display" id="toNameDisplay">For you, my love</div>
-        </div>
-        <div class="gift-box-3d" id="giftBox">
-            <div class="box-inner">
-                <div class="box-face box-front">
-                    <div class="ribbon ribbon-h"></div>
-                    <div class="ribbon ribbon-v"></div>
-                    <div class="bow">🎀</div>
-                </div>
-                <div class="box-lid"></div>
-            </div>
-        </div>
-        <div class="tap-caption">Tap the box to open <small>A magical experience awaits</small></div>
-    </div>
+    <script>
+        // ===== CURSOR GLOW =====
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
 
-    <!-- FLOWER -->
-    <div class="screen" id="flower-screen">
-        <div class="flower-container" id="flowerContainer">
-            <div class="flower-center"></div>
-        </div>
-        <div class="flower-caption">A flower can't say it all, but it's a start...</div>
-    </div>
+        // ===== BACKGROUND PARTICLES =====
+        (function createParticles() {
+            const container = document.getElementById('bgParticles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 3 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                particle.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(particle);
+            }
+        })();
 
-    <!-- NOTE -->
-    <div class="screen" id="note-screen">
-        <div class="note-card">
-            <div class="note-line" id="noteLine">In your <span class="highlight">smile</span>, I found my <span class="highlight">peace</span>.</div>
-            <button class="continue-btn" id="toPassBtn">Continue →</button>
-        </div>
-    </div>
+        // ===== CONFETTI =====
+        function launchConfetti(count = 100) {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#c9a86c', '#c0395e', '#e8b4c4', '#f1c40f', '#2ecc71', '#3498db', '#e67e22'];
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.width = (Math.random() * 8 + 4) + 'px';
+                piece.style.height = (Math.random() * 8 + 4) + 'px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                piece.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                piece.style.animationDelay = (Math.random() * 0.5) + 's';
+                container.appendChild(piece);
+                setTimeout(() => piece.remove(), 4000);
+            }
+        }
 
-    <!-- PASSKEY -->
-    <div class="screen" id="pass-screen">
-        <div class="pass-lock">🔒</div>
-        <div class="pass-title">Enter Passkey</div>
-        <div class="pass-sub">The key to your gift</div>
-        <div class="pass-dots" id="passDots">
-            <span></span><span></span><span></span><span></span>
-        </div>
-        <div class="keypad" id="keypad">
-            <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-            <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-            <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-            <button class="clear" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
-        </div>
-        <div class="pass-error" id="passError"></div>
-        <div class="pass-hint">Hint: The passkey you set</div>
-    </div>
-
-    <!-- UNLOCK -->
-    <div class="screen" id="unlock-screen">
-        <div class="unlock-check">✨</div>
-        <div class="unlock-mark">Unlocked</div>
-    </div>
-
-    <!-- PHOTOS -->
-    <div class="screen" id="photo-screen">
-        <div class="photo-title">Little Moments</div>
-        <div class="photo-grid" id="photoGrid"></div>
-        <button class="continue-btn" id="toLetterBtn" style="margin-top:20px;">Continue →</button>
-    </div>
-
-    <!-- LETTER -->
-    <div class="screen" id="letter-screen">
-        <div class="letter-paper">
-            <div class="salutation" id="salutation">To My Dearest,</div>
-            <div class="body-text" id="letterBody"></div>
-            <div class="sign">— always yours</div>
-        </div>
-        <button class="restart-btn" id="restartBtn">create another gift</button>
-    </div>
-
-</div>
-
-<script src="script.js"></script>
+        // Launch confetti on load
+        window.addEventListener('load', () => {
+            setTimeout(() => launchConfetti(120), 500);
+            setTimeout(() => launchConfetti(80), 1500);
+        });
+    </script>
 </body>
 </html>
