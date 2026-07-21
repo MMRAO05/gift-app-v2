@@ -940,21 +940,28 @@
     });
 
     // Preview button
-    document.getElementById('btnPreview').addEventListener('click', () => {
-      readFormIntoState();
-      applyTheme(state.occasion);
-      applyStateData();
-      resetExperience();
+    const btnPreview = document.getElementById('btnPreview');
+    if (btnPreview) {
+      console.log('✅ btnPreview found, attaching listener');
+      btnPreview.addEventListener('click', () => {
+        console.log('🔵 Preview button clicked');
+        readFormIntoState();
+        applyTheme(state.occasion);
+        applyStateData();
+        resetExperience();
 
-      // Show/hide background hearts for love occasions
-      if (state.occasion === 'valentine' || state.occasion === 'anniversary' || state.occasion === 'mothersday') {
-        initBgHearts();
-      } else {
-        document.getElementById('bgHearts').style.display = 'none';
-      }
+        // Show/hide background hearts for love occasions
+        if (state.occasion === 'valentine' || state.occasion === 'anniversary' || state.occasion === 'mothersday') {
+          initBgHearts();
+        } else {
+          document.getElementById('bgHearts').style.display = 'none';
+        }
 
-      nav('scr-envelope');
-    });
+        nav('scr-envelope');
+      });
+    } else {
+      console.error('❌ btnPreview not found!');
+    }
 
     // Envelope tap
     document.getElementById('envelopeTap').addEventListener('click', function() {
@@ -1014,27 +1021,34 @@
     });
 
     // Export button
-    const PRISTINE_HTML = document.documentElement.outerHTML;
-    document.getElementById('btnExport').addEventListener('click', function() {
-      readFormIntoState();
-      if (!state.letter) { alert('Please write a letter first :)'); return; }
+    const btnExport = document.getElementById('btnExport');
+    if (btnExport) {
+      console.log('✅ btnExport found, attaching listener');
+      const PRISTINE_HTML = document.documentElement.outerHTML;
+      btnExport.addEventListener('click', function() {
+        console.log('🔵 Export button clicked');
+        readFormIntoState();
+        if (!state.letter) { alert('Please write a letter first :)'); return; }
 
-      const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-      const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-      const bodyIdx = PRISTINE_HTML.indexOf('<body');
-      const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-      const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
-      const blob = new Blob([newHtml], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const safeName = (state.name || 'you').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'');
-      a.download = `celebration-${safeName || 'you'}.html`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=> URL.revokeObjectURL(url), 3000);
-    });
+        const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+        const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+        const bodyIdx = PRISTINE_HTML.indexOf('<body');
+        const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+        const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+        const blob = new Blob([newHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const safeName = (state.name || 'you').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'');
+        a.download = `celebration-${safeName || 'you'}.html`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 3000);
+      });
+    } else {
+      console.error('❌ btnExport not found!');
+    }
   });
 
   console.log('🎁 Dynamic Celebration Theme Loaded');
