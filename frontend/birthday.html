@@ -431,9 +431,9 @@
       <h3 id="letterDear" style="font-family: 'Playfair Display', serif; color:var(--gold); margin-top:0;">Dear</h3>
       <p id="letterBody" style="font-size:14px; line-height:1.7; color:#e1e2eb; white-space:pre-wrap;"></p>
       <div style="margin-top:25px; font-family:'Playfair Display', serif; font-style:italic; color:var(--primary); text-align:right;">— Yours Forever ✨</div>
-   <!-- </div>
+    </div>
     <button class="restart-link" id="restartBtn">create another one</button>
-  </div>-->
+  </div>
 </div>
 
 <script>
@@ -626,6 +626,7 @@
   const TARGET_POPS = 5;
   let heartSpawnInterval = null;
   let currentOccasionKey = 'birthday';
+  let PRISTINE_HTML = '';
 
   // ============================================================
   //  THEME APPLICATION
@@ -684,6 +685,7 @@
 
     if (id === 'scr-scratch') initScratchCard();
     if (id === 'scr-game') initHeartGame();
+    if (id === 'scr-final') buildGallery();
   }
 
   function formatDateLine(dateStr, occasion) {
@@ -704,7 +706,6 @@
     if (diffDays > 0) return `${nice} — ${diffDays} day${diffDays>1?'s':''} to go`;
     return nice;
   }
-
 
   // ============================================================
   //  STATE READ / APPLY
@@ -727,13 +728,12 @@
     document.getElementById('letterBody').innerText = state.letter;
   }
 
-
-
   // ============================================================
   //  SCRATCH CARD
   // ============================================================
   function initScratchCard() {
     const canvas = document.getElementById('scratchCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = 280; canvas.height = 160;
     canvas.style.opacity = '1';
@@ -790,7 +790,7 @@
 
     canvas.onmousedown = start;
     canvas.onmousemove = move;
-    window.onmouseup = end;
+    canvas.onmouseup = end;
     canvas.ontouchstart = start;
     canvas.ontouchmove = move;
     canvas.ontouchend = end;
@@ -829,7 +829,9 @@
     }, 700);
   }
 
-
+  // ============================================================
+  //  GALLERY
+  // ============================================================
   function buildGallery() {
     const wall = document.getElementById('galleryWall');
     wall.innerHTML = '';
@@ -883,7 +885,6 @@
     if (heartSpawnInterval) clearInterval(heartSpawnInterval);
   }
 
-
   // ============================================================
   //  AUTO-LOAD FROM PRESET
   // ============================================================
@@ -899,6 +900,9 @@
   //  INITIAL SETUP
   // ============================================================
   document.addEventListener('DOMContentLoaded', () => {
+    // Store pristine HTML for export
+    PRISTINE_HTML = document.documentElement.outerHTML;
+    
     // Initialize pDots
     pDots = document.querySelectorAll('#pDots span');
     
@@ -942,9 +946,7 @@
     // Preview button
     const btnPreview = document.getElementById('btnPreview');
     if (btnPreview) {
-      console.log('✅ btnPreview found, attaching listener');
       btnPreview.addEventListener('click', () => {
-        console.log('🔵 Preview button clicked');
         readFormIntoState();
         applyTheme(state.occasion);
         applyStateData();
@@ -959,8 +961,6 @@
 
         nav('scr-envelope');
       });
-    } else {
-      console.error('❌ btnPreview not found!');
     }
 
     // Envelope tap
@@ -1010,31 +1010,43 @@
       }
     });
 
-    // Restart button
-    document.getElementById('restartBtn').addEventListener('click', () => {
-      if (heartSpawnInterval) clearInterval(heartSpawnInterval);
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      resetExperience();
-      document.getElementById('bgHearts').style.display = 'none';
-      document.getElementById('scr-setup').classList.add('active');
-      applyTheme('birthday');
-    });
+    // Restart button - FIXED (now exists)
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        if (heartSpawnInterval) clearInterval(heartSpawnInterval);
+        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        resetExperience();
+        document.getElementById('bgHearts').style.display = 'none';
+        document.getElementById('scr-setup').classList.add('active');
+        applyTheme('birthday');
+      });
+    }
 
-    // Export button
+    // Export button - FIXED
     const btnExport = document.getElementById('btnExport');
     if (btnExport) {
-      console.log('✅ btnExport found, attaching listener');
-      const PRISTINE_HTML = document.documentElement.outerHTML;
       btnExport.addEventListener('click', function() {
-        console.log('🔵 Export button clicked');
         readFormIntoState();
         if (!state.letter) { alert('Please write a letter first :)'); return; }
 
         const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-        const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-        const bodyIdx = PRISTINE_HTML.indexOf('<body');
-        const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-        const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+        const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};<\/script>`;
+        
+        // Use stored pristine HTML
+        let baseHtml = PRISTINE_HTML;
+        if (!baseHtml) {
+          baseHtml = document.documentElement.outerHTML;
+        }
+        
+        const bodyIdx = baseHtml.indexOf('<body');
+        if (bodyIdx === -1) {
+          alert('Error: Could not generate export');
+          return;
+        }
+        const closeIdx = baseHtml.indexOf('>', bodyIdx) + 1;
+        const newHtml = '<!DOCTYPE html>\n' + baseHtml.slice(0, closeIdx) + injected + baseHtml.slice(closeIdx);
+        
         const blob = new Blob([newHtml], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1046,8 +1058,6 @@
         a.remove();
         setTimeout(()=> URL.revokeObjectURL(url), 3000);
       });
-    } else {
-      console.error('❌ btnExport not found!');
     }
   });
 
