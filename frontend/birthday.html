@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>✨ Dynamic Celebration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  /* ----- CSS Variables (will be updated by JS) ----- */
+  :root {
+    --primary: #ff4757;
+    --primary-dark: #c0395e;
+    --primary-glow: rgba(255, 71, 87, 0.4);
+    --secondary: #f39c12;
+    --bg-start: #14193a;
+    --bg-end: #050510;
+    --card-bg: rgba(255,255,255,0.05);
+    --text-soft: #a4b0be;
+    --gold: #f39c12;
+    --hero-bg: radial-gradient(circle at 50% 30%, #14193a 0%, #080a1c 60%, #050510 100%);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; font-family: 'Poppins', sans-serif; background: var(--bg-end); color: #fff; overflow: hidden; }
+
+  #stage {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--hero-bg);
+    transition: background 0.6s ease;
+  }
+  .star { position: absolute; background: #fff; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite ease-in-out; }
+  @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.9; transform: scale(1.2); } }
+
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+    opacity: 0; pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.95) translateY(15px);
+    z-index: 2;
+  }
+  .screen.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+
+  .glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 28px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* ----- Setup Screen ----- */
+  .setup-container { width: 100%; max-width: 480px; padding: 30px; max-height: 92vh; overflow-y: auto; scrollbar-width: none; }
+  .setup-container::-webkit-scrollbar { display: none; }
+  .setup-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 34px;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #fff, var(--gold), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .setup-container p.subtitle { font-size: 13px; color: var(--text-soft); margin: 0 0 24px; font-weight: 300; }
+
+  .field { text-align: left; margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; letter-spacing: .05em; text-transform: uppercase; }
+  .field input, .field textarea, .field select {
+    width: 100%; border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.2); border-radius: 12px;
+    padding: 11px 14px; font-family: 'Poppins', sans-serif; font-size: 13px;
+    color: #fff; transition: all 0.3s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 12px var(--primary-glow);
+  }
+  .field select option { background: #1a1a2e; color: #fff; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn {
+    width: 100%; padding: 14px; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.3s; margin-top: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 8px 25px var(--primary-glow);
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, var(--gold), #e67e22);
+    color: #1e1e1e;
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+    margin-top: 12px;
+  }
+  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+  /* ----- Envelope ----- */
+  .envelope {
+    width: 180px; height: 120px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-radius: 8px;
+    position: relative; cursor: pointer;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    transition: 0.4s;
+  }
+  .envelope:after {
+    content: '💌';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+  }
+  .envelope.opened { transform: scale(0) rotate(50deg); opacity: 0; }
+
+  /* ----- Hero (dynamic) ----- */
+  .hero-stage {
+    position: relative;
+    width: 240px; height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 20px 0;
+  }
+  .hero-icon {
+    font-size: 90px;
+    animation: heroPop 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    filter: drop-shadow(0 8px 30px rgba(255,215,0,0.3));
+  }
+  .hero-icon.small { font-size: 60px; }
+  @keyframes heroPop {
+    0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; margin: 10px 0 5px;
+    background: linear-gradient(135deg, #fff, var(--gold), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-sub { font-size: 14px; color: var(--text-soft); }
+
+  /* ----- Cake (birthday) ----- */
+  .cake-wrap {
+    position: relative;
+    width: 160px; height: 120px;
+    margin: 0 auto;
+  }
+  .cake-tier {
+    width: 100%; height: 50px;
+    border-radius: 10px 10px 4px 4px;
+    position: relative;
+  }
+  .cake-tier.top {
+    background: linear-gradient(180deg, #ffd0e0, #f7a8bc);
+    height: 40px; margin-bottom: -4px;
+  }
+  .cake-tier.bottom {
+    background: linear-gradient(180deg, #fddde3, #f7a8bc);
+    height: 60px; border-radius: 4px 4px 12px 12px;
+  }
+  .cake-candle {
+    position: absolute; top: -30px; left: 50%;
+    transform: translateX(-50%);
+    width: 6px; height: 26px;
+    background: linear-gradient(180deg, #fff, #f2c14e);
+    border-radius: 2px;
+  }
+  .cake-flame {
+    position: absolute; top: -16px; left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 18px;
+    background: radial-gradient(circle at 50% 30%, #fff59d, #ff9d3a 60%, #ff5e3a);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: flicker 0.5s infinite alternate;
+    cursor: pointer;
+    filter: drop-shadow(0 0 8px rgba(255,157,58,0.8));
+  }
+  .cake-flame.blown { opacity: 0; transform: translateX(-50%) scale(0.2); pointer-events: none; }
+  @keyframes flicker {
+    0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+    100% { transform: translateX(-50%) scale(1.08) rotate(2deg); }
+  }
+
+  /* ----- Flowers (mother's day) ----- */
+  .flower-bunch { display: flex; gap: 12px; align-items: flex-end; }
+  .flower { font-size: 44px; animation: bloom 0.8s ease forwards; transform-origin: bottom; }
+  @keyframes bloom {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    70% { transform: scale(1.15) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  /* ----- Hearts (valentine) ----- */
+  .heart-float-container { position: relative; width: 200px; height: 150px; }
+  .heart-float {
+    position: absolute;
+    font-size: 40px;
+    animation: heartFloat 3s ease-in-out infinite;
+  }
+  .heart-float:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+  .heart-float:nth-child(2) { left: 60%; top: 10%; animation-delay: 0.5s; font-size: 50px; }
+  .heart-float:nth-child(3) { left: 30%; top: 60%; animation-delay: 1s; font-size: 35px; }
+  .heart-float:nth-child(4) { left: 70%; top: 50%; animation-delay: 1.5s; }
+  @keyframes heartFloat {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  /* ----- Rings (anniversary) ----- */
+  .rings { display: flex; gap: 20px; font-size: 56px; animation: ringPulse 2s ease-in-out infinite; }
+  @keyframes ringPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+  /* ----- Timeline / Scratch / Game / Passkey / Final ----- */
+  .timeline-container { width: 100%; max-width: 360px; text-align: left; position: relative; padding-left: 20px; border-left: 2px dashed rgba(255,255,255,0.1); margin: 20px 0; max-height: 45vh; overflow-y: auto; }
+  .tl-item { position: relative; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); animation: slideIn 0.5s forwards; }
+  .tl-item:before { content: '✨'; position: absolute; left: -29px; top: 2px; background: var(--bg-end); width: 16px; height: 16px; font-size: 12px; }
+  .tl-date { font-size: 11px; color: var(--gold); font-weight: 600; }
+  .tl-title { font-size: 14px; font-weight: 500; color: #fff; }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+  .scratch-container { position: relative; width: 280px; height: 160px; margin: 20px 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+  .scratch-secret { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #111, #222); color: var(--gold); padding: 10px; text-align: center; }
+  .scratch-secret h4 { margin: 0; font-size: 12px; color: var(--text-soft); text-transform: uppercase; }
+  .scratch-secret p { margin: 5px 0 0; font-size: 18px; font-weight: 600; font-family: 'Playfair Display', serif; }
+  canvas#scratchCanvas { position: absolute; inset: 0; cursor: crosshair; z-index: 3; touch-action: none; }
+
+  .game-area { width: 100%; height: 220px; position: relative; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); overflow: hidden; margin: 15px 0; }
+  .game-heart { position: absolute; font-size: 28px; cursor: pointer; animation: floatUp 4s linear infinite; user-select: none; }
+  @keyframes floatUp { 0% { transform: translateY(240px) scale(0.8); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-40px) scale(1.2); opacity: 0; } }
+
+  .pass-dots { display: flex; gap: 12px; margin: 20px 0; }
+  .pass-dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--text-soft); }
+  .pass-dots span.filled { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .grid-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 12px; margin-top: 15px; }
+  .grid-pad button { width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff; font-size: 18px; cursor: pointer; }
+  .grid-pad button:active { background: rgba(255,255,255,0.1); }
+  .pass-error { min-height: 16px; font-size: 12px; color: var(--primary); margin-top: 10px; }
+
+  .photo-wall { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-height: 40vh; overflow-y: auto; padding: 10px; }
+  .polaroid { background: white; padding: 6px 6px 18px; border-radius: 4px; width: 105px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transform: rotate(var(--r, 0deg)); }
+  .polaroid img { width: 100%; height: 90px; object-fit: cover; }
+
+  .next-btn-link { margin-top: 25px; background: none; border: none; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .restart-link { margin-top: 16px; background: none; border: none; color: var(--text-soft); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: 'Poppins', sans-serif; }
+
+  /* ----- Background floating hearts (love occasions) ----- */
+  .bg-hearts { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-heart { position: absolute; color: rgba(255,77,109,0.15); font-size: 20px; animation: bgFloat 8s linear infinite; }
+  @keyframes bgFloat {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Theme color preview swatches */
+  .theme-swatches {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  .swatch {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { border-color: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.3); }
+</style>
+</head>
+<body>
+
+<!-- Background floating hearts (controlled by JS) -->
+<div class="bg-hearts" id="bgHearts" style="display:none;"></div>
+
+<div id="stage">
+  <div id="starfield"></div>
+
+  <!-- SETUP -->
+  <div class="screen active" id="scr-setup">
+    <div class="setup-container glass">
+      <h1>Create Your Celebration</h1>
+      <p class="subtitle">Pick an occasion and customize your surprise</p>
+
+      <div class="field">
+        <label>Recipient's Name</label>
+        <input type="text" id="inpName" value="Ayesha">
+      </div>
+
+      <div class="field">
+        <label>Occasion</label>
+        <select id="inpOccasion">
+          <option value="birthday">🎂 Birthday</option>
+          <option value="anniversary">💞 Anniversary</option>
+          <option value="valentine">💘 Valentine's Day</option>
+          <option value="mothersday">💐 Mother's Day</option>
+          <option value="fathersday">🦸 Father's Day</option>
+          <option value="justbecause">🎁 Just Because</option>
+        </select>
+      </div>
+
+      <!-- Theme preview (will auto-update) -->
+      <div class="theme-swatches" id="themeSwatches"></div>
+
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="inpDate">
+      </div>
+
+      <div class="field">
+        <label>Short Note</label>
+        <input type="text" id="inpShort" value="Every year with you feels like a gift.">
+      </div>
+
+      <div class="field">
+        <label>Scratch Card Voucher</label>
+        <input type="text" id="inpScratch" value="Valid for One Free Long Drive 🚗">
+      </div>
+
+      <div class="field">
+        <label>Your Letter</label>
+        <textarea id="inpLetter" rows="3">I wanted to create something completely unique for you. You are the most wonderful person in my life, and every moment shared with you is a treasure. Thank you for being you!</textarea>
+      </div>
+
+      <div class="field">
+        <label>Photos (Optional)</label>
+        <input type="file" id="inpFiles" accept="image/*" multiple>
+        <small id="photoCountHint"></small>
+      </div>
+
+      <div class="field">
+        <label>4-Digit Passkey</label>
+        <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" value="1432">
+        <small>Leave blank to use 1432</small>
+      </div>
+
+      <button class="btn btn-primary" id="btnPreview">Live Preview 👀</button>
+      <button class="btn btn-secondary" id="btnExport">Export Standalone HTML 📤</button>
+      <small style="display:block;margin-top:10px;color:#6b7383;">Export downloads a ready file — send that one, it skips straight to the surprise.</small>
+    </div>
+  </div>
+
+  <!-- ENVELOPE -->
+  <div class="screen" id="scr-envelope">
+    <div style="font-size: 12px; text-transform: uppercase; color: var(--text-soft); letter-spacing: 0.2em; margin-bottom: 15px;">A Premium Parcel For</div>
+    <h2 id="displayEncName" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 28px; margin: 0 0 40px;"></h2>
+    <div class="envelope" id="envelopeTap"></div>
+    <p style="font-size: 12px; color: var(--text-soft); margin-top: 30px;">(Tap to unlock container)</p>
+  </div>
+
+  <!-- HERO (dynamic) -->
+  <div class="screen" id="scr-hero">
+    <div id="heroParticles"></div>
+    <div class="hero-stage" id="heroStage">
+      <!-- Dynamic content will be injected -->
+    </div>
+    <h2 class="hero-title" id="heroTitle"></h2>
+    <p class="hero-sub" id="heroSub"></p>
+    <button class="next-btn-link" id="heroContinue">Continue →</button>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="screen" id="scr-timeline">
+    <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0;">The Date</h2>
+    <p style="font-size: 12px; color: var(--text-soft); margin-bottom: 15px;">A moment worth celebrating</p>
+    <div style="display:flex;flex-direction:column;align-items:center;max-width:320px;">
+      <div id="dateIcon" style="font-size: 46px;">🎂</div>
+      <div id="dateLine" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 20px; margin-top: 12px;"></div>
+      <div id="wishLine" style="margin-top: 16px; font-size: 15px; color: #e1e2eb; line-height: 1.6;"></div>
+    </div>
+    <button class="next-btn-link" id="toScratch">Reveal Next Layer →</button>
+  </div>
+
+  <!-- SCRATCH -->
+  <div class="screen" id="scr-scratch">
+    <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Scratch Voucher</h2>
+    <p style="font-size: 12px; color: var(--text-soft); max-width: 260px;">Swipe with finger to scrape and unlock your premium gift code!</p>
+    <div class="scratch-container">
+      <div class="scratch-secret">
+        <h4>Special Voucher</h4>
+        <p id="scratchRewardText">Voucher</p>
+      </div>
+      <canvas id="scratchCanvas"></canvas>
+    </div>
+    <button class="next-btn-link" id="toGame" style="display:none;">Unlock Final Mini-Game →</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="scr-game">
+    <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Pop the Hearts 💖</h2>
+    <p style="font-size: 12px; color: var(--text-soft);">Pop <span id="gameTarget" style="color:var(--primary); font-weight:600;">5</span> interactive hearts to break encryption!</p>
+    <div class="game-area" id="gameArea"></div>
+  </div>
+
+  <!-- PASSKEY -->
+  <div class="screen" id="scr-pass">
+    <div style="font-size: 26px;">🔒</div>
+    <h3 style="font-family: 'Playfair Display', serif; margin: 10px 0 5px;">Decryption Verification</h3>
+    <p style="font-size: 11px; color: var(--text-soft); margin: 0;">Enter the private key to read the final ledger</p>
+    <div class="pass-dots" id="pDots"><span></span><span></span><span></span><span></span></div>
+    <div class="grid-pad" id="keyboard">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button style="color:var(--primary); font-size:12px;">C</button><button>0</button><button>⌫</button>
+    </div>
+    <div class="pass-error" id="passError"></div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="screen" id="scr-final" style="overflow-y:auto; justify-content:flex-start; padding-top:40px;">
+    <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0 0 20px;">Memories Decrypted</h2>
+    <div class="photo-wall" id="galleryWall"></div>
+    <div class="glass" style="width:100%; max-width:380px; padding:30px; text-align:left; margin-top:30px; border:1px solid rgba(243,156,18,0.2)">
+      <h3 id="letterDear" style="font-family: 'Playfair Display', serif; color:var(--gold); margin-top:0;">Dear</h3>
+      <p id="letterBody" style="font-size:14px; line-height:1.7; color:#e1e2eb; white-space:pre-wrap;"></p>
+      <div style="margin-top:25px; font-family:'Playfair Display', serif; font-style:italic; color:var(--primary); text-align:right;">— Yours Forever ✨</div>
+    </div>
+    <button class="restart-link" id="restartBtn">create another one</button>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  //  OCCASION THEME DEFINITIONS
+  // ============================================================
+  const OCCASIONS = {
+    birthday: {
+      label: 'Birthday',
+      emoji: '🎂',
+      primary: '#ff4757',
+      primaryDark: '#c0395e',
+      secondary: '#f39c12',
+      bgStart: '#14193a',
+      bgEnd: '#050510',
+      heroHTML: `
+        <div class="cake-wrap">
+          <div class="cake-tier top"></div>
+          <div class="cake-tier bottom"></div>
+          <div class="cake-candle">
+            <div class="cake-flame" id="cakeFlame"></div>
+          </div>
+        </div>
+      `,
+      heroTitle: 'Happy Birthday!',
+      heroSub: 'Another year, another beautiful chapter.',
+      dateIcon: '🎂',
+      initHero: function() {
+        const flame = document.getElementById('cakeFlame');
+        if(flame) {
+          flame.addEventListener('click', function() {
+            if(this.classList.contains('blown')) return;
+            this.classList.add('blown');
+            if (typeof confetti !== 'undefined') {
+              confetti({ particleCount: 60, spread: 60, origin: { y: 0.5 } });
+            }
+            document.getElementById('heroSub').innerText = 'Wish made! 🎉';
+            document.getElementById('heroContinue').style.display = 'inline-block';
+          });
+        }
+      }
+    },
+    anniversary: {
+      label: 'Anniversary',
+      emoji: '💞',
+      primary: '#e84393',
+      primaryDark: '#a02c6e',
+      secondary: '#fd79a8',
+      bgStart: '#1a0a1a',
+      bgEnd: '#0a050a',
+      heroHTML: `<div class="rings">💍💞💍</div>`,
+      heroTitle: 'Happy Anniversary!',
+      heroSub: 'Every day with you is a gift.',
+      dateIcon: '💞',
+      initHero: function() {
+        setTimeout(() => {
+          if (typeof confetti !== 'undefined') {
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.5 } });
+          }
+          document.getElementById('heroSub').innerText = 'Together forever 💕';
+          document.getElementById('heroContinue').style.display = 'inline-block';
+        }, 1200);
+      }
+    },
+    valentine: {
+      label: "Valentine's Day",
+      emoji: '💘',
+      primary: '#ff6b81',
+      primaryDark: '#c0395e',
+      secondary: '#fd79a8',
+      bgStart: '#1a0a1a',
+      bgEnd: '#0a050a',
+      heroHTML: `
+        <div class="heart-float-container">
+          <div class="heart-float">❤️</div>
+          <div class="heart-float">💖</div>
+          <div class="heart-float">💗</div>
+          <div class="heart-float">💕</div>
+        </div>
+      `,
+      heroTitle: "Happy Valentine's Day!",
+      heroSub: 'You have my whole heart.',
+      dateIcon: '💘',
+      initHero: function() {
+        document.getElementById('heroSub').innerText = 'Tap any heart to reveal 💌';
+        document.querySelectorAll('.heart-float').forEach(el => {
+          el.addEventListener('click', function() {
+            this.style.animation = 'none';
+            this.style.transform = 'scale(1.5)';
+            this.style.color = 'var(--gold)';
+            if (typeof confetti !== 'undefined') {
+              confetti({ particleCount: 20, spread: 30, origin: { y: 0.5 } });
+            }
+            document.getElementById('heroSub').innerText = 'Love is in the air 💕';
+            document.getElementById('heroContinue').style.display = 'inline-block';
+          });
+        });
+      }
+    },
+    mothersday: {
+      label: "Mother's Day",
+      emoji: '💐',
+      primary: '#fd79a8',
+      primaryDark: '#c0395e',
+      secondary: '#fdcb6e',
+      bgStart: '#1a0a1a',
+      bgEnd: '#0a050a',
+      heroHTML: `
+        <div class="flower-bunch">
+          <div class="flower" style="animation-delay:0s;">🌷</div>
+          <div class="flower" style="animation-delay:0.2s;">🌹</div>
+          <div class="flower" style="animation-delay:0.4s;">🌸</div>
+          <div class="flower" style="animation-delay:0.6s;">🌺</div>
+        </div>
+      `,
+      heroTitle: "Happy Mother's Day!",
+      heroSub: 'Thank you for everything.',
+      dateIcon: '💐',
+      initHero: function() {
+        setTimeout(() => {
+          if (typeof confetti !== 'undefined') {
+            confetti({ particleCount: 30, spread: 40, origin: { y: 0.5 } });
+          }
+          document.getElementById('heroSub').innerText = 'A bouquet of love for you 💐';
+          document.getElementById('heroContinue').style.display = 'inline-block';
+        }, 1500);
+      }
+    },
+    fathersday: {
+      label: "Father's Day",
+      emoji: '🦸',
+      primary: '#0984e3',
+      primaryDark: '#0652DD',
+      secondary: '#fdcb6e',
+      bgStart: '#0a1a2a',
+      bgEnd: '#050a10',
+      heroHTML: `<div style="font-size: 80px;">🦸‍♂️</div>`,
+      heroTitle: "Happy Father's Day!",
+      heroSub: 'You are my hero.',
+      dateIcon: '🦸',
+      initHero: function() {
+        document.getElementById('heroSub').innerText = 'Strong like a superhero 💪';
+        document.getElementById('heroContinue').style.display = 'inline-block';
+        setTimeout(() => {
+          if (typeof confetti !== 'undefined') {
+            confetti({ particleCount: 30, spread: 40, origin: { y: 0.5 } });
+          }
+        }, 500);
+      }
+    },
+    justbecause: {
+      label: 'Just Because',
+      emoji: '🎁',
+      primary: '#6c5ce7',
+      primaryDark: '#4834d4',
+      secondary: '#fd79a8',
+      bgStart: '#1a0a2a',
+      bgEnd: '#0a0515',
+      heroHTML: `<div style="font-size: 80px;">🎁✨</div>`,
+      heroTitle: 'Just Because!',
+      heroSub: 'You deserve all the happiness.',
+      dateIcon: '🎁',
+      initHero: function() {
+        document.getElementById('heroSub').innerText = 'A surprise just for you!';
+        document.getElementById('heroContinue').style.display = 'inline-block';
+        setTimeout(() => {
+          if (typeof confetti !== 'undefined') {
+            confetti({ particleCount: 40, spread: 60, origin: { y: 0.5 } });
+          }
+        }, 400);
+      }
+    }
+  };
+
+  // ============================================================
+  //  STATE & VARIABLES
+  // ============================================================
+  let state = {
+    name: '',
+    occasion: 'birthday',
+    date: '',
+    short: '',
+    scratch: '',
+    letter: '',
+    passkey: '1432',
+    photos: []
+  };
+  let currentPin = '';
+  let poppedCount = 0;
+  const TARGET_POPS = 5;
+  let heartSpawnInterval = null;
+  let currentOccasionKey = 'birthday';
+
+  // ============================================================
+  //  THEME APPLICATION
+  // ============================================================
+  function applyTheme(occasionKey) {
+    const occ = OCCASIONS[occasionKey] || OCCASIONS.justbecause;
+    const root = document.documentElement;
+    root.style.setProperty('--primary', occ.primary);
+    root.style.setProperty('--primary-dark', occ.primaryDark);
+    root.style.setProperty('--secondary', occ.secondary);
+    root.style.setProperty('--primary-glow', occ.primary + '66');
+    root.style.setProperty('--bg-start', occ.bgStart);
+    root.style.setProperty('--bg-end', occ.bgEnd);
+    root.style.setProperty('--hero-bg', `radial-gradient(circle at 50% 30%, ${occ.bgStart} 0%, ${occ.bgEnd} 60%, #050510 100%)`);
+
+    // Update the swatches preview
+    const swatchesContainer = document.getElementById('themeSwatches');
+    swatchesContainer.innerHTML = '';
+    const colors = [occ.primary, occ.primaryDark, occ.secondary];
+    colors.forEach(c => {
+      const sw = document.createElement('div');
+      sw.className = 'swatch';
+      sw.style.background = c;
+      sw.title = c;
+      swatchesContainer.appendChild(sw);
+    });
+
+    currentOccasionKey = occasionKey;
+  }
+
+  // ============================================================
+  //  NAVIGATION & HERO INIT
+  // ============================================================
+  function nav(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+
+    if (id === 'scr-hero') {
+      const occ = OCCASIONS[state.occasion] || OCCASIONS.justbecause;
+      const stage = document.getElementById('heroStage');
+      stage.innerHTML = occ.heroHTML;
+      document.getElementById('heroTitle').innerText = occ.heroTitle;
+      document.getElementById('heroSub').innerText = occ.heroSub;
+      document.getElementById('heroContinue').style.display = 'none';
+      if (occ.initHero) occ.initHero();
+    }
+
+    if (id === 'scr-timeline') {
+      const occ = OCCASIONS[state.occasion] || OCCASIONS.justbecause;
+      document.getElementById('dateIcon').innerText = occ.dateIcon;
+      const dateLine = formatDateLine(state.date, state.occasion);
+      document.getElementById('dateLine').innerText = dateLine || 'A day made just for you';
+      document.getElementById('wishLine').innerText = state.short || '';
+    }
+
+    if (id === 'scr-scratch') initScratchCard();
+    if (id === 'scr-game') initHeartGame();
+  }
+
+  function formatDateLine(dateStr, occasion) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr+'T00:00:00');
+    if (isNaN(d)) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const nice = d.toLocaleDateString('en-US', {month:'long', day:'numeric'});
+    if (occasion === 'anniversary') {
+      let years = today.getFullYear() - d.getFullYear();
+      const passedThisYear = (today.getMonth() > d.getMonth()) || (today.getMonth()===d.getMonth() && today.getDate()>=d.getDate());
+      if (!passedThisYear) years -= 1;
+      if (years >= 1) return `${years} year${years>1?'s':''} of us — since ${nice}`;
+      return `Since ${nice}`;
+    }
+    const diffDays = Math.round((d - today)/86400000);
+    if (diffDays === 0) return `Today, ${nice} 🎉`;
+    if (diffDays > 0) return `${nice} — ${diffDays} day${diffDays>1?'s':''} to go`;
+    return nice;
+  }
+
+
+  // ============================================================
+  //  STATE READ / APPLY
+  // ============================================================
+  function readFormIntoState() {
+    state.name = document.getElementById('inpName').value.trim() || 'you';
+    state.occasion = document.getElementById('inpOccasion').value;
+    state.date = document.getElementById('inpDate').value;
+    state.short = document.getElementById('inpShort').value.trim();
+    state.scratch = document.getElementById('inpScratch').value;
+    state.letter = document.getElementById('inpLetter').value.trim();
+    const pk = document.getElementById('inpPasskey').value.trim();
+    state.passkey = /^\d{4}$/.test(pk) ? pk : '1432';
+  }
+
+  function applyStateData() {
+    document.getElementById('displayEncName').innerText = state.name;
+    document.getElementById('scratchRewardText').innerText = state.scratch;
+    document.getElementById('letterDear').innerText = `Dear ${state.name},`;
+    document.getElementById('letterBody').innerText = state.letter;
+  }
+
+
+
+  // ============================================================
+  //  SCRATCH CARD
+  // ============================================================
+  function initScratchCard() {
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 280; canvas.height = 160;
+    canvas.style.opacity = '1';
+    canvas.style.display = 'block';
+
+    ctx.fillStyle = '#7f8c8d';
+    ctx.fillRect(0, 0, 280, 160);
+    ctx.font = '11px Poppins';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('SCRATCH HERE WITH YOUR FINGER', 140, 85);
+
+    let isDown = false;
+    let revealed = false;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - rect.left) * (canvas.width/rect.width), y: (clientY - rect.top) * (canvas.height/rect.height) };
+    }
+
+    function scratchAt(x,y) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 18, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    function checkRevealAmount() {
+      if (revealed) return;
+      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let cleared = 0, sampled = 0;
+      for (let i=3; i<imgData.length; i+=4*20) {
+        sampled++;
+        if (imgData[i] === 0) cleared++;
+      }
+      const ratio = cleared / sampled;
+      if (ratio > 0.55) {
+        revealed = true;
+        canvas.style.transition = 'opacity .5s ease';
+        canvas.style.opacity = '0';
+        setTimeout(()=> canvas.style.display='none', 500);
+        document.getElementById('toGame').style.display = 'inline-block';
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+        }
+      }
+    }
+
+    function start(e){ isDown = true; const p = getPos(e); scratchAt(p.x,p.y); }
+    function move(e){ if(!isDown) return; e.preventDefault(); const p = getPos(e); scratchAt(p.x,p.y); checkRevealAmount(); }
+    function end(){ isDown = false; }
+
+    canvas.onmousedown = start;
+    canvas.onmousemove = move;
+    window.onmouseup = end;
+    canvas.ontouchstart = start;
+    canvas.ontouchmove = move;
+    canvas.ontouchend = end;
+  }
+
+  // ============================================================
+  //  HEART GAME
+  // ============================================================
+  function initHeartGame() {
+    poppedCount = 0;
+    document.getElementById('gameTarget').innerText = TARGET_POPS;
+    const area = document.getElementById('gameArea');
+    area.innerHTML = '';
+    if (heartSpawnInterval) clearInterval(heartSpawnInterval);
+    heartSpawnInterval = setInterval(() => {
+      if (poppedCount >= TARGET_POPS) { clearInterval(heartSpawnInterval); return; }
+      const heart = document.createElement('div');
+      heart.className = 'game-heart';
+      heart.innerText = ['💖','💗','💕','❤️','💘'][Math.floor(Math.random()*5)];
+      heart.style.left = (Math.random()*80+5) + '%';
+      heart.style.animationDuration = (3 + Math.random()*2) + 's';
+      heart.addEventListener('click', function() {
+        poppedCount++;
+        document.getElementById('gameTarget').innerText = Math.max(TARGET_POPS - poppedCount, 0);
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } });
+        }
+        this.remove();
+        if (poppedCount >= TARGET_POPS) {
+          clearInterval(heartSpawnInterval);
+          setTimeout(()=> nav('scr-pass'), 500);
+        }
+      });
+      heart.addEventListener('animationend', function(){ this.remove(); });
+      area.appendChild(heart);
+    }, 700);
+  }
+
+
+  function buildGallery() {
+    const wall = document.getElementById('galleryWall');
+    wall.innerHTML = '';
+    if (!state.photos || state.photos.length === 0) {
+      wall.innerHTML = '<p style="font-size:13px;color:var(--text-soft);font-style:italic;">More memories coming soon.</p>';
+      return;
+    }
+    state.photos.forEach(src => {
+      const div = document.createElement('div');
+      div.className = 'polaroid';
+      div.style.setProperty('--r', (Math.random()*12-6)+'deg');
+      const img = document.createElement('img');
+      img.src = src;
+      div.appendChild(img);
+      wall.appendChild(div);
+    });
+  }
+
+  // ============================================================
+  //  BACKGROUND HEARTS
+  // ============================================================
+  function initBgHearts() {
+    const container = document.getElementById('bgHearts');
+    container.style.display = 'block';
+    container.innerHTML = '';
+    for (let i=0; i<20; i++) {
+      let h = document.createElement('div');
+      h.className = 'bg-heart';
+      h.innerText = '❤️';
+      h.style.left = Math.random()*100 + '%';
+      h.style.fontSize = (Math.random()*16 + 14) + 'px';
+      h.style.animationDelay = Math.random()*8 + 's';
+      h.style.animationDuration = (Math.random()*6 + 6) + 's';
+      container.appendChild(h);
+    }
+  }
+
+  // ============================================================
+  //  RESET
+  // ============================================================
+  let pDots = null;
+  function updateDots() { 
+    if (pDots) pDots.forEach((d,i) => d.classList.toggle('filled', i < currentPin.length)); 
+  }
+  
+  function resetExperience() {
+    document.getElementById('envelopeTap').classList.remove('opened');
+    document.getElementById('toGame').style.display = 'none';
+    currentPin = ''; updateDots();
+    poppedCount = 0;
+    if (heartSpawnInterval) clearInterval(heartSpawnInterval);
+  }
+
+
+  // ============================================================
+  //  AUTO-LOAD FROM PRESET
+  // ============================================================
+  if (window.__PRESET__) {
+    state = Object.assign(state, window.__PRESET__);
+    applyTheme(state.occasion);
+    applyStateData();
+    if (state.occasion === 'valentine' || state.occasion === 'anniversary' || state.occasion === 'mothersday') initBgHearts();
+    nav('scr-envelope');
+  }
+
+  // ============================================================
+  //  INITIAL SETUP
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize pDots
+    pDots = document.querySelectorAll('#pDots span');
+    
+    // Initialize starfield
+    const sf = document.getElementById('starfield');
+    for (let i=0; i<45; i++) {
+      let s = document.createElement('div');
+      s.className = 'star';
+      let size = Math.random()*2 + 1;
+      s.style.width = s.style.height = size + 'px';
+      s.style.top = Math.random()*100 + 'vh';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDelay = Math.random()*3 + 's';
+      sf.appendChild(s);
+    }
+    
+    const dateInput = document.getElementById('inpDate');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+    }
+    // Apply default theme (birthday)
+    applyTheme('birthday');
+    // Occasion dropdown change updates theme live
+    document.getElementById('inpOccasion').addEventListener('change', function() {
+      applyTheme(this.value);
+    });
+
+    // Photo handling
+    document.getElementById('inpFiles').addEventListener('change', function(e) {
+      state.photos = [];
+      const files = Array.from(e.target.files);
+      document.getElementById('photoCountHint').innerText = files.length ? `${files.length} photo(s) selected` : '';
+      files.forEach(file => {
+        let r = new FileReader();
+        r.onload = (evt) => state.photos.push(evt.target.result);
+        r.readAsDataURL(file);
+      });
+    });
+
+    // Preview button
+    document.getElementById('btnPreview').addEventListener('click', () => {
+      readFormIntoState();
+      applyTheme(state.occasion);
+      applyStateData();
+      resetExperience();
+
+      // Show/hide background hearts for love occasions
+      if (state.occasion === 'valentine' || state.occasion === 'anniversary' || state.occasion === 'mothersday') {
+        initBgHearts();
+      } else {
+        document.getElementById('bgHearts').style.display = 'none';
+      }
+
+      nav('scr-envelope');
+    });
+
+    // Envelope tap
+    document.getElementById('envelopeTap').addEventListener('click', function() {
+      this.classList.add('opened');
+      setTimeout(() => {
+        nav('scr-hero');
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+        }
+      }, 600);
+    });
+
+    // Navigation buttons
+    document.getElementById('heroContinue').addEventListener('click', () => nav('scr-timeline'));
+    document.getElementById('toScratch').addEventListener('click', () => nav('scr-scratch'));
+    document.getElementById('toGame').addEventListener('click', () => nav('scr-game'));
+
+    // Passkey keyboard
+    document.getElementById('keyboard').addEventListener('click', function(e) {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const val = btn.innerText;
+      document.getElementById('passError').innerText = '';
+      if (val === 'C') { currentPin = ''; updateDots(); return; }
+      if (val === '⌫') { currentPin = currentPin.slice(0,-1); updateDots(); return; }
+      if (currentPin.length >= 4) return;
+      currentPin += val;
+      updateDots();
+      if (currentPin.length === 4) {
+        setTimeout(() => {
+          if (currentPin === state.passkey) {
+            buildGallery();
+            nav('scr-final');
+            if (typeof confetti !== 'undefined') {
+              confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+            }
+          } else {
+            document.getElementById('passError').innerText = 'Incorrect key, try again';
+            currentPin = '';
+            updateDots();
+            const wrap = document.getElementById('pDots');
+            wrap.style.animation = 'shake .4s';
+            setTimeout(()=> wrap.style.animation = '', 400);
+          }
+        }, 200);
+      }
+    });
+
+    // Restart button
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      if (heartSpawnInterval) clearInterval(heartSpawnInterval);
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      resetExperience();
+      document.getElementById('bgHearts').style.display = 'none';
+      document.getElementById('scr-setup').classList.add('active');
+      applyTheme('birthday');
+    });
+
+    // Export button
+    const PRISTINE_HTML = document.documentElement.outerHTML;
+    document.getElementById('btnExport').addEventListener('click', function() {
+      readFormIntoState();
+      if (!state.letter) { alert('Please write a letter first :)'); return; }
+
+      const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+      const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+      const bodyIdx = PRISTINE_HTML.indexOf('<body');
+      const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+      const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+      const blob = new Blob([newHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = (state.name || 'you').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'');
+      a.download = `celebration-${safeName || 'you'}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 3000);
+    });
+  });
+
+  console.log('🎁 Dynamic Celebration Theme Loaded');
+  console.log('🔄 Select an occasion to change the theme and animations!');
+</script>
+</body>
+</html>
