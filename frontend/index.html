@@ -39,6 +39,49 @@
         .loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid #1a1410;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
         @keyframes spin{to{transform:rotate(360deg);}}
         .ghost-hint{margin-top:14px;font-size:11px;color:rgba(255,255,255,0.15);}
+        
+        /* ----- Navigation Links (inside setup card) ----- */
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .nav-links a:active {
+            transform: translateY(0);
+        }
+        .nav-links a.birthday-link {
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            border: none;
+        }
+        .nav-links a.birthday-link:hover {
+            background: linear-gradient(135deg, #ff4e8a, #ff2e63);
+        }
+        .nav-links a.style-link {
+            background: rgba(255,255,255,0.06);
+        }
+        .nav-links a.style-link:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
         #share-screen{background:linear-gradient(135deg,#1a1410 0%,#2a1f18 50%,#1a1410 100%);}
         .share-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:24px;padding:40px 32px;max-width:440px;width:100%;border:1px solid rgba(255,255,255,0.1);}
         .share-card .success-icon{font-size:56px;margin-bottom:8px;animation:bounceIn 0.8s ease;}
@@ -131,42 +174,9 @@
         @keyframes confettiFall{0%{opacity:1;transform:translateY(-10vh) rotate(0deg) scale(1);}100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.5);}}
         .debug-console{position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,0.8);color:#0f0;padding:8px 12px;border-radius:8px;font-size:11px;font-family:monospace;z-index:999;max-width:300px;max-height:100px;overflow-y:auto;display:none;}
         @media(max-width:480px){.setup-card{padding:28px 20px 24px;}.gift-box-3d{width:160px;height:160px;}.keypad{grid-template-columns:repeat(3,58px);gap:10px;}.keypad button{width:58px;height:58px;font-size:18px;}.progress-bar{padding:6px 14px;gap:8px;top:16px;}}
-    a {
-        text-decoration: none;
-        display: inline-block;
-        padding: 12px 24px;
-        font-size: 1rem;
-        font-weight: bold;
-        color: white;
-        background: linear-gradient(135deg, #ff7eb3, #ff758c);
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
-    }
-    /* Hover effect */
-    a:hover {
-        background: linear-gradient(135deg, #ff4e8a, #ff2e63);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    }
-    /* Active (click) effect */
-    a:active {
-        transform: translateY(0);
-        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
-    /* Responsive font size */
-    @media (max-width: 600px) {
-        a {
-            font-size: 0.9rem;
-            padding: 10px 18px;
-        }
-    }
     </style>
 </head>
 <body>
-<a style="border: none; border-radius: 10px;" href="birthday.html">Birthday</a>
-<a href="1.html">Style 1</a>
 
 <div class="cursor-glow" id="cursorGlow"></div>
 <div class="confetti-container" id="confettiContainer"></div>
@@ -183,7 +193,7 @@
         <div class="progress-dot" data-step="4"></div>
     </div>
 
-    <!-- SETUP -->
+    <!-- SETUP (Front Page) -->
     <div class="screen active" id="setup">
         <div class="setup-card">
             <div class="logo">✨</div>
@@ -224,6 +234,12 @@
 
             <button class="primary-btn" id="startBtn">Create Gift ✨</button>
             <div class="ghost-hint">All data stays on this device</div>
+
+            <!-- 🔹 NAVIGATION LINKS - ONLY ON FRONT PAGE 🔹 -->
+            <div class="nav-links">
+                <a href="birthday.html" class="birthday-link">🎂 Birthday</a>
+                <a href="1.html" class="style-link">✨ Style 1</a>
+            </div>
         </div>
     </div>
 
