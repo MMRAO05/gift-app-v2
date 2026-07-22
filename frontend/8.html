@@ -1,1013 +1,1444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💕 Do You Love Me?</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
-    </script>
-    <style>
-        /* ────────── ROOT ────────── */
-        :root {
-            --pink: #ff4d6d;
-            --pink-dark: #d6335a;
-            --pink-light: #ffb3c6;
-            --pink-glow: rgba(255, 77, 109, 0.3);
-            --gold: #f7c948;
-            --gold-glow: rgba(247, 201, 72, 0.25);
-            --bg-start: #fff5f7;
-            --bg-end: #fce4ec;
-            --text: #2d1b20;
-            --soft: #7a4a5a;
-            --shadow: 0 20px 60px rgba(255, 77, 109, 0.12);
-            --radius: 28px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🌊 Ocean of Love</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
+  </script>
+  <style>
+    /* ────────── ROOT ────────── */
+    :root {
+      --deep-blue: #0b1a30;
+      --wave-1: #1a4a7a;
+      --wave-2: #2a7a9a;
+      --wave-3: #5ab0c0;
+      --gold: #f7d875;
+      --pink: #ff6b9d;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --text-light: #f0f4ff;
+      --text-soft: #b0c8e0;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      --radius: 24px;
+    }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-        html,
-        body {
-            height: 100%;
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-start);
-            color: var(--text);
-            overflow: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* ────────── STAGE ────────── */
-        #stage {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            background: radial-gradient(ellipse at 50% 0%, #ffe8ed 0%, var(--bg-start) 50%, var(--bg-end) 100%);
-        }
+    html,
+    body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--deep-blue);
+      color: var(--text-light);
+      overflow: hidden;
+    }
 
-        /* ────────── ANIMATED BACKGROUND ────────── */
-        .bg-heart {
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-            font-size: 18px;
-            opacity: 0.15;
-            animation: bgFloat linear infinite;
-        }
-        @keyframes bgFloat {
-            0% {
-                transform: translateY(100vh) scale(0.6) rotate(0deg);
-                opacity: 0.08;
-            }
-            10% {
-                opacity: 0.2;
-            }
-            90% {
-                opacity: 0.2;
-            }
-            100% {
-                transform: translateY(-10vh) scale(1.2) rotate(720deg);
-                opacity: 0;
-            }
-        }
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--deep-blue);
+    }
 
-        /* ── floating particles (sparkles) ── */
-        .sparkle {
-            position: absolute;
-            pointer-events: none;
-            border-radius: 50%;
-            background: var(--pink);
-            opacity: 0;
-            animation: sparkleFloat 6s ease-in-out infinite;
-        }
-        @keyframes sparkleFloat {
-            0%,
-            100% {
-                opacity: 0;
-                transform: translate(0, 0) scale(0);
-            }
-            20% {
-                opacity: 0.6;
-            }
-            80% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--tx, 60px), var(--ty, -80px)) scale(1.5);
-            }
-        }
+    #waveCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
 
-        /* ────────── SCREENS ────────── */
-        .screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 20px;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: scale(0.95) translateY(16px);
-            z-index: 2;
-            overflow-y: auto;
-        }
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1) translateY(0);
-        }
+    /* ────────── SCREENS ────────── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: scale(0.94) translateY(16px);
+      z-index: 2;
+      overflow-y: auto;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
 
-        /* ────────── GLASS CARD ────────── */
-        .card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            padding: 32px 28px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            position: relative;
-            overflow: hidden;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent 60%);
-            pointer-events: none;
-        }
+    .glass {
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
 
-        .script {
-            font-family: 'Dancing Script', cursive;
-            font-weight: 700;
-            color: var(--pink);
-            background: linear-gradient(135deg, var(--pink), var(--gold));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+    /* ────────── SETUP ────────── */
+    .setup-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 28px 22px;
+      max-height: 92vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+    .setup-card::-webkit-scrollbar {
+      width: 4px;
+    }
+    .setup-card::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
 
-        /* ────────── SETUP ────────── */
-        #scr-setup .card {
-            max-height: 92vh;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--pink-light) transparent;
-        }
-        #scr-setup .card::-webkit-scrollbar {
-            width: 4px;
-        }
-        #scr-setup .card::-webkit-scrollbar-thumb {
-            background: var(--pink-light);
-            border-radius: 8px;
-        }
+    .setup-card .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .setup-card .brand-icon {
+      font-size: 32px;
+    }
+    .setup-card h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 30px;
+      margin: 0 0 4px;
+      background: linear-gradient(135deg, #7ac7d4, #f7d875, #ff6b9d);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .setup-card p.sub {
+      color: var(--text-soft);
+      font-size: 13px;
+      margin: 0 0 20px;
+      font-weight: 300;
+    }
 
-        .setup-title {
-            font-size: 28px;
-            margin-bottom: 2px;
-        }
-        .setup-sub {
-            font-size: 13px;
-            color: var(--soft);
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
+    .field {
+      text-align: left;
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: var(--text-light);
+      transition: all 0.3s;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(247, 216, 117, 0.08);
+    }
+    .field select option {
+      background: #0b1a30;
+      color: #fff;
+    }
+    .field textarea {
+      min-height: 70px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .field small {
+      display: block;
+      margin-top: 4px;
+      color: var(--text-soft);
+      font-size: 10px;
+    }
+    .file-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .file-input-wrapper label {
+      padding: 8px 16px;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .file-input-wrapper label:hover {
+      border-color: var(--gold);
+      color: #fff;
+    }
+    .file-input-wrapper input[type="file"] {
+      display: none;
+    }
+    .file-name {
+      font-size: 11px;
+      color: var(--text-soft);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
-        .field {
-            text-align: left;
-            margin-bottom: 14px;
-        }
-        .field label {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--soft);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .field input,
-        .field textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1.5px solid rgba(255, 77, 109, 0.12);
-            background: rgba(255, 255, 255, 0.6);
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            color: var(--text);
-            transition: all 0.3s;
-        }
-        .field input:focus,
-        .field textarea:focus {
-            outline: none;
-            border-color: var(--pink);
-            box-shadow: 0 0 0 4px var(--pink-glow);
-        }
-        .field textarea {
-            min-height: 60px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-        .field small {
-            display: block;
-            margin-top: 4px;
-            color: #b090a0;
-            font-size: 10px;
-        }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #2a7a9a, #5ab0c0);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(42, 122, 154, 0.3);
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #d4a830);
+      color: #0b1a30;
+      box-shadow: 0 8px 30px rgba(247, 216, 117, 0.2);
+    }
+    .btn-pink {
+      background: linear-gradient(135deg, var(--pink), #d44a7a);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(255, 107, 157, 0.3);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
 
-        /* ────────── BUTTONS ────────── */
-        .btn {
-            padding: 13px 28px;
-            border: none;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-family: 'Poppins', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
-            pointer-events: none;
-        }
-        .btn:active {
-            transform: scale(0.95);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-            color: #fff;
-            box-shadow: 0 8px 30px var(--pink-glow);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--pink-glow);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold), #d4a830);
-            color: #1a1a1a;
-            box-shadow: 0 8px 30px var(--gold-glow);
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--gold-glow);
-        }
-        .btn-ghost {
-            background: rgba(255, 255, 255, 0.5);
-            color: var(--soft);
-            border: 1.5px solid rgba(255, 77, 109, 0.15);
-            box-shadow: none;
-            backdrop-filter: blur(4px);
-        }
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.8);
-        }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-group .btn {
+      flex: 1;
+      min-width: 100px;
+    }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .btn-group .btn {
-            flex: 1;
-            min-width: 100px;
-        }
+    .ghost-hint {
+      margin-top: 14px;
+      font-size: 10.5px;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
 
-        .btn-full {
-            width: 100%;
-        }
+    /* ────────── PASSKEY ────────── */
+    .pass-dots {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0 20px;
+      justify-content: center;
+    }
+    .pass-dots span {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      transition: all 0.25s;
+    }
+    .pass-dots span.filled {
+      background: var(--gold);
+      box-shadow: 0 0 16px rgba(247, 216, 117, 0.25);
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      gap: 12px;
+      justify-content: center;
+      margin: 4px 0 8px;
+    }
+    .keypad button {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.03);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      font-size: 18px;
+      color: var(--text-light);
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+    }
+    .keypad button:active {
+      background: rgba(247, 216, 117, 0.1);
+      transform: scale(0.92);
+    }
+    .keypad button.clear-key {
+      font-size: 10px;
+      color: var(--pink);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .pass-error {
+      margin-top: 14px;
+      color: var(--pink);
+      font-size: 12px;
+      min-height: 18px;
+      font-weight: 500;
+    }
+    .pass-hint {
+      margin-top: 12px;
+      color: var(--text-soft);
+      font-size: 11px;
+    }
+    @keyframes shakePass {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-8px);
+      }
+      75% {
+        transform: translateX(8px);
+      }
+    }
 
-        /* ────────── QUESTION SCREEN ────────── */
-        #scr-question h1 {
-            font-size: 38px;
-            margin: 0 0 32px;
-            position: relative;
-            z-index: 3;
-        }
-        .qs-btns {
-            position: relative;
-            width: 100%;
-            max-width: 340px;
-            min-height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        #yesBtn {
-            padding: 14px 40px;
-            position: relative;
-            z-index: 3;
-            font-size: 16px;
-        }
-        #noBtn {
-            padding: 14px 32px;
-            position: relative;
-            z-index: 3;
-            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #noBtn.dodging {
-            position: fixed;
-            z-index: 999;
-        }
+    /* ────────── SHARE ────────── */
+    .share-card .success-icon {
+      font-size: 48px;
+      margin-bottom: 4px;
+      animation: bounceIn 0.8s ease;
+    }
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.12);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .share-link-box {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 18px;
+    }
+    .share-link-box input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      color: var(--text-light);
+      outline: none;
+      font-family: 'Poppins', sans-serif;
+      min-width: 0;
+    }
+    .copy-btn {
+      background: var(--gold);
+      color: #0b1a30;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .copy-btn:hover {
+      background: #f7e08a;
+    }
+    .copy-btn.copied {
+      background: #34d399;
+      color: #0b1a30;
+    }
 
-        /* ────────── FINAL SCREEN ────────── */
-        #scr-final .card {
-            text-align: center;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 36px 28px 32px;
-        }
-        .heart-burst {
-            font-size: 64px;
-            animation: heartPulse 1.2s ease-in-out infinite;
-        }
-        @keyframes heartPulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.15);
-            }
-        }
-        .final-head {
-            font-size: 32px;
-            margin: 8px 0 4px;
-        }
-        .final-msg {
-            font-size: 15px;
-            color: var(--soft);
-            margin-top: 6px;
-            line-height: 1.7;
-            font-weight: 300;
-        }
-        .restart-link {
-            margin-top: 20px;
-            background: none;
-            border: none;
-            color: #c290a0;
-            font-size: 11.5px;
-            text-decoration: underline;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: color 0.3s;
-        }
-        .restart-link:hover {
-            color: var(--pink);
-        }
+    .share-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .share-actions button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 80px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .share-actions button:hover {
+      transform: translateY(-2px);
+    }
+    .share-actions .whatsapp {
+      background: #25D366;
+      color: #fff;
+    }
+    .share-actions .whatsapp:hover {
+      background: #1da851;
+    }
+    .share-actions .email {
+      background: #EA4335;
+      color: #fff;
+    }
+    .share-actions .email:hover {
+      background: #c62828;
+    }
+    .share-actions .open-gift {
+      background: linear-gradient(135deg, #2a7a9a, #5ab0c0);
+      color: #fff;
+      flex: 1.5;
+    }
+    .expiry-hint {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+    .share-back-link {
+      margin-top: 14px;
+      background: none;
+      border: none;
+      color: var(--text-soft);
+      font-size: 11px;
+      text-decoration: underline;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
 
-        /* ────────── SHARE SCREEN ────────── */
-        .share-card .success-icon {
-            font-size: 52px;
-            margin-bottom: 4px;
-            animation: bounceIn 0.8s ease;
-        }
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.15);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        .share-link-box {
-            background: rgba(0, 0, 0, 0.04);
-            border-radius: 14px;
-            padding: 12px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            border: 1px solid rgba(255, 77, 109, 0.1);
-            margin-bottom: 18px;
-        }
-        .share-link-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 12px;
-            color: var(--text);
-            outline: none;
-            font-family: 'Poppins', sans-serif;
-            min-width: 0;
-        }
-        .copy-btn {
-            background: var(--pink);
-            color: #fff;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
-        }
-        .copy-btn:hover {
-            background: var(--pink-dark);
-        }
-        .copy-btn.copied {
-            background: #27ae60;
-        }
+    /* ────────── EXPIRED ────────── */
+    .expired-card .icon {
+      font-size: 60px;
+      margin-bottom: 8px;
+    }
+    .expired-card h2 {
+      font-family: 'Playfair Display', serif;
+      color: #ff6b9d;
+      margin: 0;
+      font-size: 26px;
+    }
+    .expired-card p {
+      color: var(--text-soft);
+      font-size: 14px;
+      margin: 12px 0 24px;
+      line-height: 1.6;
+    }
 
-        .share-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .share-actions button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            flex: 1;
-            min-width: 80px;
-            font-family: 'Poppins', sans-serif;
-        }
-        .share-actions button:hover {
-            transform: translateY(-2px);
-        }
-        .share-actions .whatsapp {
-            background: #25D366;
-            color: #fff;
-        }
-        .share-actions .whatsapp:hover {
-            background: #1da851;
-        }
-        .share-actions .email {
-            background: #EA4335;
-            color: #fff;
-        }
-        .share-actions .email:hover {
-            background: #c62828;
-        }
-        .share-actions .open-gift {
-            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-            color: #fff;
-            flex: 1.5;
-        }
-        .expiry-hint {
-            margin-top: 14px;
-            font-size: 11px;
-            color: #c290a0;
-        }
+    /* ────────── OCEAN EXPERIENCE ────────── */
+    .ocean-card {
+      max-width: 400px;
+      padding: 32px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ocean-card .wave-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(10, 30, 60, 0.6), transparent 60%);
+      pointer-events: none;
+    }
+    .ocean-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 30px;
+      background: linear-gradient(135deg, #7ac7d4, var(--gold));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 0 0 4px;
+    }
+    .ocean-sub {
+      font-size: 15px;
+      color: var(--text-light);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin: 8px 0 16px;
+    }
+    .ocean-music {
+      margin: 12px 0 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .ocean-music audio {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 30px;
+      background: rgba(0, 0, 0, 0.2);
+      outline: none;
+    }
+    .ocean-music audio::-webkit-media-controls-panel {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .ocean-btn {
+      margin-top: 14px;
+    }
 
-        /* ────────── EXPIRED SCREEN ────────── */
-        .expired-card .icon {
-            font-size: 62px;
-            margin-bottom: 6px;
-        }
-        .expired-card h2 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 28px;
-            margin: 0;
-            color: #e74c3c;
-        }
-        .expired-card p {
-            color: var(--soft);
-            font-size: 14px;
-            margin: 12px 0 24px;
-            line-height: 1.6;
-        }
+    /* ────────── VIDEO RECORD ────────── */
+    .video-preview {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.06);
+      background: #000;
+      margin: 10px auto;
+      position: relative;
+    }
+    .video-preview canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .record-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 12px;
+    }
+    .record-btns .btn {
+      flex: 1;
+      min-width: 100px;
+    }
+    .record-status {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-top: 6px;
+      min-height: 20px;
+    }
 
-        /* ────────── RESPONSIVE ────────── */
-        @media(max-width: 440px) {
-            .card {
-                padding: 24px 18px;
-                border-radius: 24px;
-            }
-            .setup-title {
-                font-size: 24px;
-            }
-            #scr-question h1 {
-                font-size: 30px;
-            }
-            #yesBtn,
-            #noBtn {
-                padding: 12px 28px;
-                font-size: 14px;
-            }
-            .qs-btns {
-                min-height: 70px;
-                gap: 12px;
-            }
-            .final-head {
-                font-size: 26px;
-            }
-            .heart-burst {
-                font-size: 50px;
-            }
-            .btn-group {
-                flex-direction: column;
-            }
-            .btn-group .btn {
-                min-width: unset;
-            }
-        }
-        @media(max-width: 360px) {
-            .card {
-                padding: 20px 14px;
-            }
-            #scr-question h1 {
-                font-size: 26px;
-            }
-            #yesBtn,
-            #noBtn {
-                padding: 10px 20px;
-                font-size: 12px;
-            }
-        }
-    </style>
+    /* ────────── FINAL ────────── */
+    .final-card .heart-burst {
+      font-size: 56px;
+      margin-bottom: 6px;
+      animation: heartPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes heartPulse {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.12);
+      }
+    }
+    .final-card .final-head {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 32px;
+      background: linear-gradient(135deg, var(--gold), var(--pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 4px 0;
+    }
+    .final-card .final-msg {
+      font-size: 15px;
+      color: var(--text-light);
+      line-height: 1.7;
+      margin: 8px 0 16px;
+    }
+    .restart-link {
+      margin-top: 16px;
+      background: none;
+      border: none;
+      color: var(--text-soft);
+      font-size: 11.5px;
+      text-decoration: underline;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ────────── RESPONSIVE ────────── */
+    @media(max-width: 440px) {
+      .setup-card {
+        padding: 20px 16px;
+      }
+      .ocean-card {
+        padding: 24px 16px;
+      }
+      .ocean-title {
+        font-size: 24px;
+      }
+      .video-preview {
+        max-width: 280px;
+      }
+      .btn-group {
+        flex-direction: column;
+      }
+      .btn-group .btn {
+        min-width: unset;
+      }
+      .keypad {
+        gap: 10px;
+      }
+      .keypad button {
+        width: 52px;
+        height: 52px;
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="stage">
-        <!-- ─── BACKGROUND HEARTS ─── -->
-        <div id="bgHearts"></div>
+  <div id="stage">
+    <!-- ─── CANVAS WAVE BACKGROUND ─── -->
+    <canvas id="waveCanvas"></canvas>
 
-        <!-- ─── SPARKLES ─── -->
-        <div id="sparkles"></div>
+    <!-- ─── SETUP ─── -->
+    <div class="screen active" id="scr-setup">
+      <div class="setup-card glass">
+        <div class="brand">
+          <span class="brand-icon">🌊</span>
+          <h1>Ocean of Love</h1>
+        </div>
+        <p class="sub">Create a sea‑spired surprise with music, video & passkey</p>
 
-        <!-- ─── SETUP ─── -->
-        <div class="screen active" id="scr-setup">
-            <div class="card">
-                <h2 class="script setup-title">💕 Do You Love Me?</h2>
-                <p class="setup-sub">The classic un-clickable "No" button trick — now with shareable links ✨</p>
-
-                <div class="field">
-                    <label>💬 The Question</label>
-                    <input type="text" id="inpQuestion" value="Do you love me?" />
-                </div>
-                <div class="field">
-                    <label>✅ Yes Button Text</label>
-                    <input type="text" id="inpYesBtn" value="Yes 💕" />
-                </div>
-                <div class="field">
-                    <label>❌ No Button Text (it'll run away)</label>
-                    <input type="text" id="inpNoBtn" value="No" />
-                </div>
-                <div class="field">
-                    <label>💖 Final Heading</label>
-                    <input type="text" id="inpFinalHead" value="I knew it! 😏❤️" />
-                </div>
-                <div class="field">
-                    <label>💌 Final Message</label>
-                    <textarea id="inpFinalMsg" rows="2">There was never any escaping that answer. I love you too. 💗</textarea>
-                </div>
-
-                <div class="field">
-                    <label>⏳ Link Expires In (hours)</label>
-                    <input type="number" id="inpExpires" min="1" max="720" value="24" />
-                    <small>1–720 hours. After this, the link will expire.</small>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-ghost" id="btnPreview">👀 Preview</button>
-                    <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
-                </div>
-                <small style="display:block;margin-top:12px;color:#b090a0;">"Preview" tests it here. "Create Link" generates a shareable URL.</small>
-            </div>
+        <div class="field">
+          <label>💕 Recipient's Name</label>
+          <input type="text" id="inpName" value="My Love" />
         </div>
 
-        <!-- ─── SHARE ─── -->
-        <div class="screen" id="scr-share">
-            <div class="card share-card">
-                <div class="success-icon">💕</div>
-                <h2 class="script" style="font-size:24px;margin:0;">Link Ready!</h2>
-                <p style="font-size:13px;color:var(--soft);margin:4px 0 20px;">Share this love link with your special person.</p>
-                <div class="share-link-box">
-                    <input type="text" id="shareLinkInput" readonly />
-                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
-                </div>
-                <div class="share-actions">
-                    <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
-                    <button class="email" id="emailBtn">✉️ Email</button>
-                    <button class="open-gift" id="openGiftBtn">Open ❤️</button>
-                </div>
-                <div class="expiry-hint" id="expiryHint"></div>
-            </div>
+        <div class="field">
+          <label>💌 Your Message</label>
+          <textarea id="inpMessage" rows="3">You are the tide that pulls my heart, the calm in every storm. 🌊</textarea>
         </div>
 
-        <!-- ─── EXPIRED ─── -->
-        <div class="screen" id="scr-expired">
-            <div class="card expired-card">
-                <div class="icon">⏳</div>
-                <h2>Link Expired</h2>
-                <p>This love link has expired. The magic was meant to be cherished in the moment.</p>
-                <button class="btn btn-primary btn-full" id="expiredRestartBtn">Create a New One</button>
-                <div style="margin-top:12px;font-size:11px;color:#c290a0;" id="expiryDetail"></div>
-            </div>
+        <div class="field">
+          <label>🔑 Passkey (4 digits)</label>
+          <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="e.g. 1122" />
+          <small>Leave blank to skip the passkey step</small>
         </div>
 
-        <!-- ─── QUESTION ─── -->
-        <div class="screen" id="scr-question">
-            <h1 class="script" id="dispQuestion">Do you love me?</h1>
-            <div class="qs-btns" id="qsBtns">
-                <button class="btn btn-primary" id="yesBtn">Yes 💕</button>
-                <button class="btn btn-ghost" id="noBtn">No</button>
-            </div>
+        <div class="field">
+          <label>🖼️ Photo (optional)</label>
+          <div class="file-input-wrapper">
+            <label for="inpPhoto">Choose Image</label>
+            <input type="file" id="inpPhoto" accept="image/*" />
+            <span class="file-name" id="photoFileName">No file chosen</span>
+          </div>
         </div>
 
-        <!-- ─── FINAL ─── -->
-        <div class="screen" id="scr-final">
-            <div class="card">
-                <div class="heart-burst">💖</div>
-                <h1 class="script final-head" id="dispFinalHead">I knew it! 😏❤️</h1>
-                <p class="final-msg" id="dispFinalMsg">There was never any escaping that answer. I love you too. 💗</p>
-                <button class="restart-link" id="restartBtn">✨ create another one</button>
-            </div>
+        <div class="field">
+          <label>🎵 Music (optional, MP3)</label>
+          <div class="file-input-wrapper">
+            <label for="inpMusic">Choose Audio</label>
+            <input type="file" id="inpMusic" accept="audio/*" />
+            <span class="file-name" id="musicFileName">No file chosen</span>
+          </div>
         </div>
 
+        <div class="field">
+          <label>⏳ Link Expires In (hours)</label>
+          <input type="number" id="inpExpires" min="1" max="720" value="24" />
+          <small>1–720 hours. After this, the link will expire.</small>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btnPreview">👀 Preview</button>
+          <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
+        </div>
+        <div class="ghost-hint">"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</div>
+      </div>
     </div>
 
-    <script>
-        // ═══════════════════════════════════════════════════════════════
-        //  BACKGROUND HEARTS
-        // ═══════════════════════════════════════════════════════════════
-        (function initBg() {
-            const container = document.getElementById('bgHearts');
-            const emojis = ['💖', '💗', '💕', '❤️', '💘', '✨'];
-            for (let i = 0; i < 22; i++) {
-                const el = document.createElement('div');
-                el.className = 'bg-heart';
-                el.textContent = emojis[i % emojis.length];
-                el.style.left = Math.random() * 100 + '%';
-                el.style.fontSize = (14 + Math.random() * 20) + 'px';
-                el.style.animationDuration = (6 + Math.random() * 8) + 's';
-                el.style.animationDelay = (Math.random() * 10) + 's';
-                container.appendChild(el);
+    <!-- ─── SHARE ─── -->
+    <div class="screen" id="scr-share">
+      <div class="glass share-card" style="width:100%; max-width:440px; padding:30px 24px;">
+        <div class="success-icon">🌊</div>
+        <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0;font-size:24px;">Ocean Ready!</h2>
+        <p style="color:var(--text-soft);font-size:13px;margin:4px 0 20px;">Share this oceanic link with your special person.</p>
+        <div class="share-link-box">
+          <input type="text" id="shareLinkInput" readonly />
+          <button class="copy-btn" id="copyLinkBtn">Copy</button>
+        </div>
+        <div class="share-actions">
+          <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+          <button class="email" id="emailBtn">✉️ Email</button>
+          <button class="open-gift" id="openGiftBtn">Open 🌊</button>
+        </div>
+        <div class="expiry-hint" id="expiryHint"></div>
+        <button class="share-back-link" id="shareBackBtn">← Back to setup</button>
+      </div>
+    </div>
+
+    <!-- ─── EXPIRED ─── -->
+    <div class="screen" id="scr-expired">
+      <div class="glass expired-card" style="width:100%; max-width:400px; padding:40px 30px;">
+        <div class="icon">⏳</div>
+        <h2>Link Expired</h2>
+        <p>This oceanic link has gently faded. The magic was meant to be cherished in the moment.</p>
+        <button class="btn btn-primary" id="expiredRestartBtn">Create a New One</button>
+        <div style="margin-top:12px;font-size:11px;color:var(--text-soft);" id="expiryDetail"></div>
+      </div>
+    </div>
+
+    <!-- ─── PASSKEY SCREEN ─── -->
+    <div class="screen" id="scr-pass">
+      <div class="glass" style="width:100%; max-width:380px; padding:32px 24px;">
+        <div style="font-size:32px;">🔒</div>
+        <h3 style="font-family:'Playfair Display',serif;margin:6px 0 2px;color:var(--gold);font-size:22px;">Enter Passkey</h3>
+        <p style="font-size:12px;color:var(--text-soft);margin:0 0 6px;">Unlock the ocean of love</p>
+        <div class="pass-dots" id="passDots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="keypad" id="passKeypad">
+          <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+          <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+          <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+          <button class="clear-key" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
+        </div>
+        <div class="pass-error" id="passError"></div>
+        <div class="pass-hint" id="passHint">💡 Enter the 4-digit passkey</div>
+      </div>
+    </div>
+
+    <!-- ─── OCEAN EXPERIENCE ─── -->
+    <div class="screen" id="scr-ocean">
+      <div class="glass ocean-card">
+        <div class="wave-overlay"></div>
+        <div class="ocean-title" id="oceanTitle">For My Love</div>
+        <div class="ocean-sub" id="oceanMessage">You are the tide that pulls my heart...</div>
+        <div class="ocean-music" id="oceanMusicContainer"></div>
+        <button class="btn btn-gold ocean-btn" id="oceanContinue">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ─── VIDEO RECORD / SKIP ─── -->
+    <div class="screen" id="scr-video">
+      <div class="glass" style="width:100%; max-width:400px; padding:24px 20px;">
+        <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0 0 4px;font-size:24px;">Capture the Memory</h2>
+        <p style="color:var(--text-soft);font-size:12px;margin:0 0 12px;">Record a short video of this ocean moment, or skip ahead.</p>
+        <div class="video-preview">
+          <canvas id="videoCanvas"></canvas>
+        </div>
+        <div class="record-btns">
+          <button class="btn btn-primary" id="recordBtn">⏺ Record & Download</button>
+          <button class="btn btn-pink" id="skipBtn">⏭ Skip</button>
+        </div>
+        <div class="record-status" id="recordStatus">⏳ Ready to record</div>
+      </div>
+    </div>
+
+    <!-- ─── FINAL ─── -->
+    <div class="screen" id="scr-final">
+      <div class="glass final-card" style="width:100%; max-width:400px; padding:32px 24px;">
+        <div class="heart-burst">💖</div>
+        <div class="final-head" id="finalHead">Forever Yours</div>
+        <div class="final-msg" id="finalMsg">You are my ocean, my endless love. 🌊</div>
+        <button class="restart-link" id="restartBtn">✨ create another one</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════
+    //  WAVE CANVAS BACKGROUND
+    // ═══════════════════════════════════════════════════════════════
+    (function initWaves() {
+      const canvas = document.getElementById('waveCanvas');
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      let time = 0;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const colors = [
+        { r: 26, g: 74, b: 122 },
+        { r: 42, g: 122, b: 154 },
+        { r: 90, g: 176, b: 192 },
+        { r: 180, g: 220, b: 235 },
+      ];
+
+      function drawWaves() {
+        time += 0.008;
+        ctx.clearRect(0, 0, w, h);
+
+        for (let layer = 0; layer < 4; layer++) {
+          const offset = layer * 0.7 + time * 0.2;
+          const baseY = h * (0.5 + layer * 0.08);
+          const amp = 50 + layer * 20 + Math.sin(time * 0.5 + layer) * 10;
+          const freq = 0.008 + layer * 0.002;
+
+          ctx.beginPath();
+          const points = [];
+          const steps = 140;
+          for (let i = 0; i <= steps; i++) {
+            const x = (i / steps) * w;
+            const y = baseY + Math.sin(x * freq + offset) * amp +
+              Math.sin(x * freq * 0.6 + offset * 1.7) * amp * 0.4 +
+              Math.sin(x * freq * 0.3 + offset * 2.3) * amp * 0.2;
+            points.push({ x, y });
+          }
+
+          const grad = ctx.createLinearGradient(0, baseY - amp - 30, 0, baseY + amp + 30);
+          const c = colors[layer % colors.length];
+          const alpha = 0.3 + layer * 0.05;
+          grad.addColorStop(0, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.3})`);
+          grad.addColorStop(0.3, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.9})`);
+          grad.addColorStop(0.5, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`);
+          grad.addColorStop(0.7, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.9})`);
+          grad.addColorStop(1, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.3})`);
+
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, points[0].y);
+          for (let i = 1; i < points.length; i++) {
+            const p = points[i];
+            const prev = points[i - 1];
+            const cx = (prev.x + p.x) / 2;
+            const cy = (prev.y + p.y) / 2;
+            ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
+          }
+          const last = points[points.length - 1];
+          ctx.lineTo(last.x, h);
+          ctx.lineTo(points[0].x, h);
+          ctx.closePath();
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          ctx.beginPath();
+          for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else {
+              const prev = points[i - 1];
+              const cx = (prev.x + p.x) / 2;
+              const cy = (prev.y + p.y) / 2;
+              ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
             }
-        })();
+          }
+          ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${0.1 + layer * 0.02})`;
+          ctx.lineWidth = 2 + layer * 2;
+          ctx.shadowColor = `rgba(${c.r}, ${c.g}, ${c.b}, 0.05)`;
+          ctx.shadowBlur = 30;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
 
-        // ─── SPARKLES ───
-        (function initSparkles() {
-            const container = document.getElementById('sparkles');
-            for (let i = 0; i < 16; i++) {
-                const el = document.createElement('div');
-                el.className = 'sparkle';
-                const size = 3 + Math.random() * 5;
-                el.style.width = size + 'px';
-                el.style.height = size + 'px';
-                el.style.left = Math.random() * 100 + '%';
-                el.style.top = Math.random() * 100 + '%';
-                el.style.setProperty('--tx', (Math.random() - 0.5) * 120 + 'px');
-                el.style.setProperty('--ty', -60 - Math.random() * 100 + 'px');
-                el.style.animationDuration = (4 + Math.random() * 5) + 's';
-                el.style.animationDelay = (Math.random() * 6) + 's';
-                el.style.background = Math.random() > 0.5 ? 'var(--pink)' : 'var(--gold)';
-                container.appendChild(el);
+        for (let i = 0; i < 20; i++) {
+          const x = (Math.sin(i * 1.3 + time * 0.5) * 0.5 + 0.5) * w;
+          const y = (Math.cos(i * 1.7 + time * 0.4) * 0.3 + 0.6) * h;
+          const size = 1 + Math.sin(time + i) * 0.5 + 0.5;
+          ctx.beginPath();
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${0.1 + Math.sin(time*2+i)*0.05+0.05})`;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(drawWaves);
+      }
+      drawWaves();
+    })();
+
+    // ═══════════════════════════════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════════════════════════════
+    const DEFAULTS = {
+      name: 'My Love',
+      message: 'You are the tide that pulls my heart, the calm in every storm. 🌊',
+      passkey: '',
+      photo: '',
+      music: '',
+      expiresIn: 24,
+      createdAt: 0
+    };
+    let state = Object.assign({}, DEFAULTS);
+    let currentGiftId = null;
+    let musicDataURL = '';
+    let photoDataURL = '';
+    let passEntry = '';
+    let passDotsEl = null;
+
+    // ═══════════════════════════════════════════════════════════════
+    //  DOM REFS
+    // ═══════════════════════════════════════════════════════════════
+    const $ = id => document.getElementById(id);
+    const screens = {
+      setup: $('scr-setup'),
+      share: $('scr-share'),
+      expired: $('scr-expired'),
+      pass: $('scr-pass'),
+      ocean: $('scr-ocean'),
+      video: $('scr-video'),
+      final: $('scr-final'),
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    //  NAVIGATION
+    // ═══════════════════════════════════════════════════════════════
+    function nav(id) {
+      Object.keys(screens).forEach(k => {
+        if (screens[k]) screens[k].classList.toggle('active', k === id);
+      });
+      if (id === 'scr-pass') {
+        passEntry = '';
+        updatePassDots();
+        $('passError').textContent = '';
+        $('passHint').textContent = '💡 Enter the 4-digit passkey';
+      }
+      if (id === 'scr-ocean') {
+        const container = $('oceanMusicContainer');
+        container.innerHTML = '';
+        if (musicDataURL) {
+          const audio = document.createElement('audio');
+          audio.src = musicDataURL;
+          audio.controls = true;
+          audio.autoplay = true;
+          audio.loop = true;
+          audio.style.width = '100%';
+          audio.style.maxWidth = '280px';
+          container.appendChild(audio);
+        }
+      }
+      if (id === 'scr-video') {
+        startVideoPreview();
+      }
+      if (id === 'scr-final') {
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 130, spread: 80, origin: { y: 0.5 } });
+          setTimeout(() => {
+            confetti({ particleCount: 70, angle: 50, spread: 50, origin: { x: 0 } });
+            confetti({ particleCount: 70, angle: 130, spread: 50, origin: { x: 1 } });
+          }, 300);
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  FILE HANDLING
+    // ═══════════════════════════════════════════════════════════════
+    $('inpPhoto').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => { photoDataURL = ev.target.result; };
+        reader.readAsDataURL(file);
+        $('photoFileName').textContent = file.name;
+      } else {
+        photoDataURL = '';
+        $('photoFileName').textContent = 'No file chosen';
+      }
+    });
+
+    $('inpMusic').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => { musicDataURL = ev.target.result; };
+        reader.readAsDataURL(file);
+        $('musicFileName').textContent = file.name;
+      } else {
+        musicDataURL = '';
+        $('musicFileName').textContent = 'No file chosen';
+      }
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  PASSKEY SYSTEM
+    // ═══════════════════════════════════════════════════════════════
+    function updatePassDots() {
+      const dots = document.querySelectorAll('#passDots span');
+      const len = passEntry.length;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('filled', i < len);
+      });
+    }
+
+    function setupPasskeyHandler() {
+      passDotsEl = document.querySelectorAll('#passDots span');
+
+      document.querySelectorAll('#passKeypad button').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const key = this.dataset.k;
+          const errEl = $('passError');
+          const hintEl = $('passHint');
+
+          if (key === 'clear') {
+            passEntry = '';
+            updatePassDots();
+            errEl.textContent = '';
+            hintEl.textContent = '💡 Enter the 4-digit passkey';
+            return;
+          }
+          if (key === 'back') {
+            passEntry = passEntry.slice(0, -1);
+            updatePassDots();
+            errEl.textContent = '';
+            return;
+          }
+          if (passEntry.length >= 4) return;
+
+          passEntry += key;
+          updatePassDots();
+          errEl.textContent = '';
+
+          if (passEntry.length === 4) {
+            // Check against stored passkey
+            const expected = state.passkey || '';
+            if (expected === '' || passEntry === expected) {
+              // Correct! Go to ocean
+              setTimeout(() => nav('scr-ocean'), 300);
+            } else {
+              errEl.textContent = '❌ Wrong passkey, try again';
+              hintEl.textContent = '💡 Hint: the passkey you set';
+              const wrap = document.querySelector('#passDots');
+              wrap.style.animation = 'shakePass .4s';
+              setTimeout(() => wrap.style.animation = '', 400);
+              setTimeout(() => {
+                passEntry = '';
+                updatePassDots();
+                errEl.textContent = '';
+              }, 800);
             }
-        })();
-
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE
-        // ═══════════════════════════════════════════════════════════════
-        const DEFAULTS = {
-            question: 'Do you love me?',
-            yesBtn: 'Yes 💕',
-            noBtn: 'No',
-            finalHead: 'I knew it! 😏❤️',
-            finalMsg: 'There was never any escaping that answer. I love you too. 💗',
-            expiresIn: 24,
-            createdAt: 0
-        };
-        let state = Object.assign({}, DEFAULTS);
-        let currentGiftId = null;
-
-        // ═══════════════════════════════════════════════════════════════
-        //  DOM REFS
-        // ═══════════════════════════════════════════════════════════════
-        const $ = id => document.getElementById(id);
-        const screens = {
-            setup: $('scr-setup'),
-            share: $('scr-share'),
-            expired: $('scr-expired'),
-            question: $('scr-question'),
-            final: $('scr-final'),
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        //  NAVIGATION
-        // ═══════════════════════════════════════════════════════════════
-        function nav(id) {
-            Object.keys(screens).forEach(k => {
-                if (screens[k]) screens[k].classList.toggle('active', k === id);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE READ / APPLY
-        // ═══════════════════════════════════════════════════════════════
-        function readFormIntoState() {
-            state.question = $('inpQuestion').value.trim() || DEFAULTS.question;
-            state.yesBtn = $('inpYesBtn').value.trim() || DEFAULTS.yesBtn;
-            state.noBtn = $('inpNoBtn').value.trim() || DEFAULTS.noBtn;
-            state.finalHead = $('inpFinalHead').value.trim() || DEFAULTS.finalHead;
-            state.finalMsg = $('inpFinalMsg').value.trim() || DEFAULTS.finalMsg;
-            const exp = parseInt($('inpExpires').value) || 24;
-            state.expiresIn = Math.min(Math.max(exp, 1), 720);
-            state.createdAt = Date.now();
-        }
-
-        function applyState() {
-            $('dispQuestion').innerText = state.question;
-            $('yesBtn').innerText = state.yesBtn;
-            $('noBtn').innerText = state.noBtn;
-            $('dispFinalHead').innerText = state.finalHead;
-            $('dispFinalMsg').innerText = state.finalMsg;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  NO BUTTON DODGE (enhanced)
-        // ═══════════════════════════════════════════════════════════════
-        function dodgeNoButton(btn) {
-            const bRect = btn.getBoundingClientRect();
-            const margin = 20;
-            const maxX = window.innerWidth - bRect.width - margin;
-            const maxY = window.innerHeight - bRect.height - margin;
-            const newX = Math.max(margin, Math.random() * maxX);
-            const newY = Math.max(margin, Math.random() * maxY);
-            btn.style.position = 'fixed';
-            btn.style.left = newX + 'px';
-            btn.style.top = newY + 'px';
-            btn.style.zIndex = '999';
-            btn.classList.add('dodging');
-
-            // Small haptic-like feedback (shake)
-            btn.style.transform = 'scale(0.95)';
-            setTimeout(() => { btn.style.transform = ''; }, 150);
-        }
-
-        const noBtn = $('noBtn');
-        let dodgeTimeout = null;
-
-        function setupNoButtonDodge() {
-            const events = ['mouseenter', 'touchstart', 'click'];
-            events.forEach(evt => {
-                noBtn.addEventListener(evt, function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Debounce dodge to prevent excessive jumps
-                    if (dodgeTimeout) return;
-                    dodgeTimeout = setTimeout(() => {
-                        dodgeNoButton(noBtn);
-                        dodgeTimeout = null;
-                    }, 50);
-                }, { passive: false });
-            });
-        }
-        setupNoButtonDodge();
-
-        // Also dodge when window resizes (if button is floating)
-        window.addEventListener('resize', () => {
-            if (noBtn.classList.contains('dodging')) {
-                dodgeNoButton(noBtn);
-            }
+          }
         });
+      });
+    }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  YES BUTTON
-        // ═══════════════════════════════════════════════════════════════
-        $('yesBtn').addEventListener('click', function() {
-            nav('final');
-            // Massive confetti burst
-            if (typeof confetti !== 'undefined') {
-                confetti({ particleCount: 180, spread: 100, origin: { y: 0.5 } });
-                setTimeout(() => {
-                    confetti({ particleCount: 80, angle: 50, spread: 60, origin: { x: 0 } });
-                    confetti({ particleCount: 80, angle: 130, spread: 60, origin: { x: 1 } });
-                }, 200);
-                setTimeout(() => {
-                    confetti({ particleCount: 60, spread: 50, origin: { y: 0.3 } });
-                }, 500);
-            }
-            // Reset no button position for next time
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-        });
+    // ═══════════════════════════════════════════════════════════════
+    //  STATE READ / APPLY
+    // ═══════════════════════════════════════════════════════════════
+    function readFormIntoState() {
+      state.name = $('inpName').value.trim() || DEFAULTS.name;
+      state.message = $('inpMessage').value.trim() || DEFAULTS.message;
+      state.passkey = $('inpPasskey').value.trim() || '';
+      state.photo = photoDataURL || '';
+      state.music = musicDataURL || '';
+      const exp = parseInt($('inpExpires').value) || 24;
+      state.expiresIn = Math.min(Math.max(exp, 1), 720);
+      state.createdAt = Date.now();
+    }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  PREVIEW
-        // ═══════════════════════════════════════════════════════════════
-        $('btnPreview').addEventListener('click', () => {
-            readFormIntoState();
-            applyState();
-            // Reset no button position
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-            nav('question');
-        });
+    function applyState() {
+      $('oceanTitle').textContent = `For ${state.name}`;
+      $('oceanMessage').textContent = state.message;
+      $('finalHead').textContent = `Forever Yours, ${state.name}`;
+      $('finalMsg').textContent = state.message || 'You are my ocean, my endless love. 🌊';
+      // Passkey hint
+      $('passHint').textContent = state.passkey ? '💡 Enter the 4-digit passkey' : '💡 No passkey set — just tap any 4 digits';
+    }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  ID GENERATION
-        // ═══════════════════════════════════════════════════════════════
-        function genId() {
-            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    // ═══════════════════════════════════════════════════════════════
+    //  VIDEO RECORDING
+    // ═══════════════════════════════════════════════════════════════
+    let videoCanvas = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recording = false;
+    let videoAnimId = null;
+
+    function startVideoPreview() {
+      const canvas = $('videoCanvas');
+      if (!canvas) return;
+      videoCanvas = canvas;
+      const ctx = canvas.getContext('2d');
+      canvas.width = 640;
+      canvas.height = 360;
+
+      if (videoAnimId) cancelAnimationFrame(videoAnimId);
+
+      function animatePreview() {
+        const time = Date.now() * 0.002;
+        ctx.fillStyle = '#0b1a30';
+        ctx.fillRect(0, 0, 640, 360);
+
+        for (let layer = 0; layer < 3; layer++) {
+          const offset = layer * 0.8 + time * 0.15;
+          const baseY = 140 + layer * 40;
+          const amp = 30 + layer * 12;
+          const freq = 0.015 + layer * 0.003;
+
+          ctx.beginPath();
+          for (let i = 0; i <= 120; i++) {
+            const x = (i / 120) * 640;
+            const y = baseY + Math.sin(x * freq + offset) * amp +
+              Math.sin(x * freq * 0.7 + offset * 1.5) * amp * 0.4;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          const colors = ['#2a7a9a', '#5ab0c0', '#7ac7d4'];
+          ctx.strokeStyle = colors[layer % colors.length];
+          ctx.lineWidth = 2 + layer * 2;
+          ctx.shadowColor = 'rgba(90,176,192,0.3)';
+          ctx.shadowBlur = 20;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  SHAREABLE LINK SYSTEM
-        // ═══════════════════════════════════════════════════════════════
-        function createShareableLink() {
-            readFormIntoState();
-            if (!state.question) {
-                alert('💕 Please write a question before creating a link!');
-                return;
-            }
-            state.createdAt = Date.now();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 32px "Playfair Display", serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 20;
+        ctx.fillText(state.name || 'You', 320, 170);
 
-            const id = genId();
-            currentGiftId = id;
-            const dataToStore = JSON.parse(JSON.stringify(state));
-            localStorage.setItem('love_question_' + id, JSON.stringify(dataToStore));
+        ctx.font = '18px "Poppins", sans-serif';
+        ctx.fillStyle = 'rgba(247,216,117,0.7)';
+        ctx.fillText('✨ Ocean of Love ✨', 320, 220);
+        ctx.shadowBlur = 0;
 
-            let allIds = JSON.parse(localStorage.getItem('love_question_ids') || '[]');
-            if (!allIds.includes(id)) allIds.push(id);
-            localStorage.setItem('love_question_ids', JSON.stringify(allIds));
+        ctx.font = '28px sans-serif';
+        ctx.fillStyle = '#ff6b9d';
+        ctx.fillText('❤️', 320, 260);
 
-            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
-            $('shareLinkInput').value = shareUrl;
-            $('expiryHint').innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-                's' : '');
+        videoAnimId = requestAnimationFrame(animatePreview);
+      }
+      animatePreview();
+    }
 
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            nav('share');
-            console.log('💕 Love link created! ID:', id);
-            return id;
+    function startRecording() {
+      const canvas = $('videoCanvas');
+      if (!canvas) return;
+
+      recordedChunks = [];
+      const stream = canvas.captureStream(25);
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 2500000
+      });
+
+      mediaRecorder.ondataavailable = function(e) {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = function() {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ocean-memory-${state.name || 'you'}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        $('recordStatus').textContent = '✅ Video downloaded!';
+        $('recordBtn').textContent = '⏺ Record Again';
+        recording = false;
+      };
+
+      mediaRecorder.start();
+      recording = true;
+      $('recordStatus').textContent = '🔴 Recording... (5s)';
+      $('recordBtn').textContent = '⏹ Recording...';
+
+      setTimeout(() => {
+        if (mediaRecorder && recording) {
+          mediaRecorder.stop();
+          recording = false;
+          $('recordBtn').textContent = '⏺ Record & Download';
         }
+      }, 5000);
+    }
 
-        $('btnCreateLink').addEventListener('click', createShareableLink);
+    $('recordBtn').addEventListener('click', function() {
+      if (recording) {
+        if (mediaRecorder) mediaRecorder.stop();
+        recording = false;
+        $('recordStatus').textContent = '⏹ Stopped recording.';
+        this.textContent = '⏺ Record & Download';
+        return;
+      }
+      startRecording();
+    });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  SHARE BUTTONS
-        // ═══════════════════════════════════════════════════════════════
-        $('copyLinkBtn').addEventListener('click', function() {
-            const input = $('shareLinkInput');
-            if (!input || !input.value) return;
-            navigator.clipboard.writeText(input.value).then(() => {
-                this.textContent = '✓ Copied!';
-                this.classList.add('copied');
-                setTimeout(() => {
-                    this.textContent = 'Copy';
-                    this.classList.remove('copied');
-                }, 2000);
-            }).catch(() => {
-                input.select();
-                document.execCommand('copy');
-                alert('Link copied!');
-            });
-        });
+    $('skipBtn').addEventListener('click', function() {
+      if (recording) {
+        if (mediaRecorder) mediaRecorder.stop();
+        recording = false;
+        $('recordBtn').textContent = '⏺ Record & Download';
+      }
+      nav('scr-final');
+    });
 
-        $('whatsappBtn').addEventListener('click', () => {
-            const link = $('shareLinkInput')?.value || '';
-            window.open('https://wa.me/?text=' + encodeURIComponent('💕 A love question for you! ' + link), '_blank');
-        });
+    // ═══════════════════════════════════════════════════════════════
+    //  OCEAN CONTINUE → VIDEO
+    // ═══════════════════════════════════════════════════════════════
+    $('oceanContinue').addEventListener('click', function() {
+      nav('scr-video');
+    });
 
-        $('emailBtn').addEventListener('click', () => {
-            const link = $('shareLinkInput')?.value || '';
-            window.location.href = 'mailto:?subject=A Love Question&body=💕 A love question for you! ' + link;
-        });
+    // ═══════════════════════════════════════════════════════════════
+    //  PREVIEW (FIXED)
+    // ═══════════════════════════════════════════════════════════════
+    $('btnPreview').addEventListener('click', function() {
+      readFormIntoState();
+      applyState();
+      // If passkey is set, go to pass screen, else directly to ocean
+      if (state.passkey) {
+        passEntry = '';
+        updatePassDots();
+        $('passError').textContent = '';
+        nav('scr-pass');
+      } else {
+        nav('scr-ocean');
+      }
+    });
 
-        $('openGiftBtn').addEventListener('click', function() {
-            const id = currentGiftId;
-            if (id) loadFromId(id);
-        });
+    // ═══════════════════════════════════════════════════════════════
+    //  ENCODE / DECODE (ALL DATA IN URL)
+    // ═══════════════════════════════════════════════════════════════
+    function encodeData(data) {
+      try {
+        return encodeURIComponent(JSON.stringify(data));
+      } catch (e) { return ''; }
+    }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  LOAD FROM ID
-        // ═══════════════════════════════════════════════════════════════
-        function loadFromId(id) {
-            console.log('🔍 Loading love question with ID:', id);
+    function decodeData(str) {
+      try {
+        return JSON.parse(decodeURIComponent(str));
+      } catch (e) { return null; }
+    }
 
-            let raw = localStorage.getItem('love_question_' + id);
-            if (!raw) {
-                console.warn('⚠️ Love question not found:', id);
-                const detailEl = $('expiryDetail');
-                if (detailEl) detailEl.textContent = 'This love link no longer exists.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('expired');
-                return false;
-            }
+    function genId() {
+      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    }
 
-            try {
-                const data = JSON.parse(raw);
-                const now = Date.now();
-                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                if (expTime > 0 && now > expTime) {
-                    const d = new Date(expTime);
-                    const detailEl = $('expiryDetail');
-                    if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    nav('expired');
-                    return false;
-                }
+    // ═══════════════════════════════════════════════════════════════
+    //  SHAREABLE LINK SYSTEM (ALL DATA IN URL)
+    // ═══════════════════════════════════════════════════════════════
+    function createShareableLink() {
+      readFormIntoState();
+      if (!state.name) {
+        alert('🌊 Please enter a name before creating a link!');
+        return;
+      }
+      state.createdAt = Date.now();
 
-                // Apply data
-                state = data;
-                currentGiftId = id;
-                applyState();
+      // Store full state in localStorage for caching (optional)
+      const id = genId();
+      currentGiftId = id;
+      localStorage.setItem('ocean_' + id, JSON.stringify(state));
 
-                // Reset No button position
-                noBtn.style.position = '';
-                noBtn.style.left = '';
-                noBtn.style.top = '';
-                noBtn.classList.remove('dodging');
-                noBtn.style.zIndex = '';
+      // ENCODE ALL DATA INCLUDING PHOTO & MUSIC into URL
+      const fullData = {
+        name: state.name,
+        message: state.message,
+        passkey: state.passkey,
+        photo: state.photo || '',
+        music: state.music || '',
+        expiresIn: state.expiresIn,
+        createdAt: state.createdAt,
+        id: id
+      };
+      const encoded = encodeData(fullData);
+      const shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
 
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('question');
-                console.log('✅ Love question loaded successfully!');
-                return true;
+      $('shareLinkInput').value = shareUrl;
+      $('expiryHint').innerText = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+        's' : '');
 
-            } catch (e) {
-                console.error('❌ Error loading:', e);
-                const detailEl = $('expiryDetail');
-                if (detailEl) detailEl.textContent = 'Error loading love link.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('expired');
-                return false;
-            }
-        }
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      nav('scr-share');
+      console.log('🌊 Ocean link created! ID:', id);
+      return id;
+    }
 
-        // ─── Auto-load from URL ───
-        (function loadFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-            if (id) {
-                console.log('🔗 Loading from URL with ID:', id);
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                loadFromId(id);
-            }
-        })();
+    $('btnCreateLink').addEventListener('click', createShareableLink);
 
-        // ═══════════════════════════════════════════════════════════════
-        //  RESTART / GO TO SETUP
-        // ═══════════════════════════════════════════════════════════════
-        function goToSetup() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            nav('setup');
-            if (window.history && window.history.pushState) {
-                window.history.pushState({}, '', window.location.pathname);
-            }
-            currentGiftId = null;
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-        }
+    // ═══════════════════════════════════════════════════════════════
+    //  SHARE BUTTONS
+    // ═══════════════════════════════════════════════════════════════
+    $('copyLinkBtn').addEventListener('click', function() {
+      const input = $('shareLinkInput');
+      if (!input || !input.value) return;
+      navigator.clipboard.writeText(input.value).then(() => {
+        this.textContent = '✓ Copied!';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = 'Copy';
+          this.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        alert('Link copied!');
+      });
+    });
 
-        $('restartBtn').addEventListener('click', goToSetup);
-        $('expiredRestartBtn').addEventListener('click', goToSetup);
+    $('whatsappBtn').addEventListener('click', () => {
+      const link = $('shareLinkInput')?.value || '';
+      window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link), '_blank');
+    });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  LEGACY PRESET SUPPORT
-        // ═══════════════════════════════════════════════════════════════
-        if (window.__PRESET__) {
-            state = Object.assign({}, DEFAULTS, window.__PRESET__);
-            applyState();
-            nav('question');
-            delete window.__PRESET__;
-        }
+    $('emailBtn').addEventListener('click', () => {
+      const link = $('shareLinkInput')?.value || '';
+      window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
+    });
 
-        console.log('💕 Do You Love Me? — Premium Shareable Edition');
-        console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-    </script>
+    $('openGiftBtn').addEventListener('click', function() {
+      window.location.reload();
+    });
 
+    $('shareBackBtn').addEventListener('click', () => {
+      nav('scr-setup');
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  LOAD FROM URL (FIXED — ALL DATA IN URL)
+    // ═══════════════════════════════════════════════════════════════
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get('d');
+      if (!encoded) return false;
+
+      const data = decodeData(encoded);
+      if (!data) {
+        $('expiryDetail').innerText = 'The link is corrupted. Please create a new one.';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        $('scr-expired').classList.add('active');
+        return false;
+      }
+
+      // Check expiration
+      const now = Date.now();
+      const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+      if (expTime > 0 && now > expTime) {
+        const d = new Date(expTime);
+        $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        $('scr-expired').classList.add('active');
+        return false;
+      }
+
+      // Load all data from URL
+      state.name = data.name || DEFAULTS.name;
+      state.message = data.message || DEFAULTS.message;
+      state.passkey = data.passkey || '';
+      state.photo = data.photo || '';
+      state.music = data.music || '';
+      state.expiresIn = data.expiresIn || DEFAULTS.expiresIn;
+      state.createdAt = data.createdAt || 0;
+      musicDataURL = state.music || '';
+      photoDataURL = state.photo || '';
+      currentGiftId = data.id || null;
+
+      // Cache in localStorage for faster reloads on same device
+      if (data.id) {
+        try { localStorage.setItem('ocean_' + data.id, JSON.stringify(state)); } catch (e) {}
+      }
+
+      applyState();
+
+      // Determine which screen to show
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+      if (state.passkey) {
+        passEntry = '';
+        updatePassDots();
+        $('passError').textContent = '';
+        nav('scr-pass');
+      } else {
+        nav('scr-ocean');
+      }
+
+      console.log('✅ Ocean loaded from URL successfully!');
+      return true;
+    }
+
+    // ─── Auto-load ──────────────────────────────────────────────────
+    (function init() {
+      const loaded = loadFromUrl();
+      if (!loaded) {
+        $('scr-setup').classList.add('active');
+      }
+      // Setup passkey handlers
+      setupPasskeyHandler();
+      // Init pass dots
+      passDotsEl = document.querySelectorAll('#passDots span');
+    })();
+
+    // ═══════════════════════════════════════════════════════════════
+    //  RESTART / GO TO SETUP
+    // ═══════════════════════════════════════════════════════════════
+    function goToSetup() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      nav('scr-setup');
+      if (window.history && window.history.pushState) {
+        window.history.pushState({}, '', window.location.pathname);
+      }
+      currentGiftId = null;
+      if (mediaRecorder && recording) {
+        mediaRecorder.stop();
+        recording = false;
+      }
+    }
+
+    $('restartBtn').addEventListener('click', goToSetup);
+    $('expiredRestartBtn').addEventListener('click', goToSetup);
+
+    // ─── Legacy preset support ──────────────────────────────────
+    if (window.__PRESET__) {
+      state = Object.assign({}, DEFAULTS, window.__PRESET__);
+      applyState();
+      if (state.passkey) { nav('scr-pass');
+        passEntry = '';
+        updatePassDots(); } else { nav('scr-ocean'); }
+      delete window.__PRESET__;
+    }
+
+    console.log('🌊 Ocean of Love — Style 7 (FULLY FIXED) loaded!');
+    console.log('🔗 ALL data encoded in URL — works across any device.');
+    console.log('🔑 Passkey feature added.');
+  </script>
 </body>
 </html>
