@@ -541,25 +541,20 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   });
 
   // ============================================================
-  //  ENCODE / DECODE HELPERS
+  //  ENCODE / DECODE HELPERS (robust URL-safe)
   // ============================================================
   function encodeData(data){
-    try {
-      return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    } catch(e) {
-      // Fallback for large data
-      return encodeURIComponent(JSON.stringify(data));
-    }
+    // Use URI encoding – safe for URLs, works across all devices
+    return encodeURIComponent(JSON.stringify(data));
   }
+
   function decodeData(str){
     try {
-      return JSON.parse(decodeURIComponent(escape(atob(str))));
+      const decoded = decodeURIComponent(str);
+      return JSON.parse(decoded);
     } catch(e) {
-      try {
-        return JSON.parse(decodeURIComponent(str));
-      } catch(e2) {
-        return null;
-      }
+      console.warn('Decode failed:', e);
+      return null;
     }
   }
 
@@ -592,7 +587,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   }
 
   // ============================================================
-  //  SHAREABLE LINK SYSTEM
+  //  SHAREABLE LINK SYSTEM (FIXED)
   // ============================================================
   function createShareableLink() {
     readFormIntoState();
@@ -613,7 +608,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     if (!allIds.includes(id)) allIds.push(id);
     localStorage.setItem('surprise_ids', JSON.stringify(allIds));
 
-    // Encode data into URL
+    // Encode data into URL using robust URI encoding
     const encodedData = encodeData(state);
     const shareUrl = window.location.origin + window.location.pathname + '?d=' + encodedData;
 
@@ -667,7 +662,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   });
 
   // ============================================================
-  //  LOAD FROM URL
+  //  LOAD FROM URL (FIXED)
   // ============================================================
   function loadFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -675,6 +670,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     // Check for embedded data
     const encodedData = params.get('d');
     if (encodedData) {
+      console.log('🔍 Found encoded data in URL, decoding...');
       const data = decodeData(encodedData);
       if (data) {
         console.log('📦 Data loaded from URL:', data);
@@ -700,14 +696,22 @@ Add as many lines as you like — each one becomes its own point.</textarea>
         // Cache for faster subsequent loads
         localStorage.setItem('surprise_cached', JSON.stringify(data));
 
+        // Hide setup and show the first surprise screen
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         nav('scr-1');
         console.log('✅ Surprise loaded from URL successfully!');
         return true;
+      } else {
+        console.warn('⚠️ Failed to decode data from URL.');
+        // Show a user-friendly error
+        $('expiryDetail').innerText = 'The link is corrupted. Please try creating a new one.';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        $('scr-expired').classList.add('active');
+        return false;
       }
     }
 
-    // Fallback: check for ID in URL
+    // Fallback: check for ID in URL (legacy support)
     const id = params.get('id');
     if (id) {
       const raw = localStorage.getItem('surprise_' + id);
@@ -773,7 +777,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     delete window.__PRESET__;
   }
 
-  console.log('🎁 Custom Surprise Builder — Shareable Edition');
+  console.log('🎁 Custom Surprise Builder — Shareable Edition (FIXED)');
   console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
   console.log('⏳ Links expire after the set hours (default 24h).');
 </script>
