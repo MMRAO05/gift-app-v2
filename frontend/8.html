@@ -22,6 +22,8 @@
       --text-soft: #b0c8e0;
       --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
       --radius: 24px;
+      --theme-color: #f7d875;
+      --theme-glow: rgba(247, 216, 117, 0.3);
     }
 
     * {
@@ -487,6 +489,20 @@
       background: radial-gradient(ellipse at 50% 80%, rgba(10, 30, 60, 0.6), transparent 60%);
       pointer-events: none;
     }
+    .ocean-icon {
+      font-size: 52px;
+      margin-bottom: 4px;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-8px) scale(1.05);
+      }
+    }
     .ocean-title {
       font-family: 'Playfair Display', serif;
       font-style: italic;
@@ -495,24 +511,24 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin: 0 0 4px;
+      margin: 4px 0 2px;
     }
     .ocean-sub {
       font-size: 15px;
       color: var(--text-light);
       line-height: 1.6;
       white-space: pre-wrap;
-      margin: 8px 0 16px;
+      margin: 6px 0 14px;
     }
     .ocean-music {
-      margin: 12px 0 10px;
+      margin: 10px 0 8px;
       width: 100%;
       display: flex;
       justify-content: center;
     }
     .ocean-music audio {
       width: 100%;
-      max-width: 300px;
+      max-width: 280px;
       border-radius: 30px;
       background: rgba(0, 0, 0, 0.2);
       outline: none;
@@ -521,7 +537,19 @@
       background: rgba(0, 0, 0, 0.2);
     }
     .ocean-btn {
-      margin-top: 14px;
+      margin-top: 12px;
+    }
+    .occasion-badge {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-soft);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
     }
 
     /* ────────── VIDEO RECORD ────────── */
@@ -612,6 +640,9 @@
       .ocean-title {
         font-size: 24px;
       }
+      .ocean-icon {
+        font-size: 42px;
+      }
       .video-preview {
         max-width: 280px;
       }
@@ -646,6 +677,19 @@
           <h1>Ocean of Love</h1>
         </div>
         <p class="sub">Create a sea‑spired surprise with music, video & passkey</p>
+
+        <div class="field">
+          <label>🎯 Occasion</label>
+          <select id="inpOccasion">
+            <option value="birthday">🎂 Birthday</option>
+            <option value="mothersday">💐 Mother's Day</option>
+            <option value="fathersday">🦸 Father's Day</option>
+            <option value="anniversary">💞 Anniversary</option>
+            <option value="valentine">💘 Valentine's Day</option>
+            <option value="congratulations">🎊 Congratulations</option>
+            <option value="justbecause">🎁 Just Because</option>
+          </select>
+        </div>
 
         <div class="field">
           <label>💕 Recipient's Name</label>
@@ -750,6 +794,8 @@
     <div class="screen" id="scr-ocean">
       <div class="glass ocean-card">
         <div class="wave-overlay"></div>
+        <div class="occasion-badge" id="occBadge">🎂 Birthday</div>
+        <div class="ocean-icon" id="occIcon">🎂</div>
         <div class="ocean-title" id="oceanTitle">For My Love</div>
         <div class="ocean-sub" id="oceanMessage">You are the tide that pulls my heart...</div>
         <div class="ocean-music" id="oceanMusicContainer"></div>
@@ -776,7 +822,7 @@
     <!-- ─── FINAL ─── -->
     <div class="screen" id="scr-final">
       <div class="glass final-card" style="width:100%; max-width:400px; padding:32px 24px;">
-        <div class="heart-burst">💖</div>
+        <div class="heart-burst" id="finalIcon">💖</div>
         <div class="final-head" id="finalHead">Forever Yours</div>
         <div class="final-msg" id="finalMsg">You are my ocean, my endless love. 🌊</div>
         <button class="restart-link" id="restartBtn">✨ create another one</button>
@@ -787,13 +833,97 @@
 
   <script>
     // ═══════════════════════════════════════════════════════════════
-    //  WAVE CANVAS BACKGROUND
+    //  OCCASION CONFIG
+    // ═══════════════════════════════════════════════════════════════
+    const OCCASIONS = {
+      birthday: {
+        label: 'Birthday',
+        icon: '🎂',
+        badge: '🎂 Birthday Celebration',
+        title: 'Happy Birthday!',
+        finalHead: 'Happy Birthday to You! 🎉',
+        finalMsg: 'Wishing you the most beautiful day filled with joy, love, and everything you deserve.',
+        colors: ['#ff6b6b', '#f7d875', '#ff6b9d'],
+        particles: ['🎂', '🎈', '🎉', '🎊', '⭐', '🎁'],
+        waveColors: [{ r: 255, g: 107, b: 107 }, { r: 247, g: 216, b: 117 }, { r: 255, g: 107, b: 157 }]
+      },
+      mothersday: {
+        label: "Mother's Day",
+        icon: '💐',
+        badge: '💐 Mother\'s Day',
+        title: 'Happy Mother\'s Day!',
+        finalHead: 'To the Most Amazing Mom 💐',
+        finalMsg: 'Thank you for your endless love, your strength, and your beautiful heart. You are my inspiration.',
+        colors: ['#f472b6', '#f7d875', '#a78bfa'],
+        particles: ['🌸', '🌺', '🌹', '💐', '🌷', '🌻'],
+        waveColors: [{ r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }, { r: 167, g: 139, b: 250 }]
+      },
+      fathersday: {
+        label: "Father's Day",
+        icon: '🦸',
+        badge: '🦸 Father\'s Day',
+        title: 'Happy Father\'s Day!',
+        finalHead: 'To My Hero 🦸',
+        finalMsg: 'Thank you for being my strength, my guide, and my protector. I love you more than words can say.',
+        colors: ['#3b82f6', '#60a5fa', '#f7d875'],
+        particles: ['🦸', '💪', '⭐', '🎯', '🏆', '🔵'],
+        waveColors: [{ r: 59, g: 130, b: 246 }, { r: 96, g: 165, b: 250 }, { r: 247, g: 216, b: 117 }]
+      },
+      anniversary: {
+        label: 'Anniversary',
+        icon: '💞',
+        badge: '💞 Happy Anniversary',
+        title: 'Happy Anniversary!',
+        finalHead: 'Forever and Always 💞',
+        finalMsg: 'Every day with you is a gift. Thank you for being my partner, my best friend, and my greatest love.',
+        colors: ['#ef4444', '#f472b6', '#f7d875'],
+        particles: ['💕', '💞', '❤️', '💗', '💖', '💘'],
+        waveColors: [{ r: 239, g: 68, b: 68 }, { r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }]
+      },
+      valentine: {
+        label: "Valentine's Day",
+        icon: '💘',
+        badge: '💘 Valentine\'s Day',
+        title: 'Happy Valentine\'s Day!',
+        finalHead: 'You Have My Heart 💘',
+        finalMsg: 'You are the love of my life, the beat of my heart, and the reason I believe in magic. I love you.',
+        colors: ['#ff6b6b', '#f472b6', '#f7d875'],
+        particles: ['❤️', '💗', '💖', '💕', '💘', '💝'],
+        waveColors: [{ r: 255, g: 107, b: 107 }, { r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }]
+      },
+      congratulations: {
+        label: 'Congratulations',
+        icon: '🎊',
+        badge: '🎊 Congratulations!',
+        title: 'Congratulations! 🎉',
+        finalHead: 'You Did It! 🎊',
+        finalMsg: 'So proud of you and everything you\'ve achieved. This is just the beginning of something extraordinary.',
+        colors: ['#f7d875', '#f59e0b', '#34d399'],
+        particles: ['🎊', '🎉', '✨', '⭐', '🏆', '🎈'],
+        waveColors: [{ r: 247, g: 216, b: 117 }, { r: 245, g: 158, b: 11 }, { r: 52, g: 211, b: 153 }]
+      },
+      justbecause: {
+        label: 'Just Because',
+        icon: '🎁',
+        badge: '🎁 Just Because',
+        title: 'Just Because! ✨',
+        finalHead: 'A Little Surprise 🎁',
+        finalMsg: 'Just because you deserve the world, and I wanted to remind you how truly special you are.',
+        colors: ['#a78bfa', '#f472b6', '#34d399'],
+        particles: ['🎁', '✨', '💫', '🌟', '🌈', '🎀'],
+        waveColors: [{ r: 167, g: 139, b: 250 }, { r: 244, g: 114, b: 182 }, { r: 52, g: 211, b: 153 }]
+      }
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    //  WAVE CANVAS BACKGROUND WITH OCCASION PARTICLES
     // ═══════════════════════════════════════════════════════════════
     (function initWaves() {
       const canvas = document.getElementById('waveCanvas');
       const ctx = canvas.getContext('2d');
       let w, h;
       let time = 0;
+      let occasionParticles = [];
 
       function resize() {
         w = canvas.width = window.innerWidth;
@@ -802,17 +932,44 @@
       resize();
       window.addEventListener('resize', resize);
 
-      const colors = [
+      const baseColors = [
         { r: 26, g: 74, b: 122 },
         { r: 42, g: 122, b: 154 },
         { r: 90, g: 176, b: 192 },
         { r: 180, g: 220, b: 235 },
       ];
 
+      // Occasion particle system
+      let particleEmojis = ['✨', '💖', '⭐'];
+      let particleColors = ['#f7d875', '#ff6b9d', '#7ac7d4'];
+
+      function updateParticlesForOccasion(occasionKey) {
+        const occ = OCCASIONS[occasionKey] || OCCASIONS.justbecause;
+        particleEmojis = occ.particles || ['✨', '💖', '⭐'];
+        const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
+        particleColors = colors;
+        // Reset particles
+        occasionParticles = [];
+        for (let i = 0; i < 25; i++) {
+          occasionParticles.push({
+            x: Math.random() * w,
+            y: Math.random() * h * 0.7 + h * 0.1,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: -0.2 - Math.random() * 0.3,
+            size: 14 + Math.random() * 18,
+            emoji: particleEmojis[Math.floor(Math.random() * particleEmojis.length)],
+            opacity: 0.3 + Math.random() * 0.4,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+      updateParticlesForOccasion('birthday');
+
       function drawWaves() {
         time += 0.008;
         ctx.clearRect(0, 0, w, h);
 
+        // Draw wave layers
         for (let layer = 0; layer < 4; layer++) {
           const offset = layer * 0.7 + time * 0.2;
           const baseY = h * (0.5 + layer * 0.08);
@@ -831,7 +988,7 @@
           }
 
           const grad = ctx.createLinearGradient(0, baseY - amp - 30, 0, baseY + amp + 30);
-          const c = colors[layer % colors.length];
+          const c = baseColors[layer % baseColors.length];
           const alpha = 0.3 + layer * 0.05;
           grad.addColorStop(0, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.3})`);
           grad.addColorStop(0.3, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.9})`);
@@ -855,6 +1012,7 @@
           ctx.fillStyle = grad;
           ctx.fill();
 
+          // Glow stroke
           ctx.beginPath();
           for (let i = 0; i < points.length; i++) {
             const p = points[i];
@@ -874,25 +1032,60 @@
           ctx.shadowBlur = 0;
         }
 
-        for (let i = 0; i < 20; i++) {
-          const x = (Math.sin(i * 1.3 + time * 0.5) * 0.5 + 0.5) * w;
-          const y = (Math.cos(i * 1.7 + time * 0.4) * 0.3 + 0.6) * h;
-          const size = 1 + Math.sin(time + i) * 0.5 + 0.5;
+        // ─── Draw occasion particles ───
+        occasionParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy -= 0.002;
+          p.x += Math.sin(time * 0.5 + p.phase) * 0.15;
+
+          if (p.y < -20) {
+            p.y = h + 20;
+            p.x = Math.random() * w;
+            p.vy = -0.2 - Math.random() * 0.3;
+            p.emoji = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
+          }
+          if (p.x < -20) p.x = w + 20;
+          if (p.x > w + 20) p.x = -20;
+
+          const alpha = p.opacity * (0.6 + Math.sin(time * 0.5 + p.phase) * 0.3);
+          ctx.font = `${p.size}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.globalAlpha = alpha;
+          ctx.fillText(p.emoji, p.x, p.y);
+          ctx.globalAlpha = 1;
+        });
+
+        // Add some sparkles
+        for (let i = 0; i < 12; i++) {
+          const x = (Math.sin(i * 1.7 + time * 0.6) * 0.5 + 0.5) * w;
+          const y = (Math.cos(i * 2.1 + time * 0.5) * 0.3 + 0.5) * h;
+          const size = 1.5 + Math.sin(time * 2 + i) * 0.5 + 0.5;
+          const col = particleColors[i % particleColors.length];
           ctx.beginPath();
           ctx.arc(x, y, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${0.1 + Math.sin(time*2+i)*0.05+0.05})`;
+          ctx.fillStyle = col;
+          ctx.globalAlpha = 0.2 + Math.sin(time * 1.5 + i) * 0.1 + 0.1;
           ctx.fill();
+          ctx.globalAlpha = 1;
         }
 
         requestAnimationFrame(drawWaves);
       }
       drawWaves();
+
+      // Expose update function
+      window.updateOccasionParticles = function(occKey) {
+        updateParticlesForOccasion(occKey);
+      };
     })();
 
     // ═══════════════════════════════════════════════════════════════
     //  STATE
     // ═══════════════════════════════════════════════════════════════
     const DEFAULTS = {
+      occasion: 'birthday',
       name: 'My Love',
       message: 'You are the tide that pulls my heart, the calm in every storm. 🌊',
       passkey: '',
@@ -906,20 +1099,19 @@
     let musicDataURL = '';
     let photoDataURL = '';
     let passEntry = '';
-    let passDotsEl = null;
 
     // ═══════════════════════════════════════════════════════════════
     //  DOM REFS
     // ═══════════════════════════════════════════════════════════════
     const $ = id => document.getElementById(id);
     const screens = {
-      setup: $('scr-setup'),
-      share: $('scr-share'),
-      expired: $('scr-expired'),
-      pass: $('scr-pass'),
-      ocean: $('scr-ocean'),
-      video: $('scr-video'),
-      final: $('scr-final'),
+      'scr-setup': $('scr-setup'),
+      'scr-share': $('scr-share'),
+      'scr-expired': $('scr-expired'),
+      'scr-pass': $('scr-pass'),
+      'scr-ocean': $('scr-ocean'),
+      'scr-video': $('scr-video'),
+      'scr-final': $('scr-final'),
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -927,26 +1119,33 @@
     // ═══════════════════════════════════════════════════════════════
     function nav(id) {
       Object.keys(screens).forEach(k => {
-        if (screens[k]) screens[k].classList.toggle('active', k === id);
+        if (screens[k]) {
+          screens[k].classList.toggle('active', k === id);
+        }
       });
       if (id === 'scr-pass') {
         passEntry = '';
         updatePassDots();
-        $('passError').textContent = '';
-        $('passHint').textContent = '💡 Enter the 4-digit passkey';
+        const errEl = $('passError');
+        const hintEl = $('passHint');
+        if (errEl) errEl.textContent = '';
+        if (hintEl) hintEl.textContent = '💡 Enter the 4-digit passkey';
       }
       if (id === 'scr-ocean') {
+        applyOceanUI();
         const container = $('oceanMusicContainer');
-        container.innerHTML = '';
-        if (musicDataURL) {
-          const audio = document.createElement('audio');
-          audio.src = musicDataURL;
-          audio.controls = true;
-          audio.autoplay = true;
-          audio.loop = true;
-          audio.style.width = '100%';
-          audio.style.maxWidth = '280px';
-          container.appendChild(audio);
+        if (container) {
+          container.innerHTML = '';
+          if (musicDataURL) {
+            const audio = document.createElement('audio');
+            audio.src = musicDataURL;
+            audio.controls = true;
+            audio.autoplay = true;
+            audio.loop = true;
+            audio.style.width = '100%';
+            audio.style.maxWidth = '280px';
+            container.appendChild(audio);
+          }
         }
       }
       if (id === 'scr-video') {
@@ -961,6 +1160,41 @@
           }, 300);
         }
       }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  OCCASION UI APPLY
+    // ═══════════════════════════════════════════════════════════════
+    function applyOceanUI() {
+      const occKey = state.occasion || 'birthday';
+      const occ = OCCASIONS[occKey] || OCCASIONS.justbecause;
+
+      const badge = $('occBadge');
+      const icon = $('occIcon');
+      const title = $('oceanTitle');
+      const msg = $('oceanMessage');
+      const finalHead = $('finalHead');
+      const finalMsg = $('finalMsg');
+      const finalIcon = $('finalIcon');
+
+      if (badge) badge.textContent = occ.badge;
+      if (icon) icon.textContent = occ.icon;
+      if (title) title.textContent = `${occ.title} ${state.name}!`;
+      if (msg) msg.textContent = state.message;
+      if (finalHead) finalHead.textContent = occ.finalHead;
+      if (finalMsg) finalMsg.textContent = occ.finalMsg;
+      if (finalIcon) finalIcon.textContent = occ.icon;
+
+      // Update particle system
+      if (window.updateOccasionParticles) {
+        window.updateOccasionParticles(occKey);
+      }
+
+      // Update CSS theme colors
+      const root = document.documentElement;
+      const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
+      root.style.setProperty('--theme-color', colors[0]);
+      root.style.setProperty('--theme-glow', colors[0] + '44');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1004,8 +1238,6 @@
     }
 
     function setupPasskeyHandler() {
-      passDotsEl = document.querySelectorAll('#passDots span');
-
       document.querySelectorAll('#passKeypad button').forEach(btn => {
         btn.addEventListener('click', function() {
           const key = this.dataset.k;
@@ -1015,38 +1247,38 @@
           if (key === 'clear') {
             passEntry = '';
             updatePassDots();
-            errEl.textContent = '';
-            hintEl.textContent = '💡 Enter the 4-digit passkey';
+            if (errEl) errEl.textContent = '';
+            if (hintEl) hintEl.textContent = '💡 Enter the 4-digit passkey';
             return;
           }
           if (key === 'back') {
             passEntry = passEntry.slice(0, -1);
             updatePassDots();
-            errEl.textContent = '';
+            if (errEl) errEl.textContent = '';
             return;
           }
           if (passEntry.length >= 4) return;
 
           passEntry += key;
           updatePassDots();
-          errEl.textContent = '';
+          if (errEl) errEl.textContent = '';
 
           if (passEntry.length === 4) {
-            // Check against stored passkey
             const expected = state.passkey || '';
             if (expected === '' || passEntry === expected) {
-              // Correct! Go to ocean
               setTimeout(() => nav('scr-ocean'), 300);
             } else {
-              errEl.textContent = '❌ Wrong passkey, try again';
-              hintEl.textContent = '💡 Hint: the passkey you set';
+              if (errEl) errEl.textContent = '❌ Wrong passkey, try again';
+              if (hintEl) hintEl.textContent = '💡 Hint: the passkey you set';
               const wrap = document.querySelector('#passDots');
-              wrap.style.animation = 'shakePass .4s';
-              setTimeout(() => wrap.style.animation = '', 400);
+              if (wrap) {
+                wrap.style.animation = 'shakePass .4s';
+                setTimeout(() => wrap.style.animation = '', 400);
+              }
               setTimeout(() => {
                 passEntry = '';
                 updatePassDots();
-                errEl.textContent = '';
+                if (errEl) errEl.textContent = '';
               }, 800);
             }
           }
@@ -1058,6 +1290,7 @@
     //  STATE READ / APPLY
     // ═══════════════════════════════════════════════════════════════
     function readFormIntoState() {
+      state.occasion = $('inpOccasion').value || 'birthday';
       state.name = $('inpName').value.trim() || DEFAULTS.name;
       state.message = $('inpMessage').value.trim() || DEFAULTS.message;
       state.passkey = $('inpPasskey').value.trim() || '';
@@ -1069,12 +1302,12 @@
     }
 
     function applyState() {
-      $('oceanTitle').textContent = `For ${state.name}`;
-      $('oceanMessage').textContent = state.message;
-      $('finalHead').textContent = `Forever Yours, ${state.name}`;
-      $('finalMsg').textContent = state.message || 'You are my ocean, my endless love. 🌊';
-      // Passkey hint
-      $('passHint').textContent = state.passkey ? '💡 Enter the 4-digit passkey' : '💡 No passkey set — just tap any 4 digits';
+      applyOceanUI();
+      const hintEl = $('passHint');
+      if (hintEl) {
+        hintEl.textContent = state.passkey ? '💡 Enter the 4-digit passkey' :
+          '💡 No passkey set — just tap any 4 digits';
+      }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1095,6 +1328,8 @@
       canvas.height = 360;
 
       if (videoAnimId) cancelAnimationFrame(videoAnimId);
+
+      const occ = OCCASIONS[state.occasion || 'birthday'] || OCCASIONS.justbecause;
 
       function animatePreview() {
         const time = Date.now() * 0.002;
@@ -1124,22 +1359,26 @@
           ctx.shadowBlur = 0;
         }
 
+        // Draw occasion icon
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.font = 'bold 32px "Playfair Display", serif';
+        ctx.font = '48px sans-serif';
+        ctx.fillText(occ.icon || '💖', 320, 60);
+
+        ctx.font = 'bold 28px "Playfair Display", serif';
         ctx.fillStyle = 'rgba(255,255,255,0.85)';
         ctx.shadowColor = 'rgba(0,0,0,0.6)';
         ctx.shadowBlur = 20;
         ctx.fillText(state.name || 'You', 320, 170);
 
-        ctx.font = '18px "Poppins", sans-serif';
+        ctx.font = '16px "Poppins", sans-serif';
         ctx.fillStyle = 'rgba(247,216,117,0.7)';
         ctx.fillText('✨ Ocean of Love ✨', 320, 220);
         ctx.shadowBlur = 0;
 
-        ctx.font = '28px sans-serif';
+        ctx.font = '24px sans-serif';
         ctx.fillStyle = '#ff6b9d';
-        ctx.fillText('❤️', 320, 260);
+        ctx.fillText('❤️', 320, 270);
 
         videoAnimId = requestAnimationFrame(animatePreview);
       }
@@ -1171,68 +1410,86 @@
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 3000);
-        $('recordStatus').textContent = '✅ Video downloaded!';
-        $('recordBtn').textContent = '⏺ Record Again';
+        const status = $('recordStatus');
+        if (status) status.textContent = '✅ Video downloaded!';
+        const btn = $('recordBtn');
+        if (btn) btn.textContent = '⏺ Record Again';
         recording = false;
       };
 
       mediaRecorder.start();
       recording = true;
-      $('recordStatus').textContent = '🔴 Recording... (5s)';
-      $('recordBtn').textContent = '⏹ Recording...';
+      const status = $('recordStatus');
+      if (status) status.textContent = '🔴 Recording... (5s)';
+      const btn = $('recordBtn');
+      if (btn) btn.textContent = '⏹ Recording...';
 
       setTimeout(() => {
         if (mediaRecorder && recording) {
           mediaRecorder.stop();
           recording = false;
-          $('recordBtn').textContent = '⏺ Record & Download';
+          if (btn) btn.textContent = '⏺ Record & Download';
         }
       }, 5000);
     }
 
-    $('recordBtn').addEventListener('click', function() {
-      if (recording) {
-        if (mediaRecorder) mediaRecorder.stop();
-        recording = false;
-        $('recordStatus').textContent = '⏹ Stopped recording.';
-        this.textContent = '⏺ Record & Download';
-        return;
-      }
-      startRecording();
-    });
+    const recordBtn = $('recordBtn');
+    if (recordBtn) {
+      recordBtn.addEventListener('click', function() {
+        if (recording) {
+          if (mediaRecorder) mediaRecorder.stop();
+          recording = false;
+          const status = $('recordStatus');
+          if (status) status.textContent = '⏹ Stopped recording.';
+          this.textContent = '⏺ Record & Download';
+          return;
+        }
+        startRecording();
+      });
+    }
 
-    $('skipBtn').addEventListener('click', function() {
-      if (recording) {
-        if (mediaRecorder) mediaRecorder.stop();
-        recording = false;
-        $('recordBtn').textContent = '⏺ Record & Download';
-      }
-      nav('scr-final');
-    });
+    const skipBtn = $('skipBtn');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function() {
+        if (recording) {
+          if (mediaRecorder) mediaRecorder.stop();
+          recording = false;
+          const btn = $('recordBtn');
+          if (btn) btn.textContent = '⏺ Record & Download';
+        }
+        nav('scr-final');
+      });
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  OCEAN CONTINUE → VIDEO
     // ═══════════════════════════════════════════════════════════════
-    $('oceanContinue').addEventListener('click', function() {
-      nav('scr-video');
-    });
+    const oceanContinue = $('oceanContinue');
+    if (oceanContinue) {
+      oceanContinue.addEventListener('click', function() {
+        nav('scr-video');
+      });
+    }
 
     // ═══════════════════════════════════════════════════════════════
-    //  PREVIEW (FIXED)
+    //  PREVIEW
     // ═══════════════════════════════════════════════════════════════
-    $('btnPreview').addEventListener('click', function() {
-      readFormIntoState();
-      applyState();
-      // If passkey is set, go to pass screen, else directly to ocean
-      if (state.passkey) {
-        passEntry = '';
-        updatePassDots();
-        $('passError').textContent = '';
-        nav('scr-pass');
-      } else {
-        nav('scr-ocean');
-      }
-    });
+    const previewBtn = $('btnPreview');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', function() {
+        readFormIntoState();
+        applyState();
+        if (state.passkey) {
+          passEntry = '';
+          updatePassDots();
+          const errEl = $('passError');
+          if (errEl) errEl.textContent = '';
+          nav('scr-pass');
+        } else {
+          nav('scr-ocean');
+        }
+      });
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  ENCODE / DECODE (ALL DATA IN URL)
@@ -1254,87 +1511,104 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  SHAREABLE LINK SYSTEM (ALL DATA IN URL)
+    //  SHAREABLE LINK SYSTEM
     // ═══════════════════════════════════════════════════════════════
-    function createShareableLink() {
-      readFormIntoState();
-      if (!state.name) {
-        alert('🌊 Please enter a name before creating a link!');
-        return;
-      }
-      state.createdAt = Date.now();
+    const createLinkBtn = $('btnCreateLink');
+    if (createLinkBtn) {
+      createLinkBtn.addEventListener('click', function() {
+        readFormIntoState();
+        if (!state.name) {
+          alert('🌊 Please enter a name before creating a link!');
+          return;
+        }
+        state.createdAt = Date.now();
 
-      // Store full state in localStorage for caching (optional)
-      const id = genId();
-      currentGiftId = id;
-      localStorage.setItem('ocean_' + id, JSON.stringify(state));
+        const id = genId();
+        currentGiftId = id;
+        try { localStorage.setItem('ocean_' + id, JSON.stringify(state)); } catch (e) {}
 
-      // ENCODE ALL DATA INCLUDING PHOTO & MUSIC into URL
-      const fullData = {
-        name: state.name,
-        message: state.message,
-        passkey: state.passkey,
-        photo: state.photo || '',
-        music: state.music || '',
-        expiresIn: state.expiresIn,
-        createdAt: state.createdAt,
-        id: id
-      };
-      const encoded = encodeData(fullData);
-      const shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
+        const fullData = {
+          occasion: state.occasion,
+          name: state.name,
+          message: state.message,
+          passkey: state.passkey,
+          photo: state.photo || '',
+          music: state.music || '',
+          expiresIn: state.expiresIn,
+          createdAt: state.createdAt,
+          id: id
+        };
+        const encoded = encodeData(fullData);
+        const shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
 
-      $('shareLinkInput').value = shareUrl;
-      $('expiryHint').innerText = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-        's' : '');
+        const input = $('shareLinkInput');
+        if (input) input.value = shareUrl;
+        const hint = $('expiryHint');
+        if (hint) hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+          's' : '');
 
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      nav('scr-share');
-      console.log('🌊 Ocean link created! ID:', id);
-      return id;
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        nav('scr-share');
+        console.log('🌊 Ocean link created! ID:', id);
+        return id;
+      });
     }
-
-    $('btnCreateLink').addEventListener('click', createShareableLink);
 
     // ═══════════════════════════════════════════════════════════════
     //  SHARE BUTTONS
     // ═══════════════════════════════════════════════════════════════
-    $('copyLinkBtn').addEventListener('click', function() {
-      const input = $('shareLinkInput');
-      if (!input || !input.value) return;
-      navigator.clipboard.writeText(input.value).then(() => {
-        this.textContent = '✓ Copied!';
-        this.classList.add('copied');
-        setTimeout(() => {
-          this.textContent = 'Copy';
-          this.classList.remove('copied');
-        }, 2000);
-      }).catch(() => {
-        input.select();
-        document.execCommand('copy');
-        alert('Link copied!');
+    const copyBtn = $('copyLinkBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        const input = $('shareLinkInput');
+        if (!input || !input.value) return;
+        navigator.clipboard.writeText(input.value).then(() => {
+          this.textContent = '✓ Copied!';
+          this.classList.add('copied');
+          setTimeout(() => {
+            this.textContent = 'Copy';
+            this.classList.remove('copied');
+          }, 2000);
+        }).catch(() => {
+          input.select();
+          document.execCommand('copy');
+          alert('Link copied!');
+        });
       });
-    });
+    }
 
-    $('whatsappBtn').addEventListener('click', () => {
-      const link = $('shareLinkInput')?.value || '';
-      window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link), '_blank');
-    });
+    const whatsappBtn = $('whatsappBtn');
+    if (whatsappBtn) {
+      whatsappBtn.addEventListener('click', () => {
+        const link = $('shareLinkInput')?.value || '';
+        window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link), '_blank');
+      });
+    }
 
-    $('emailBtn').addEventListener('click', () => {
-      const link = $('shareLinkInput')?.value || '';
-      window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
-    });
+    const emailBtn = $('emailBtn');
+    if (emailBtn) {
+      emailBtn.addEventListener('click', () => {
+        const link = $('shareLinkInput')?.value || '';
+        window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
+      });
+    }
 
-    $('openGiftBtn').addEventListener('click', function() {
-      window.location.reload();
-    });
+    const openGiftBtn = $('openGiftBtn');
+    if (openGiftBtn) {
+      openGiftBtn.addEventListener('click', function() {
+        window.location.reload();
+      });
+    }
 
-    $('shareBackBtn').addEventListener('click', () => {
-      nav('scr-setup');
-    });
+    const shareBackBtn = $('shareBackBtn');
+    if (shareBackBtn) {
+      shareBackBtn.addEventListener('click', () => {
+        nav('scr-setup');
+      });
+    }
 
     // ═══════════════════════════════════════════════════════════════
-    //  LOAD FROM URL (FIXED — ALL DATA IN URL)
+    //  LOAD FROM URL
     // ═══════════════════════════════════════════════════════════════
     function loadFromUrl() {
       const params = new URLSearchParams(window.location.search);
@@ -1343,24 +1617,27 @@
 
       const data = decodeData(encoded);
       if (!data) {
-        $('expiryDetail').innerText = 'The link is corrupted. Please create a new one.';
+        const detail = $('expiryDetail');
+        if (detail) detail.textContent = 'The link is corrupted. Please create a new one.';
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        $('scr-expired').classList.add('active');
+        const expired = $('scr-expired');
+        if (expired) expired.classList.add('active');
         return false;
       }
 
-      // Check expiration
       const now = Date.now();
       const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
       if (expTime > 0 && now > expTime) {
         const d = new Date(expTime);
-        $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+        const detail = $('expiryDetail');
+        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        $('scr-expired').classList.add('active');
+        const expired = $('scr-expired');
+        if (expired) expired.classList.add('active');
         return false;
       }
 
-      // Load all data from URL
+      state.occasion = data.occasion || 'birthday';
       state.name = data.name || DEFAULTS.name;
       state.message = data.message || DEFAULTS.message;
       state.passkey = data.passkey || '';
@@ -1372,20 +1649,19 @@
       photoDataURL = state.photo || '';
       currentGiftId = data.id || null;
 
-      // Cache in localStorage for faster reloads on same device
       if (data.id) {
         try { localStorage.setItem('ocean_' + data.id, JSON.stringify(state)); } catch (e) {}
       }
 
       applyState();
 
-      // Determine which screen to show
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 
       if (state.passkey) {
         passEntry = '';
         updatePassDots();
-        $('passError').textContent = '';
+        const errEl = $('passError');
+        if (errEl) errEl.textContent = '';
         nav('scr-pass');
       } else {
         nav('scr-ocean');
@@ -1399,12 +1675,10 @@
     (function init() {
       const loaded = loadFromUrl();
       if (!loaded) {
-        $('scr-setup').classList.add('active');
+        const setup = $('scr-setup');
+        if (setup) setup.classList.add('active');
       }
-      // Setup passkey handlers
       setupPasskeyHandler();
-      // Init pass dots
-      passDotsEl = document.querySelectorAll('#passDots span');
     })();
 
     // ═══════════════════════════════════════════════════════════════
@@ -1423,22 +1697,40 @@
       }
     }
 
-    $('restartBtn').addEventListener('click', goToSetup);
-    $('expiredRestartBtn').addEventListener('click', goToSetup);
+    const restartBtn = $('restartBtn');
+    if (restartBtn) restartBtn.addEventListener('click', goToSetup);
+
+    const expiredRestartBtn = $('expiredRestartBtn');
+    if (expiredRestartBtn) expiredRestartBtn.addEventListener('click', goToSetup);
 
     // ─── Legacy preset support ──────────────────────────────────
     if (window.__PRESET__) {
       state = Object.assign({}, DEFAULTS, window.__PRESET__);
       applyState();
-      if (state.passkey) { nav('scr-pass');
+      if (state.passkey) {
         passEntry = '';
-        updatePassDots(); } else { nav('scr-ocean'); }
+        updatePassDots();
+        nav('scr-pass');
+      } else {
+        nav('scr-ocean');
+      }
       delete window.__PRESET__;
     }
 
-    console.log('🌊 Ocean of Love — Style 7 (FULLY FIXED) loaded!');
+    // ─── Occasion change preview in setup ──────────────────────────
+    const occSelect = $('inpOccasion');
+    if (occSelect) {
+      occSelect.addEventListener('change', function() {
+        // Preview the occasion icon in the brand area
+        const occ = OCCASIONS[this.value] || OCCASIONS.justbecause;
+        const iconEl = document.querySelector('.brand-icon');
+        if (iconEl) iconEl.textContent = occ.icon;
+      });
+    }
+
+    console.log('🌊 Ocean of Love — Style 7 (with Occasion Themes) loaded!');
+    console.log('🎯 Choose an occasion to change the theme and animations.');
     console.log('🔗 ALL data encoded in URL — works across any device.');
-    console.log('🔑 Passkey feature added.');
   </script>
 </body>
 </html>
