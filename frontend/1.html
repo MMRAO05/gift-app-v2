@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ────────── same as before, plus new share/expired screens ────────── */
         :root {
             --bg-deep: #0a0e27;
             --bg-mid: #171c42;
@@ -40,8 +41,6 @@
             overflow: hidden;
             background: radial-gradient(ellipse at 50% -10%, #2a2f6b 0%, var(--bg-deep) 60%);
         }
-
-        /* starfield */
         .star {
             position: absolute;
             background: #fff;
@@ -58,7 +57,6 @@
                 opacity: .9;
             }
         }
-
         .screen {
             position: absolute;
             inset: 0;
@@ -77,7 +75,6 @@
             opacity: 1;
             pointer-events: auto;
         }
-
         .glass {
             background: var(--glass);
             backdrop-filter: blur(14px);
@@ -85,8 +82,7 @@
             border: 1px solid var(--glass-brd);
             border-radius: 20px;
         }
-
-        /* ---------- Setup ---------- */
+        /* ── setup ── */
         #scr-setup {
             background: linear-gradient(180deg, #11153a, #0a0e27);
         }
@@ -214,9 +210,18 @@
             color: #7f7aa0;
             line-height: 1.5;
         }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-group .primary-btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            padding: 12px 8px;
+        }
 
-        /* ---------- Envelope ---------- */
-        #envelope-screen {}
+        /* ── envelope, hero, cake, note, pass, unlock, photos, letter ── */
         .eyebrow {
             font-size: 12px;
             letter-spacing: .16em;
@@ -301,7 +306,7 @@
             letter-spacing: .03em;
         }
 
-        /* ---------- Hero (occasion animation) ---------- */
+        /* hero */
         #hero-screen {
             overflow: hidden;
         }
@@ -396,7 +401,7 @@
             z-index: 2;
         }
 
-        /* ---------- Cake screen ---------- */
+        /* cake */
         #cake-screen {
             overflow: hidden;
         }
@@ -560,8 +565,7 @@
             pointer-events: none;
         }
 
-        /* ---------- Note ---------- */
-        #note-screen {}
+        /* note */
         .note-card {
             padding: 36px 28px;
             max-width: 380px;
@@ -591,8 +595,7 @@
             padding-bottom: 2px;
         }
 
-        /* ---------- Passkey ---------- */
-        #pass-screen {}
+        /* pass */
         .lock-icon {
             font-size: 30px;
             margin-bottom: 6px;
@@ -658,8 +661,7 @@
             font-size: 11.5px;
         }
 
-        /* ---------- Unlock ---------- */
-        #unlock-screen {}
+        /* unlock */
         .unlock-check {
             font-size: 44px;
             margin-bottom: 8px;
@@ -672,8 +674,7 @@
             color: var(--gold);
         }
 
-        /* ---------- Photos ---------- */
-        #photo-screen {}
+        /* photos */
         .photo-title {
             font-family: 'Playfair Display', serif;
             font-style: italic;
@@ -738,8 +739,7 @@
             padding-bottom: 2px;
         }
 
-        /* ---------- Letter ---------- */
-        #letter-screen {}
+        /* letter */
         .letter-paper {
             max-width: 400px;
             width: 100%;
@@ -781,7 +781,127 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* ---------- Scrollbar ---------- */
+        /* ── Share screen ── */
+        .share-card .success-icon {
+            font-size: 54px;
+            margin-bottom: 8px;
+            animation: bounceIn 0.8s ease;
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .share-link-box {
+            background: rgba(0, 0, 0, .3);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid var(--glass-brd);
+            margin-bottom: 18px;
+        }
+        .share-link-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: var(--text-light);
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            min-width: 0;
+        }
+        .copy-btn {
+            background: var(--gold);
+            color: #1a1a2e;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .copy-btn:hover {
+            background: #f1c40f;
+        }
+        .copy-btn.copied {
+            background: #27ae60;
+            color: #fff;
+        }
+        .share-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .share-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 80px;
+        }
+        .share-actions button:hover {
+            transform: translateY(-2px);
+        }
+        .share-actions .whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+        .share-actions .whatsapp:hover {
+            background: #1da851;
+        }
+        .share-actions .email {
+            background: #EA4335;
+            color: #fff;
+        }
+        .share-actions .email:hover {
+            background: #c62828;
+        }
+        .share-actions .open-gift {
+            background: linear-gradient(135deg, var(--pink), #ff6b81);
+            color: #fff;
+            flex: 1.5;
+        }
+        .expiry-hint {
+            margin-top: 14px;
+            font-size: 11px;
+            color: #7f7aa0;
+        }
+
+        /* ── Expired screen ── */
+        .expired-card .icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+        .expired-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #e74c3c;
+            margin: 0;
+            font-size: 28px;
+        }
+        .expired-card p {
+            color: var(--text-soft);
+            font-size: 14px;
+            margin: 12px 0 24px;
+            line-height: 1.6;
+        }
+
+        /* ── scrollbar ── */
         .setup-card::-webkit-scrollbar,
         .photo-grid::-webkit-scrollbar,
         .letter-paper::-webkit-scrollbar {
@@ -799,7 +919,7 @@
             border-radius: 8px;
         }
 
-        /* ---------- Responsive ---------- */
+        /* ── responsive ── */
         @media(max-width:440px) {
             .setup-card {
                 padding: 20px 16px 24px;
@@ -892,6 +1012,10 @@
             .photo-grid {
                 gap: 12px;
             }
+            .btn-group {
+                flex-direction: column;
+                gap: 6px;
+            }
         }
         @media(max-width:360px) {
             .keypad {
@@ -948,11 +1072,11 @@
     <div id="stage">
         <div id="starfield"></div>
 
-        <!-- SETUP -->
+        <!-- ─── SETUP ─── -->
         <div class="screen active" id="scr-setup">
             <div class="setup-card glass">
                 <h1>Create a Celebration</h1>
-                <p class="sub">Pick the occasion, add your words, and send a surprise that opens like magic.</p>
+                <p class="sub">Pick the occasion, add your words, and generate a shareable link.</p>
 
                 <div class="field">
                     <label for="herName">Their name</label>
@@ -989,7 +1113,7 @@
                 </div>
 
                 <div class="field">
-                    <label for="shortLine">Short note (shown early, keep it brief)</label>
+                    <label for="shortLine">Short note (shown early)</label>
                     <input type="text" id="shortLine" placeholder="Every year with you feels like a gift." maxlength="90" value="Every year with you feels like a gift.">
                 </div>
 
@@ -1005,6 +1129,12 @@
                 </div>
 
                 <div class="field">
+                    <label for="expiresIn">⏳ Link expires in (hours)</label>
+                    <input type="number" id="expiresIn" min="1" max="720" value="24">
+                    <small>After this many hours, the link will expire. (1–720 hours)</small>
+                </div>
+
+                <div class="field">
                     <label>Photos (optional)</label>
                     <div class="photo-row">
                         <label class="upload-btn" for="photoInput">+ Add photos</label>
@@ -1013,13 +1143,45 @@
                     </div>
                 </div>
 
-                <button class="primary-btn" id="startBtn">Preview It 👀</button>
-                <button class="primary-btn gold" id="exportBtn">📤 Export File to Send</button>
-                <div class="ghost-hint">"Preview" plays it here. "Export" downloads a ready file — send that one, it opens straight to the celebration with no form. Everything stays on this device.</div>
+                <div class="btn-group">
+                    <button class="primary-btn" id="previewBtn">👀 Preview</button>
+                    <button class="primary-btn gold" id="createLinkBtn">🔗 Create Link</button>
+                </div>
+                <div class="ghost-hint">"Preview" plays it here. "Create Link" generates a shareable URL with expiration.</div>
             </div>
         </div>
 
-        <!-- ENVELOPE -->
+        <!-- ─── SHARE SCREEN ─── -->
+        <div class="screen" id="scr-share">
+            <div class="glass" style="width:100%; max-width:440px; padding:30px 24px;">
+                <div class="success-icon">🎉</div>
+                <h2 style="font-family:'Playfair Display', serif; color:var(--gold); margin:0; font-size:26px;">Celebration Ready!</h2>
+                <p class="sub" style="color:var(--text-soft); font-size:13px; margin:4px 0 20px;">Copy this link and share it with your special person.</p>
+                <div class="share-link-box">
+                    <input type="text" id="shareLinkInput" readonly>
+                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
+                </div>
+                <div class="share-actions">
+                    <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+                    <button class="email" id="emailBtn">✉️ Email</button>
+                    <button class="open-gift" id="openGiftBtn">Open Celebration →</button>
+                </div>
+                <div class="expiry-hint" id="expiryHint"></div>
+            </div>
+        </div>
+
+        <!-- ─── EXPIRED SCREEN ─── -->
+        <div class="screen" id="scr-expired">
+            <div class="glass expired-card" style="width:100%; max-width:400px; padding:40px 30px;">
+                <div class="icon">⏳</div>
+                <h2>Link Expired</h2>
+                <p>This celebration link has expired. The magic was meant to be cherished in the moment.</p>
+                <button class="primary-btn" id="expiredRestartBtn">Create a New Celebration</button>
+                <div style="margin-top:12px; font-size:11px; color:#7f7aa0;" id="expiryDetail"></div>
+            </div>
+        </div>
+
+        <!-- ─── ENVELOPE ─── -->
         <div class="screen" id="envelope-screen">
             <div class="eyebrow">A little celebration for</div>
             <div class="env-name" id="toNameDisplay">someone special</div>
@@ -1032,7 +1194,7 @@
             <div class="tap-caption">(tap the envelope to open)</div>
         </div>
 
-        <!-- HERO / occasion animation -->
+        <!-- ─── HERO ─── -->
         <div class="screen" id="hero-screen">
             <div id="heroParticles"></div>
             <div class="hero-icon" id="heroIcon">🎉</div>
@@ -1042,7 +1204,7 @@
             <button class="hero-continue" id="toNoteBtn">Continue →</button>
         </div>
 
-        <!-- CAKE (birthday / anniversary only) -->
+        <!-- ─── CAKE ─── -->
         <div class="screen" id="cake-screen">
             <div id="cakeConfetti"></div>
             <div class="eyebrow" id="cakeEyebrow">Make a wish</div>
@@ -1064,7 +1226,7 @@
             <button class="hero-continue" id="toNoteFromCakeBtn" style="display:none;">Continue →</button>
         </div>
 
-        <!-- NOTE -->
+        <!-- ─── NOTE ─── -->
         <div class="screen" id="note-screen">
             <div class="note-card glass">
                 <div class="note-line" id="noteLine">Every year with <span class="hl">you</span> feels like a gift.</div>
@@ -1072,7 +1234,7 @@
             </div>
         </div>
 
-        <!-- PASSKEY -->
+        <!-- ─── PASSKEY ─── -->
         <div class="screen" id="pass-screen">
             <div class="lock-icon">🔒</div>
             <div class="pass-title">Enter Passkey</div>
@@ -1087,28 +1249,29 @@
             <div class="pass-hint">Hint: the passkey set when creating this</div>
         </div>
 
-        <!-- UNLOCK -->
+        <!-- ─── UNLOCK ─── -->
         <div class="screen" id="unlock-screen">
             <div class="unlock-check">✨</div>
             <div class="unlock-mark">Unlocked</div>
         </div>
 
-        <!-- PHOTOS -->
+        <!-- ─── PHOTOS ─── -->
         <div class="screen" id="photo-screen">
             <div class="photo-title">Little moments</div>
             <div class="photo-grid" id="photoGrid"></div>
             <button class="photo-continue" id="toLetterBtn">Read the letter →</button>
         </div>
 
-        <!-- LETTER -->
+        <!-- ─── LETTER ─── -->
         <div class="screen" id="letter-screen">
             <div class="letter-paper glass">
                 <div class="salutation" id="letterSalutation">Dear friend,</div>
                 <div class="body-text" id="letterBody"></div>
                 <div class="sign" id="letterSign">— with love</div>
-           </div>
-           <!-- <button class="restart-btn" id="restartBtn">⟳ Start over</button>
-        </div>--> 
+          <!--</div>
+            <button class="restart-btn" id="restartBtn">⟳ Start over</button>
+        </div> -->  
+
     </div>
 
     <script>
@@ -1133,6 +1296,8 @@
         const $ = id => document.getElementById(id);
         const screens = {
             setup: $('scr-setup'),
+            share: $('scr-share'),
+            expired: $('scr-expired'),
             envelope: $('envelope-screen'),
             hero: $('hero-screen'),
             cake: $('cake-screen'),
@@ -1152,6 +1317,8 @@
             letterText: '',
             passkey: '1122',
             photos: [],
+            expiresIn: 24,
+            createdAt: 0,
             currentScreen: 'setup',
             passEntry: '',
             envelopeOpened: false,
@@ -1160,6 +1327,8 @@
             unlocked: false,
             heroDone: false,
         };
+        let currentGiftId = null;
+        const photoData = [];
 
         // ─── Helpers ───
         function showScreen(id) {
@@ -1216,13 +1385,14 @@
             return map[occ] || `For you, ${name}. ✨`;
         }
 
-        // ─── Setup ───
+        // ─── Setup UI ───
         const nameInput = $('herName');
         const occSelect = $('occasion');
         const purposeSelect = $('purpose');
         const shortInput = $('shortLine');
         const letterInput = $('letterText');
         const passInput = $('passkey');
+        const expiresInput = $('expiresIn');
         const photoInput = $('photoInput');
         const photoPreview = $('photoPreview');
 
@@ -1238,7 +1408,6 @@
         if (occSelect) occSelect.addEventListener('change', autoShort);
 
         // Photo upload
-        const photoData = [];
         if (photoInput) {
             photoInput.addEventListener('change', function(e) {
                 const files = Array.from(e.target.files);
@@ -1279,95 +1448,297 @@
             });
         }
 
-        // ─── Start / Preview ───
-        const startBtn = $('startBtn');
-        if (startBtn) {
-            startBtn.addEventListener('click', function() {
-                const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
-                const occ = occSelect ? occSelect.value : 'birthday';
-                const purpose = purposeSelect ? purposeSelect.value : 'celebration';
-                const short = shortInput ? shortInput.value.trim() || getDefaultShort(occ, name) : getDefaultShort(occ,
-                    name);
-                const letter = letterInput ? letterInput.value.trim() || 'Wishing you all the best.' :
-                    'Wishing you all the best.';
-                const pass = passInput ? passInput.value.trim() || '1122' : '1122';
+        // ─── Read form ───
+        function readFormIntoState() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            const purpose = purposeSelect ? purposeSelect.value : 'celebration';
+            const short = shortInput ? shortInput.value.trim() || getDefaultShort(occ, name) : getDefaultShort(occ, name);
+            const letter = letterInput ? letterInput.value.trim() || 'Wishing you all the best.' : 'Wishing you all the best.';
+            const pass = passInput ? passInput.value.trim() || '1122' : '1122';
+            const expires = parseInt(expiresInput ? expiresInput.value : '24') || 24;
+            state.name = name;
+            state.occasion = occ;
+            state.purpose = purpose;
+            state.shortLine = short;
+            state.letterText = letter;
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            state.photos = [...photoData];
+            state.expiresIn = Math.min(Math.max(expires, 1), 720);
+            state.createdAt = Date.now();
+        }
 
-                state.name = name;
-                state.occasion = occ;
-                state.purpose = purpose;
-                state.shortLine = short;
-                state.letterText = letter;
-                state.passkey = pass.padStart(4, '0').slice(0, 4);
-                state.photos = [...photoData];
-                state.passEntry = '';
+        // ─── Apply state to UI ───
+        function applyStateToUI() {
+            const nameDisplay = $('toNameDisplay');
+            if (nameDisplay) nameDisplay.textContent = state.name;
+            const envelopeEl = document.querySelector('.envelope');
+            if (envelopeEl) envelopeEl.classList.remove('opened');
+
+            const heroIcon = $('heroIcon');
+            if (heroIcon) heroIcon.textContent = getOccasionIcon(state.occasion);
+            const heroTitle = $('heroTitle');
+            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
+            const heroSub = $('heroSub');
+            if (heroSub) heroSub.textContent = state.shortLine;
+            const purposeBadge = $('purposeBadge');
+            if (purposeBadge) purposeBadge.textContent = getPurposeLabel(state.purpose);
+
+            const noteLine = $('noteLine');
+            if (noteLine) {
+                const noteText = state.shortLine.replace(/\[name\]/g, state.name);
+                noteLine.innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
+                    (m) => `<span class="hl">${m}</span>`);
+                if (!noteLine.querySelector('.hl')) {
+                    noteLine.innerHTML = noteText.replace(/\n/g, '<br>') +
+                        ` <span class="hl">${state.name}</span>`;
+                }
+            }
+
+            const letterSalutation = $('letterSalutation');
+            if (letterSalutation) letterSalutation.textContent = `Dear ${state.name},`;
+            const letterBody = $('letterBody');
+            if (letterBody) letterBody.textContent = state.letterText;
+            const letterSign = $('letterSign');
+            if (letterSign) letterSign.textContent = `— with love`;
+
+            renderPhotos();
+
+            const flame = $('flame');
+            if (flame) flame.classList.remove('blown');
+            const smoke = $('smoke');
+            if (smoke) smoke.classList.remove('active');
+            const cutMark = $('cutMark');
+            if (cutMark) cutMark.classList.remove('show');
+            const slicePiece = $('slicePiece');
+            if (slicePiece) slicePiece.classList.remove('out');
+            const knife = $('knife');
+            if (knife) {
+                knife.classList.add('disabled');
+                knife.classList.remove('swipe');
+            }
+            const cakeInstruction = $('cakeInstruction');
+            if (cakeInstruction) cakeInstruction.textContent = 'Blow the candle 🕯️ — or tap the flame';
+            const toNoteFromCakeBtn = $('toNoteFromCakeBtn');
+            if (toNoteFromCakeBtn) toNoteFromCakeBtn.style.display = 'none';
+            const cakeConfetti = $('cakeConfetti');
+            if (cakeConfetti) cakeConfetti.innerHTML = '';
+
+            state.passEntry = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+            const passError = $('passError');
+            if (passError) passError.textContent = '';
+        }
+
+        function renderPhotos() {
+            const grid = $('photoGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            if (!state.photos || state.photos.length === 0) {
+                grid.innerHTML =
+                    '<div class="no-photos">No photos added — but that\'s okay. The words matter most.</div>';
+                return;
+            }
+            state.photos.forEach((url) => {
+                const div = document.createElement('div');
+                div.className = 'taped';
+                const rot = (Math.random() - 0.5) * 8;
+                div.style.setProperty('--r', rot + 'deg');
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'memory';
+                div.appendChild(img);
+                grid.appendChild(div);
+            });
+        }
+
+        // ─── PREVIEW ───
+        const previewBtn = $('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                readFormIntoState();
+                applyStateToUI();
+                showScreen('envelope');
+            });
+        }
+
+        // ─── ID generation ───
+        function genId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ─── CREATE SHAREABLE LINK ───
+        const createLinkBtn = $('createLinkBtn');
+        if (createLinkBtn) {
+            createLinkBtn.addEventListener('click', function() {
+                readFormIntoState();
+                if (!state.letterText) {
+                    alert('💌 Please write a message before creating a link!');
+                    return;
+                }
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && state.photos.length === 0) {
+                    const evt = new Event('change');
+                    photoInput.dispatchEvent(evt);
+                    setTimeout(() => doCreateLink(), 200);
+                    return;
+                }
+                doCreateLink();
+            });
+        }
+
+        function doCreateLink() {
+            state.createdAt = Date.now();
+            const id = genId();
+            currentGiftId = id;
+            const dataToStore = JSON.parse(JSON.stringify(state));
+            localStorage.setItem('celebration_v4_' + id, JSON.stringify(dataToStore));
+
+            let allIds = JSON.parse(localStorage.getItem('celebration_v4_ids') || '[]');
+            if (!allIds.includes(id)) allIds.push(id);
+            localStorage.setItem('celebration_v4_ids', JSON.stringify(allIds));
+
+            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
+            const input = $('shareLinkInput');
+            if (input) input.value = shareUrl;
+            const hint = $('expiryHint');
+            if (hint) hint.textContent = '🔗 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                's' : '');
+
+            showScreen('share');
+            console.log('✅ Celebration link created! ID:', id);
+        }
+
+        // ─── SHARE BUTTONS ───
+        const copyBtn = $('copyLinkBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const input = $('shareLinkInput');
+                if (!input || !input.value) return;
+                navigator.clipboard.writeText(input.value).then(() => {
+                    this.textContent = '✓ Copied!';
+                    this.classList.add('copied');
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    input.select();
+                    document.execCommand('copy');
+                    alert('Link copied!');
+                });
+            });
+        }
+
+        const whatsappBtn = $('whatsappBtn');
+        if (whatsappBtn) {
+            whatsappBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.open('https://wa.me/?text=' + encodeURIComponent('✨ A special celebration for you! ' + link),
+                    '_blank');
+            });
+        }
+
+        const emailBtn = $('emailBtn');
+        if (emailBtn) {
+            emailBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.location.href = 'mailto:?subject=A Celebration For You&body=✨ A special celebration for you! ' +
+                    link;
+            });
+        }
+
+        const openGiftBtn = $('openGiftBtn');
+        if (openGiftBtn) {
+            openGiftBtn.addEventListener('click', function() {
+                const id = currentGiftId;
+                if (id) loadFromId(id);
+            });
+        }
+
+        // ─── LOAD FROM ID (FIXED) ───
+        function loadFromId(id) {
+            console.log('🔍 Loading gift with ID:', id);
+            const raw = localStorage.getItem('celebration_v4_' + id);
+            if (!raw) {
+                console.warn('⚠️ Gift not found in localStorage:', id);
+                // Try old format for backward compatibility
+                const oldRaw = localStorage.getItem('celebration_v3_' + id);
+                if (oldRaw) {
+                    console.log('🔄 Found in v3 format, converting...');
+                    try {
+                        const data = JSON.parse(oldRaw);
+                        // Migrate to v4
+                        localStorage.setItem('celebration_v4_' + id, oldRaw);
+                        return loadFromId(id);
+                    } catch (e) {
+                        console.error('Migration failed:', e);
+                    }
+                }
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'This celebration no longer exists.';
+                showScreen('expired');
+                return false;
+            }
+
+            try {
+                const data = JSON.parse(raw);
+                const now = Date.now();
+                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                if (expTime > 0 && now > expTime) {
+                    const d = new Date(expTime);
+                    const detail = $('expiryDetail');
+                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                    showScreen('expired');
+                    return false;
+                }
+
+                // Apply data to state
+                state.name = data.name || 'you';
+                state.occasion = data.occasion || 'birthday';
+                state.purpose = data.purpose || 'celebration';
+                state.shortLine = data.shortLine || getDefaultShort(state.occasion, state.name);
+                state.letterText = data.letterText || 'Wishing you all the best.';
+                state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+                state.photos = data.photos || [];
+                state.expiresIn = data.expiresIn || 24;
+                state.createdAt = data.createdAt || Date.now();
                 state.envelopeOpened = false;
                 state.candleBlown = false;
                 state.cakeSliced = false;
                 state.unlocked = false;
                 state.heroDone = false;
+                state.passEntry = '';
 
-                const nameDisplay = $('toNameDisplay');
-                if (nameDisplay) nameDisplay.textContent = name;
+                currentGiftId = id;
+                applyStateToUI();
+
                 const envelopeEl = document.querySelector('.envelope');
                 if (envelopeEl) envelopeEl.classList.remove('opened');
 
-                const heroIcon = $('heroIcon');
-                if (heroIcon) heroIcon.textContent = getOccasionIcon(occ);
-                const heroTitle = $('heroTitle');
-                if (heroTitle) heroTitle.textContent = getOccasionTitle(occ);
-                const heroSub = $('heroSub');
-                if (heroSub) heroSub.textContent = short;
-                const purposeBadge = $('purposeBadge');
-                if (purposeBadge) purposeBadge.textContent = getPurposeLabel(purpose);
-
-                const noteLine = $('noteLine');
-                if (noteLine) {
-                    const noteText = short.replace(/\[name\]/g, name);
-                    noteLine.innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
-                        (m) => `<span class="hl">${m}</span>`);
-                    if (!noteLine.querySelector('.hl')) {
-                        noteLine.innerHTML = noteText.replace(/\n/g, '<br>') +
-                            ` <span class="hl">${name}</span>`;
-                    }
-                }
-
-                const letterSalutation = $('letterSalutation');
-                if (letterSalutation) letterSalutation.textContent = `Dear ${name},`;
-                const letterBody = $('letterBody');
-                if (letterBody) letterBody.textContent = letter;
-                const letterSign = $('letterSign');
-                if (letterSign) letterSign.textContent = `— with love`;
-
-                state.passkey = pass.padStart(4, '0').slice(0, 4);
-                const passError = $('passError');
-                if (passError) passError.textContent = '';
                 document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
-
-                renderPhotos();
-
-                const flame = $('flame');
-                if (flame) flame.classList.remove('blown');
-                const smoke = $('smoke');
-                if (smoke) smoke.classList.remove('active');
-                const cutMark = $('cutMark');
-                if (cutMark) cutMark.classList.remove('show');
-                const slicePiece = $('slicePiece');
-                if (slicePiece) slicePiece.classList.remove('out');
-                const knife = $('knife');
-                if (knife) {
-                    knife.classList.add('disabled');
-                    knife.classList.remove('swipe');
-                }
-                const cakeInstruction = $('cakeInstruction');
-                if (cakeInstruction) cakeInstruction.textContent = 'Blow the candle 🕯️ — or tap the flame';
-                const toNoteFromCakeBtn = $('toNoteFromCakeBtn');
-                if (toNoteFromCakeBtn) toNoteFromCakeBtn.style.display = 'none';
-                const cakeConfetti = $('cakeConfetti');
-                if (cakeConfetti) cakeConfetti.innerHTML = '';
-
                 showScreen('envelope');
-            });
+                console.log('✅ Gift loaded successfully!');
+                return true;
+
+            } catch (e) {
+                console.error('❌ Error loading gift:', e);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'Error loading celebration.';
+                showScreen('expired');
+                return false;
+            }
         }
+
+        // ─── LOAD FROM URL ───
+        (function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                console.log('🔗 Loading from URL with ID:', id);
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                loadFromId(id);
+            }
+        })();
 
         // ─── Envelope ───
         const envelope = document.querySelector('.envelope');
@@ -1579,6 +1950,9 @@
                                 } else {
                                     showScreen('letter');
                                 }
+                                if (typeof confetti !== 'undefined') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                                }
                             }, 1200);
                         }, 300);
                     } else {
@@ -1593,29 +1967,7 @@
             });
         });
 
-        // ─── Photos ───
-        function renderPhotos() {
-            const grid = $('photoGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            if (!state.photos || state.photos.length === 0) {
-                grid.innerHTML =
-                    '<div class="no-photos">No photos added — but that\'s okay. The words matter most.</div>';
-                return;
-            }
-            state.photos.forEach((url) => {
-                const div = document.createElement('div');
-                div.className = 'taped';
-                const rot = (Math.random() - 0.5) * 8;
-                div.style.setProperty('--r', rot + 'deg');
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = 'memory';
-                div.appendChild(img);
-                grid.appendChild(div);
-            });
-        }
-
+        // ─── Photo continue ───
         const toLetterBtn = $('toLetterBtn');
         if (toLetterBtn) {
             toLetterBtn.addEventListener('click', function() {
@@ -1624,177 +1976,23 @@
         }
 
         // ─── Restart ───
+        function goToSetup() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            showScreen('setup');
+            if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', window.location.pathname);
+            }
+        }
+
         const restartBtn = $('restartBtn');
         if (restartBtn) {
-            restartBtn.addEventListener('click', function() {
-                showScreen('setup');
-            });
+            restartBtn.addEventListener('click', goToSetup);
         }
 
-        // ─── EXPORT FIX ───
-        const exportBtn = $('exportBtn');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', function() {
-                const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
-                const occ = occSelect ? occSelect.value : 'birthday';
-                const purpose = purposeSelect ? purposeSelect.value : 'celebration';
-                const short = shortInput ? shortInput.value.trim() || getDefaultShort(occ, name) : getDefaultShort(occ,
-                    name);
-                const letter = letterInput ? letterInput.value.trim() || 'Wishing you all the best.' :
-                    'Wishing you all the best.';
-                const pass = passInput ? passInput.value.trim() || '1122' : '1122';
-
-                const data = {
-                    name,
-                    occasion: occ,
-                    purpose,
-                    shortLine: short,
-                    letterText: letter,
-                    passkey: pass.padStart(4, '0').slice(0, 4),
-                    photos: photoData,
-                };
-
-                const htmlContent = generateStandaloneHTML(data);
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `celebration_${name.replace(/\s/g,'_')}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
+        const expiredRestartBtn = $('expiredRestartBtn');
+        if (expiredRestartBtn) {
+            expiredRestartBtn.addEventListener('click', goToSetup);
         }
-
-        function generateStandaloneHTML(data) {
-            const doctype = '<!DOCTYPE html>\n';
-            const html = document.documentElement.outerHTML;
-
-            // 🔹 FIX: Hide the setup screen (id="scr-setup") and include data
-            const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${JSON.stringify(data).replace(/</g, '\\u003c')};<\/script>`;
-
-            const bodyIdx = html.indexOf('<body');
-            if (bodyIdx === -1) return doctype + html;
-            const closeIdx = html.indexOf('>', bodyIdx) + 1;
-            const modifiedHtml = doctype + html.slice(0, closeIdx) + injected + html.slice(closeIdx);
-
-            return modifiedHtml;
-        }
-
-        // ─── Import data (for standalone HTML) ───
-        function loadFromData(data) {
-            state.name = data.name || 'you';
-            state.occasion = data.occasion || 'birthday';
-            state.purpose = data.purpose || 'celebration';
-            state.shortLine = data.shortLine || getDefaultShort(state.occasion, state.name);
-            state.letterText = data.letterText || 'Wishing you all the best.';
-            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
-            state.photos = data.photos || [];
-            state.passEntry = '';
-            state.envelopeOpened = false;
-            state.candleBlown = false;
-            state.cakeSliced = false;
-            state.unlocked = false;
-            state.heroDone = false;
-
-            if (nameInput) nameInput.value = state.name;
-            if (occSelect) occSelect.value = state.occasion;
-            if (purposeSelect) purposeSelect.value = state.purpose;
-            if (shortInput) shortInput.value = state.shortLine;
-            if (letterInput) letterInput.value = state.letterText;
-            if (passInput) passInput.value = state.passkey;
-
-            photoData.length = 0;
-            state.photos.forEach(url => photoData.push(url));
-            renderPhotoPreviews();
-
-            const nameDisplay = $('toNameDisplay');
-            if (nameDisplay) nameDisplay.textContent = state.name;
-            const envelopeEl = document.querySelector('.envelope');
-            if (envelopeEl) envelopeEl.classList.remove('opened');
-
-            const heroIcon = $('heroIcon');
-            if (heroIcon) heroIcon.textContent = getOccasionIcon(state.occasion);
-            const heroTitle = $('heroTitle');
-            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
-            const heroSub = $('heroSub');
-            if (heroSub) heroSub.textContent = state.shortLine;
-            const purposeBadge = $('purposeBadge');
-            if (purposeBadge) purposeBadge.textContent = getPurposeLabel(state.purpose);
-
-            const noteLine = $('noteLine');
-            if (noteLine) {
-                const noteText = state.shortLine.replace(/\[name\]/g, state.name);
-                noteLine.innerHTML = noteText.replace(/\n/g, '<br>').replace(/\b(you)\b/gi,
-                    (m) => `<span class="hl">${m}</span>`);
-                if (!noteLine.querySelector('.hl')) {
-                    noteLine.innerHTML = noteText.replace(/\n/g, '<br>') +
-                        ` <span class="hl">${state.name}</span>`;
-                }
-            }
-
-            const letterSalutation = $('letterSalutation');
-            if (letterSalutation) letterSalutation.textContent = `Dear ${state.name},`;
-            const letterBody = $('letterBody');
-            if (letterBody) letterBody.textContent = state.letterText;
-            const letterSign = $('letterSign');
-            if (letterSign) letterSign.textContent = `— with love`;
-
-            renderPhotos();
-
-            const flameEl = $('flame');
-            if (flameEl) flameEl.classList.remove('blown');
-            const smokeEl = $('smoke');
-            if (smokeEl) smokeEl.classList.remove('active');
-            const cutMarkEl = $('cutMark');
-            if (cutMarkEl) cutMarkEl.classList.remove('show');
-            const slicePieceEl = $('slicePiece');
-            if (slicePieceEl) slicePieceEl.classList.remove('out');
-            const knifeEl = $('knife');
-            if (knifeEl) {
-                knifeEl.classList.add('disabled');
-                knifeEl.classList.remove('swipe');
-            }
-            const cakeInstr = $('cakeInstruction');
-            if (cakeInstr) cakeInstr.textContent = 'Blow the candle 🕯️ — or tap the flame';
-            const toNoteBtn = $('toNoteFromCakeBtn');
-            if (toNoteBtn) toNoteBtn.style.display = 'none';
-            const confettiContainer = $('cakeConfetti');
-            if (confettiContainer) confettiContainer.innerHTML = '';
-
-            showScreen('envelope');
-        }
-
-        // ─── Auto-load if window.__PRESET__ is defined (exported file) ───
-        if (window.__PRESET__) {
-            // Ensure DOM is ready
-            (function() {
-                if (document.readyState === 'complete') {
-                    loadFromData(window.__PRESET__);
-                } else {
-                    window.addEventListener('load', function() {
-                        loadFromData(window.__PRESET__);
-                    });
-                }
-            })();
-        }
-
-        // ─── Handle import via URL param ───
-        const params = new URLSearchParams(window.location.search);
-        const importData = params.get('data');
-        if (importData) {
-            try {
-                const parsed = JSON.parse(decodeURIComponent(importData));
-                setTimeout(() => loadFromData(parsed), 300);
-            } catch (e) { /* ignore */ }
-        }
-
-        // ─── Initial setup ───
-        const today = new Date().toISOString().split('T')[0];
-        const occDate = $('occDate');
-        if (occDate) occDate.value = today;
-        setTimeout(autoShort, 100);
 
         // ─── Keyboard support for passkey ───
         document.addEventListener('keydown', function(e) {
@@ -1814,6 +2012,9 @@
                                     showScreen('photo');
                                 } else {
                                     showScreen('letter');
+                                }
+                                if (typeof confetti !== 'undefined') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
                                 }
                             }, 1200);
                         }, 300);
@@ -1839,9 +2040,32 @@
             }
         });
 
-        console.log('✨ A Little Celebration ready!');
-        console.log('📤 Use "Export" to save a shareable HTML file.');
-        console.log('📥 Drop a .json file on the page to import.');
+        // ─── Auto-set date ───
+        const today = new Date().toISOString().split('T')[0];
+        const occDate = $('occDate');
+        if (occDate) occDate.value = today;
+        setTimeout(autoShort, 100);
+
+        // ─── Legacy preset support ───
+        if (window.__PRESET__) {
+            const data = window.__PRESET__;
+            state.name = data.name || 'you';
+            state.occasion = data.occasion || 'birthday';
+            state.purpose = data.purpose || 'celebration';
+            state.shortLine = data.shortLine || getDefaultShort(state.occasion, state.name);
+            state.letterText = data.letterText || 'Wishing you all the best.';
+            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+            state.photos = data.photos || [];
+            state.expiresIn = data.expiresIn || 24;
+            state.createdAt = data.createdAt || Date.now();
+            delete window.__PRESET__;
+            applyStateToUI();
+            showScreen('envelope');
+        }
+
+        console.log('✨ A Little Celebration – with shareable link system (FIXED)!');
+        console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
+        console.log('📌 Data stored in localStorage with key: celebration_v4_*');
     </script>
 </body>
 </html>

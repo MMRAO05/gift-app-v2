@@ -1,1 +1,5 @@
 SB08PK01112304
+
+
+cd D:\gift-app-new\backend
+node server.js

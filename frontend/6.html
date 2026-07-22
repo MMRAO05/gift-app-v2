@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <title>Nexus · Smart Celebration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
+    </script>
+    <style>
+        /* ────────── ROOT ────────── */
+        :root {
+            --bg-primary: #080c18;
+            --bg-secondary: #0d1428;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-hover: rgba(255, 255, 255, 0.06);
+            --cyan: #22d3ee;
+            --cyan-glow: rgba(34, 211, 238, 0.15);
+            --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.15);
+            --purple: #a78bfa;
+            --purple-glow: rgba(167, 139, 250, 0.12);
+            --pink: #f472b6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #475569;
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* ────────── STAGE ────────── */
+        #stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+
+        /* ────────── PARTICLE NETWORK ────────── */
+        #networkCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* ── subtle radial glow ── */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+            opacity: 0.15;
+        }
+        .bg-glow.g1 {
+            width: 500px;
+            height: 500px;
+            top: -10%;
+            right: -10%;
+            background: var(--purple);
+        }
+        .bg-glow.g2 {
+            width: 400px;
+            height: 400px;
+            bottom: -10%;
+            left: -10%;
+            background: var(--cyan);
+        }
+
+        /* ────────── SCREENS ────────── */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.94) translateY(16px);
+            z-index: 2;
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        /* ────────── SETUP ────────── */
+        #scr-setup {
+            background: radial-gradient(ellipse at 50% 30%, #0d1428 0%, var(--bg-primary) 80%);
+        }
+        .setup-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 32px 28px 36px;
+            max-height: 92vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.06) transparent;
+        }
+        .setup-card::-webkit-scrollbar {
+            width: 3px;
+        }
+        .setup-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+        }
+
+        .nexus-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2px;
+        }
+        .nexus-logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--cyan), var(--purple), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+        .nexus-logo::after {
+            content: '◆';
+            font-size: 12px;
+            margin-left: 6px;
+            color: var(--cyan);
+            opacity: 0.5;
+        }
+        .nexus-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+        .setup-card .tagline {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0 0 24px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .field {
+            text-align: left;
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .field label .label-icon {
+            font-size: 12px;
+        }
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px var(--cyan-glow);
+        }
+        .field select option {
+            background: #0d1428;
+            color: #fff;
+        }
+        .field textarea {
+            min-height: 72px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .field small {
+            display: block;
+            margin-top: 4px;
+            color: var(--text-tertiary);
+            font-size: 10.5px;
+        }
+        .row2 {
+            display: flex;
+            gap: 10px;
+        }
+        .row2 .field {
+            flex: 1;
+        }
+
+        .smart-wish {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(34, 211, 238, 0.04);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(34, 211, 238, 0.06);
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .smart-wish .spark {
+            font-size: 14px;
+        }
+        .smart-wish .suggest-btn {
+            background: none;
+            border: none;
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .smart-wish .suggest-btn:hover {
+            background: rgba(34, 211, 238, 0.08);
+        }
+
+        .photo-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .photo-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .upload-btn {
+            border: 1.5px dashed rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.02);
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .upload-btn:hover {
+            border-color: var(--cyan);
+            color: var(--text-primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+            letter-spacing: 0.02em;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+            pointer-events: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan), #0ea5e9);
+            color: #080c18;
+            box-shadow: 0 8px 32px var(--cyan-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--cyan-glow);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #d97706);
+            color: #080c18;
+            box-shadow: 0 8px 32px var(--gold-glow);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--gold-glow);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            padding: 12px 8px;
+        }
+
+        .ghost-hint {
+            margin-top: 14px;
+            font-size: 10.5px;
+            color: var(--text-tertiary);
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+        }
+
+        /* ────────── SHARE ────────── */
+        .share-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 32px 26px;
+        }
+        .share-card .success-icon {
+            font-size: 44px;
+            margin-bottom: 2px;
+            animation: bounceIn 0.8s ease;
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.12);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .share-link-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 18px;
+        }
+        .share-link-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            min-width: 0;
+        }
+        .copy-btn {
+            background: var(--gold);
+            color: #080c18;
+            border: none;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .copy-btn:hover {
+            background: #fcd34d;
+        }
+        .copy-btn.copied {
+            background: #34d399;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .share-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 80px;
+            font-family: 'Inter', sans-serif;
+        }
+        .share-actions button:hover {
+            transform: translateY(-2px);
+        }
+        .share-actions .whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+        .share-actions .whatsapp:hover {
+            background: #1da851;
+        }
+        .share-actions .email {
+            background: #EA4335;
+            color: #fff;
+        }
+        .share-actions .email:hover {
+            background: #c62828;
+        }
+        .share-actions .open-gift {
+            background: linear-gradient(135deg, var(--cyan), #0ea5e9);
+            color: #080c18;
+            flex: 1.5;
+        }
+        .expiry-hint {
+            margin-top: 14px;
+            font-size: 10.5px;
+            color: var(--text-tertiary);
+        }
+
+        /* ────────── EXPIRED ────────── */
+        .expired-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+        }
+        .expired-card .icon {
+            font-size: 50px;
+            margin-bottom: 4px;
+        }
+        .expired-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--pink);
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .expired-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 12px 0 24px;
+            line-height: 1.6;
+        }
+
+        /* ────────── SMART CARD (envelope) ────────── */
+        .smart-card-container {
+            perspective: 1000px;
+            width: 200px;
+            height: 260px;
+            cursor: pointer;
+            margin: 8px 0 18px;
+        }
+        .smart-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .smart-card:hover:not(.opened) {
+            transform: rotateY(6deg) rotateX(3deg);
+        }
+        .smart-card.opened {
+            transform: rotateY(180deg) scale(0.7);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-md);
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card-front {
+            background: linear-gradient(160deg, rgba(34, 211, 238, 0.06), rgba(167, 139, 250, 0.08));
+            border: 1px solid rgba(34, 211, 238, 0.08);
+            box-shadow: 0 0 60px rgba(34, 211, 238, 0.03);
+            backdrop-filter: blur(4px);
+        }
+        .card-front .card-icon {
+            font-size: 44px;
+            margin-bottom: 8px;
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.15));
+            }
+            50% {
+                filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.3));
+            }
+        }
+        .card-front .card-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        .card-front .card-shine {
+            position: absolute;
+            top: 8%;
+            left: 15%;
+            width: 40%;
+            height: 25%;
+            background: radial-gradient(ellipse, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(160deg, rgba(167, 139, 250, 0.06), rgba(251, 191, 36, 0.04));
+            border: 1px solid rgba(167, 139, 250, 0.06);
+            font-size: 48px;
+            backdrop-filter: blur(4px);
+        }
+
+        .env-name {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 28px;
+            margin: 0 0 2px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+        .tap-caption {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            letter-spacing: 0.06em;
+            font-weight: 300;
+        }
+
+        /* ────────── HERO ────────── */
+        .hero-hologram {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 30%, rgba(34, 211, 238, 0.08), rgba(167, 139, 250, 0.04), transparent 70%);
+            border: 1px solid rgba(34, 211, 238, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            animation: floatHolo 4s ease-in-out infinite;
+        }
+        .hero-hologram::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px solid rgba(167, 139, 250, 0.04);
+            animation: holoPulse 3s ease-in-out infinite;
+        }
+        @keyframes holoPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 0.08;
+            }
+        }
+        @keyframes floatHolo {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 30px;
+            margin: 12px 0 4px;
+            background: linear-gradient(135deg, var(--cyan), var(--purple), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 360px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        .hero-continue {
+            margin-top: 24px;
+            border: none;
+            background: none;
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--cyan);
+            padding-bottom: 2px;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-continue:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        /* ────────── WISH ────────── */
+        .wish-card {
+            padding: 34px 28px;
+            max-width: 380px;
+        }
+        .wish-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        .wish-text .hl {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+        .continue-btn {
+            margin-top: 26px;
+            border: none;
+            background: none;
+            color: var(--cyan);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--cyan);
+            padding-bottom: 2px;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .continue-btn:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        /* ────────── PASSKEY ────────── */
+        .pass-dots {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+        .pass-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--cyan);
+            transition: var(--transition);
+        }
+        .pass-dots span.filled {
+            background: var(--cyan);
+            box-shadow: 0 0 20px var(--cyan-glow);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            gap: 12px;
+        }
+        .keypad button {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+        }
+        .keypad button:active {
+            background: rgba(34, 211, 238, 0.08);
+            transform: scale(0.92);
+        }
+        .keypad button.clear {
+            font-size: 10px;
+            color: var(--pink);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .pass-error {
+            margin-top: 14px;
+            color: var(--pink);
+            font-size: 12px;
+            min-height: 18px;
+            font-weight: 500;
+        }
+        .pass-hint {
+            margin-top: 12px;
+            color: var(--text-tertiary);
+            font-size: 11px;
+        }
+
+        /* ────────── UNLOCK ────────── */
+        .unlock-icon {
+            font-size: 44px;
+            animation: bounceIn 0.7s ease;
+        }
+        .unlock-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        /* ────────── PHOTOS ────────── */
+        .photo-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 26px;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+        .photo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            max-width: 400px;
+            max-height: 48vh;
+            overflow-y: auto;
+            padding: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(34, 211, 238, 0.15) transparent;
+        }
+        .photo-grid::-webkit-scrollbar {
+            width: 3px;
+        }
+        .photo-grid::-webkit-scrollbar-thumb {
+            background: rgba(34, 211, 238, 0.15);
+            border-radius: 8px;
+        }
+        .polaroid-nexus {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 6px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 110px;
+            transform: rotate(var(--r, 0deg));
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            transition: transform 0.3s;
+        }
+        .polaroid-nexus:hover {
+            transform: rotate(0deg) scale(1.04) !important;
+        }
+        .polaroid-nexus img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .no-photos {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* ────────── LETTER ────────── */
+        .letter-paper {
+            max-width: 400px;
+            width: 100%;
+            padding: 32px 26px;
+            max-height: 56vh;
+            overflow-y: auto;
+            text-align: left;
+            border: 1px solid rgba(34, 211, 238, 0.04);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(34, 211, 238, 0.08) transparent;
+        }
+        .letter-paper::-webkit-scrollbar {
+            width: 3px;
+        }
+        .letter-paper::-webkit-scrollbar-thumb {
+            background: rgba(34, 211, 238, 0.08);
+            border-radius: 8px;
+        }
+        .letter-paper .salutation {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: var(--cyan);
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .letter-paper .body-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            font-weight: 300;
+        }
+        .letter-paper .sign {
+            margin-top: 22px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 22px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .restart-btn {
+            margin-top: 18px;
+            border: none;
+            background: none;
+            color: var(--text-tertiary);
+            font-size: 11.5px;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+        }
+        .restart-btn:hover {
+            color: var(--cyan);
+        }
+
+        /* ────────── RESPONSIVE ────────── */
+        @media(max-width:440px) {
+            .setup-card {
+                padding: 20px 16px 24px;
+            }
+            .setup-card .nexus-logo {
+                font-size: 22px;
+            }
+            .row2 {
+                flex-direction: column;
+                gap: 0;
+            }
+            .keypad {
+                gap: 10px;
+            }
+            .keypad button {
+                width: 54px;
+                height: 54px;
+                font-size: 16px;
+            }
+            .wish-text {
+                font-size: 19px;
+            }
+            .hero-title {
+                font-size: 24px;
+            }
+            .hero-hologram {
+                width: 110px;
+                height: 110px;
+                font-size: 42px;
+            }
+            .smart-card-container {
+                width: 160px;
+                height: 210px;
+            }
+            .card-front .card-icon {
+                font-size: 36px;
+            }
+            .env-name {
+                font-size: 22px;
+            }
+            .polaroid-nexus {
+                width: 90px;
+            }
+            .polaroid-nexus img {
+                height: 82px;
+            }
+            .letter-paper .body-text {
+                font-size: 14px;
+            }
+            .btn-group {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .smart-wish {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        @media(max-width:360px) {
+            .keypad {
+                gap: 8px;
+            }
+            .keypad button {
+                width: 46px;
+                height: 46px;
+                font-size: 14px;
+            }
+            .pass-dots {
+                gap: 8px;
+            }
+            .pass-dots span {
+                width: 10px;
+                height: 10px;
+            }
+            .smart-card-container {
+                width: 130px;
+                height: 175px;
+            }
+            .hero-hologram {
+                width: 90px;
+                height: 90px;
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stage">
+        <!-- ─── BACKGROUND GLOWS ─── -->
+        <div class="bg-glow g1"></div>
+        <div class="bg-glow g2"></div>
+
+        <!-- ─── PARTICLE NETWORK ─── -->
+        <canvas id="networkCanvas"></canvas>
+
+        <!-- ─── SETUP ─── -->
+        <div class="screen active" id="scr-setup">
+            <div class="setup-card glass">
+                <div class="nexus-brand">
+                    <span class="nexus-logo">Nexus</span>
+                    <span class="nexus-badge">v6</span>
+                </div>
+                <p class="tagline">Intelligent celebration · designed for the discerning</p>
+
+                <div class="field">
+                    <label><span class="label-icon">◆</span> Recipient</label>
+                    <input type="text" id="inpName" placeholder="e.g. Sophia" maxlength="30" value="MM Rao" />
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label><span class="label-icon">◈</span> Occasion</label>
+                        <select id="inpOccasion">
+                            <option value="birthday">Birthday</option>
+                            <option value="anniversary">Anniversary</option>
+                            <option value="valentine">Valentine's Day</option>
+                            <option value="mothersday">Mother's Day</option>
+                            <option value="fathersday">Father's Day</option>
+                            <option value="justbecause">Just Because</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><span class="label-icon">◈</span> Date</label>
+                        <input type="date" id="inpDate" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label><span class="label-icon">✦</span> Short Wish</label>
+                    <div class="smart-wish">
+                        <span class="spark">⚡</span>
+                        <span style="flex:1;font-weight:300;" id="wishPreview">You are the nexus of my world.</span>
+                        <button class="suggest-btn" id="suggestWishBtn">↻ suggest</button>
+                    </div>
+                    <input type="text" id="inpWish" placeholder="A short, meaningful wish..." maxlength="100" value="You are the nexus of my world." />
+                </div>
+
+                <div class="field">
+                    <label><span class="label-icon">◈</span> Letter</label>
+                    <textarea id="inpLetter" rows="3">I wanted to create something that reflects the depth of my appreciation for you. You are the axis around which my world turns — the calm in every storm, the light in every shadow. Thank you for being you.</textarea>
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label><span class="label-icon">◈</span> Passkey</label>
+                        <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122" />
+                    </div>
+                    <div class="field">
+                        <label><span class="label-icon">◈</span> Expires (hrs)</label>
+                        <input type="number" id="inpExpires" min="1" max="720" value="24" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label><span class="label-icon">◈</span> Photos</label>
+                    <div class="photo-row">
+                        <label class="upload-btn" for="photoInput">+ Add</label>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" />
+                        <div id="photoPreview" class="photo-row"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="previewBtn">◈ Preview</button>
+                    <button class="btn btn-gold" id="createLinkBtn">◆ Create Link</button>
+                </div>
+                <div class="ghost-hint">Preview locally · Create Link generates a unique, time‑limited URL.</div>
+            </div>
+        </div>
+
+        <!-- ─── SHARE ─── -->
+        <div class="screen" id="scr-share">
+            <div class="glass share-card">
+                <div class="success-icon">◆</div>
+                <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0;font-size:24px;font-weight:600;">Nexus Active</h2>
+                <p style="color:var(--text-secondary);font-size:13px;margin:4px 0 20px;">Share this intelligent link with your special person.</p>
+                <div class="share-link-box">
+                    <input type="text" id="shareLinkInput" readonly />
+                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
+                </div>
+                <div class="share-actions">
+                    <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+                    <button class="email" id="emailBtn">✉️ Email</button>
+                    <button class="open-gift" id="openGiftBtn">Open ◆</button>
+                </div>
+                <div class="expiry-hint" id="expiryHint"></div>
+            </div>
+        </div>
+
+        <!-- ─── EXPIRED ─── -->
+        <div class="screen" id="scr-expired">
+            <div class="glass expired-card">
+                <div class="icon">◆</div>
+                <h2>Nexus Expired</h2>
+                <p>This intelligent link has reached its end. The magic was designed to be experienced in the moment.</p>
+                <button class="btn btn-primary" id="expiredRestartBtn">Create New Nexus</button>
+                <div style="margin-top:12px;font-size:11px;color:var(--text-tertiary);" id="expiryDetail"></div>
+            </div>
+        </div>
+
+        <!-- ─── SMART CARD ─── -->
+        <div class="screen" id="scr-card">
+            <div style="font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:2px;">A nexus for</div>
+            <div class="env-name" id="displayName">someone special</div>
+            <div class="smart-card-container" id="cardTap">
+                <div class="smart-card" id="smartCard">
+                    <div class="card-face card-front">
+                        <div class="card-icon">◆</div>
+                        <div class="card-label">tap to activate</div>
+                        <div class="card-shine"></div>
+                    </div>
+                    <div class="card-face card-back">✦</div>
+                </div>
+            </div>
+            <div class="tap-caption">(tap the card to activate the nexus)</div>
+        </div>
+
+        <!-- ─── HERO ─── -->
+        <div class="screen" id="scr-hero">
+            <div class="hero-hologram" id="heroOrb">◆</div>
+            <div class="hero-title" id="heroTitle">Nexus Rising</div>
+            <div class="hero-sub" id="heroSub"></div>
+            <button class="hero-continue" id="toWishBtn">Continue →</button>
+        </div>
+
+        <!-- ─── WISH ─── -->
+        <div class="screen" id="scr-wish">
+            <div class="wish-card glass">
+                <div class="wish-text" id="wishLine">You are the <span class="hl">nexus</span> of my world.</div>
+                <button class="continue-btn" id="toPassBtn">Continue →</button>
+            </div>
+        </div>
+
+        <!-- ─── PASSKEY ─── -->
+        <div class="screen" id="scr-pass">
+            <div style="font-size:26px;">◈</div>
+            <h3 style="font-family:'Playfair Display',serif;margin:6px 0 4px;color:var(--cyan);font-weight:600;">Enter Nexus Key</h3>
+            <p style="font-size:11.5px;color:var(--text-secondary);margin:0 0 6px;">4-digit passkey</p>
+            <div class="pass-dots" id="passDots"><span></span><span></span><span></span><span></span></div>
+            <div class="keypad" id="keypad">
+                <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+                <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+                <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+                <button class="clear" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
+            </div>
+            <div class="pass-error" id="passError"></div>
+            <div class="pass-hint">Hint: the passkey you set</div>
+        </div>
+
+        <!-- ─── UNLOCK ─── -->
+        <div class="screen" id="scr-unlock">
+            <div class="unlock-icon">✦</div>
+            <div class="unlock-text">Nexus Unlocked</div>
+        </div>
+
+        <!-- ─── PHOTOS ─── -->
+        <div class="screen" id="scr-photos">
+            <div class="photo-title">Nexus Memories</div>
+            <div class="photo-grid" id="photoGrid"></div>
+            <button class="continue-btn" id="toLetterBtn" style="color:var(--gold);border-color:var(--gold);">Read Letter →</button>
+        </div>
+
+        <!-- ─── LETTER ─── -->
+        <div class="screen" id="scr-letter">
+            <div class="letter-paper glass">
+                <div class="salutation" id="letterSalutation">Dear friend,</div>
+                <div class="body-text" id="letterBody"></div>
+                <div class="sign" id="letterSign">— with all my light</div>
+          <!-- </div>
+            <button class="restart-btn" id="restartBtn">⟳ Create another nexus</button>
+        </div> --> 
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  PARTICLE NETWORK (Intelligent constellation)
+        // ═══════════════════════════════════════════════════════════════
+        (function initNetwork() {
+            const canvas = document.getElementById('networkCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            const particles = [];
+            const NUM = 75;
+            const CONNECTION_DIST = 150;
+            let mouse = { x: null, y: null };
+            let mouseActive = false;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.vx = (Math.random() - 0.5) * 0.25;
+                    this.vy = (Math.random() - 0.5) * 0.25;
+                    this.radius = 1.2 + Math.random() * 1.5;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > w) this.vx *= -1;
+                    if (this.y < 0 || this.y > h) this.vy *= -1;
+                }
+                draw() {
+                    const distToMouse = mouseActive && mouse.x !== null ? Math.hypot(this.x - mouse.x, this.y - mouse.y) :
+                        9999;
+                    const brightness = distToMouse < 120 ? 1 - (distToMouse / 120) * 0.5 : 0.2;
+                    const alpha = 0.2 + brightness * 0.4;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < NUM; i++) particles.push(new Particle());
+
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < CONNECTION_DIST) {
+                            const alpha = 1 - (dist / CONNECTION_DIST);
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(34, 211, 238, ${alpha * 0.12})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                // Mouse connections
+                if (mouseActive && mouse.x !== null) {
+                    for (const p of particles) {
+                        const dx = p.x - mouse.x;
+                        const dy = p.y - mouse.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < CONNECTION_DIST * 1.2) {
+                            const alpha = 1 - (dist / (CONNECTION_DIST * 1.2));
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.strokeStyle = `rgba(251, 191, 36, ${alpha * 0.08})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                for (const p of particles) p.update();
+                for (const p of particles) p.draw();
+                drawConnections();
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouseActive = true;
+            });
+            document.addEventListener('mouseleave', () => {
+                mouseActive = false;
+                mouse.x = null;
+                mouse.y = null;
+            });
+            document.addEventListener('touchmove', e => {
+                const t = e.touches[0];
+                if (t) {
+                    mouse.x = t.clientX;
+                    mouse.y = t.clientY;
+                    mouseActive = true;
+                }
+            });
+            document.addEventListener('touchend', () => {
+                mouseActive = false;
+                mouse.x = null;
+                mouse.y = null;
+            });
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        //  DOM REFS
+        // ═══════════════════════════════════════════════════════════════
+        const $ = id => document.getElementById(id);
+        const screens = {
+            setup: $('scr-setup'),
+            share: $('scr-share'),
+            expired: $('scr-expired'),
+            card: $('scr-card'),
+            hero: $('scr-hero'),
+            wish: $('scr-wish'),
+            pass: $('scr-pass'),
+            unlock: $('scr-unlock'),
+            photos: $('scr-photos'),
+            letter: $('scr-letter'),
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        //  STATE
+        // ═══════════════════════════════════════════════════════════════
+        const state = {
+            name: '',
+            occasion: 'birthday',
+            wish: '',
+            letter: '',
+            passkey: '1122',
+            photos: [],
+            expiresIn: 24,
+            createdAt: 0,
+            currentScreen: 'setup',
+            passEntry: '',
+            cardOpened: false,
+            unlocked: false,
+        };
+        let currentGiftId = null;
+        const photoData = [];
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SMART WISH SUGGESTIONS
+        // ═══════════════════════════════════════════════════════════════
+        const wishSuggestions = {
+            birthday: [
+                'Every year with you is a gift I treasure.',
+                'You make every day feel like a celebration.',
+                'Another year, another reason to admire you.',
+                'The world is brighter because you\'re in it.'
+            ],
+            anniversary: [
+                'You are my forever and always.',
+                'Every day with you is a new beginning.',
+                'Together we are unstoppable.',
+                'You are the love story I will never stop telling.'
+            ],
+            valentine: [
+                'You are the heartbeat of my soul.',
+                'My love for you grows stronger every day.',
+                'You are the poetry my heart writes.',
+                'With you, every moment is magical.'
+            ],
+            mothersday: [
+                'Thank you for being my guiding light.',
+                'You are the heart of our family.',
+                'Your love has shaped who I am.',
+                'You are the most beautiful soul I know.'
+            ],
+            fathersday: [
+                'You are my hero and my inspiration.',
+                'Thank you for your endless strength.',
+                'Your wisdom guides me every day.',
+                'You are the pillar of our family.'
+            ],
+            justbecause: [
+                'You are the reason I smile.',
+                'Just because you are extraordinary.',
+                'You make the ordinary feel magical.',
+                'I am grateful for you, always.'
+            ]
+        };
+
+        function getSuggestions(occ) {
+            return wishSuggestions[occ] || wishSuggestions.justbecause;
+        }
+
+        // ─── Auto-wish ───
+        const nameInput = $('inpName');
+        const occSelect = $('inpOccasion');
+        const wishInput = $('inpWish');
+        const wishPreview = $('wishPreview');
+
+        function updateWishPreview() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const wish = wishInput ? wishInput.value.trim() || 'You are the nexus of my world.' : 'You are the nexus of my world.';
+            const preview = wish.replace(/\[name\]/g, name);
+            if (wishPreview) wishPreview.textContent = preview;
+        }
+
+        function autoWish() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            const suggestions = getSuggestions(occ);
+            const defaultWish = suggestions[0] || 'You are the nexus of my world.';
+            if (wishInput && (!wishInput.value || wishInput.value === '')) {
+                wishInput.value = defaultWish;
+            }
+            updateWishPreview();
+        }
+
+        if (nameInput) nameInput.addEventListener('input', updateWishPreview);
+        if (wishInput) wishInput.addEventListener('input', updateWishPreview);
+        if (occSelect) occSelect.addEventListener('change', autoWish);
+
+        // ─── Suggest button ───
+        const suggestBtn = $('suggestWishBtn');
+        if (suggestBtn) {
+            let suggestionIndex = 0;
+            suggestBtn.addEventListener('click', function() {
+                const occ = occSelect ? occSelect.value : 'birthday';
+                const suggestions = getSuggestions(occ);
+                const current = wishInput ? wishInput.value.trim() : '';
+                const filtered = suggestions.filter(s => s !== current);
+                if (filtered.length === 0) {
+                    // Cycle through all
+                    const idx = (suggestionIndex % suggestions.length);
+                    wishInput.value = suggestions[idx];
+                    suggestionIndex++;
+                } else {
+                    const idx = (suggestionIndex % filtered.length);
+                    wishInput.value = filtered[idx];
+                    suggestionIndex++;
+                }
+                updateWishPreview();
+                // Add a subtle animation
+                wishInput.style.transition = 'all 0.2s';
+                wishInput.style.borderColor = 'var(--gold)';
+                setTimeout(() => { wishInput.style.borderColor = ''; }, 400);
+            });
+        }
+
+        // ─── Photos ───
+        const photoInput = $('photoInput');
+        const photoPreview = $('photoPreview');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        photoData.push(ev.target.result);
+                        renderPhotoPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                photoInput.value = '';
+            });
+        }
+
+        function renderPhotoPreviews() {
+            if (!photoPreview) return;
+            photoPreview.innerHTML = '';
+            photoData.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.className = 'photo-thumb';
+                img.src = url;
+                img.alt = 'photo';
+                const wrap = document.createElement('span');
+                wrap.style.position = 'relative';
+                wrap.appendChild(img);
+                const del = document.createElement('span');
+                del.textContent = '✕';
+                del.style.cssText =
+                    'position:absolute;top:-6px;right:-6px;background:#f472b6;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.1);';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    photoData.splice(i, 1);
+                    renderPhotoPreviews();
+                });
+                wrap.appendChild(del);
+                photoPreview.appendChild(wrap);
+            });
+        }
+
+        // ─── Read form ───
+        function readFormIntoState() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            const wish = wishInput ? wishInput.value.trim() || 'You are the nexus of my world.' :
+                'You are the nexus of my world.';
+            const letter = $('inpLetter') ? $('inpLetter').value.trim() || 'You are amazing.' :
+            'You are amazing.';
+            const pass = $('inpPasskey') ? $('inpPasskey').value.trim() || '1122' : '1122';
+            const expires = parseInt($('inpExpires') ? $('inpExpires').value : '24') || 24;
+            state.name = name;
+            state.occasion = occ;
+            state.wish = wish;
+            state.letter = letter;
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            state.photos = [...photoData];
+            state.expiresIn = Math.min(Math.max(expires, 1), 720);
+            state.createdAt = Date.now();
+        }
+
+        // ─── Apply state to UI ───
+        function applyStateToUI() {
+            const nameDisplay = $('displayName');
+            if (nameDisplay) nameDisplay.textContent = state.name;
+
+            const card = $('smartCard');
+            if (card) card.classList.remove('opened');
+
+            const heroOrb = $('heroOrb');
+            if (heroOrb) heroOrb.textContent = getOccasionIcon(state.occasion);
+            const heroTitle = $('heroTitle');
+            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
+            const heroSub = $('heroSub');
+            if (heroSub) heroSub.textContent = state.wish;
+
+            const wishLine = $('wishLine');
+            if (wishLine) {
+                const text = state.wish.replace(/\[name\]/g, state.name);
+                wishLine.innerHTML = text.replace(/\b(you|your)\b/gi, (m) => `<span class="hl">${m}</span>`);
+                if (!wishLine.querySelector('.hl')) {
+                    wishLine.innerHTML = text + ` <span class="hl">${state.name}</span>`;
+                }
+            }
+
+            const salutation = $('letterSalutation');
+            if (salutation) salutation.textContent = `Dear ${state.name},`;
+            const body = $('letterBody');
+            if (body) body.textContent = state.letter;
+            const sign = $('letterSign');
+            if (sign) sign.textContent = '— with all my light';
+
+            // Photos
+            const grid = $('photoGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                if (!state.photos || state.photos.length === 0) {
+                    grid.innerHTML =
+                    '<div class="no-photos">Even without photos, the connection remains.</div>';
+                } else {
+                    state.photos.forEach((url) => {
+                        const div = document.createElement('div');
+                        div.className = 'polaroid-nexus';
+                        const rot = (Math.random() - 0.5) * 8;
+                        div.style.setProperty('--r', rot + 'deg');
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'memory';
+                        div.appendChild(img);
+                        grid.appendChild(div);
+                    });
+                }
+            }
+
+            // Reset pass
+            state.passEntry = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+            const passError = $('passError');
+            if (passError) passError.textContent = '';
+        }
+
+        function getOccasionIcon(occ) {
+            const map = {
+                birthday: '🎂',
+                anniversary: '💞',
+                valentine: '💘',
+                mothersday: '💐',
+                fathersday: '🦸',
+                justbecause: '✦'
+            };
+            return map[occ] || '◆';
+        }
+
+        function getOccasionTitle(occ) {
+            const map = {
+                birthday: 'Happy Birthday',
+                anniversary: 'Happy Anniversary',
+                valentine: 'Happy Valentine\'s Day',
+                mothersday: 'Happy Mother\'s Day',
+                fathersday: 'Happy Father\'s Day',
+                justbecause: 'Nexus Rising'
+            };
+            return map[occ] || 'Celebration';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PREVIEW
+        // ═══════════════════════════════════════════════════════════════
+        const previewBtn = $('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                readFormIntoState();
+                applyStateToUI();
+                showScreen('card');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  NAVIGATION
+        // ═══════════════════════════════════════════════════════════════
+        function showScreen(id) {
+            Object.keys(screens).forEach(k => {
+                if (screens[k]) screens[k].classList.toggle('active', k === id);
+            });
+            state.currentScreen = id;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  ID GENERATION
+        // ═══════════════════════════════════════════════════════════════
+        function genId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  CREATE SHAREABLE LINK
+        // ═══════════════════════════════════════════════════════════════
+        const createLinkBtn = $('createLinkBtn');
+        if (createLinkBtn) {
+            createLinkBtn.addEventListener('click', function() {
+                readFormIntoState();
+                if (!state.letter) {
+                    alert('◈ Please write a message before creating a link!');
+                    return;
+                }
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && state.photos.length === 0) {
+                    const evt = new Event('change');
+                    photoInput.dispatchEvent(evt);
+                    setTimeout(() => doCreateLink(), 200);
+                    return;
+                }
+                doCreateLink();
+            });
+        }
+
+        function doCreateLink() {
+            state.createdAt = Date.now();
+            const id = genId();
+            currentGiftId = id;
+            const dataToStore = JSON.parse(JSON.stringify(state));
+            localStorage.setItem('nexus_v6_' + id, JSON.stringify(dataToStore));
+
+            let allIds = JSON.parse(localStorage.getItem('nexus_v6_ids') || '[]');
+            if (!allIds.includes(id)) allIds.push(id);
+            localStorage.setItem('nexus_v6_ids', JSON.stringify(allIds));
+
+            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
+            const input = $('shareLinkInput');
+            if (input) input.value = shareUrl;
+            const hint = $('expiryHint');
+            if (hint) hint.textContent = '◆ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                's' : '');
+
+            showScreen('share');
+            console.log('◆ Nexus link created! ID:', id);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SHARE BUTTONS
+        // ═══════════════════════════════════════════════════════════════
+        const copyBtn = $('copyLinkBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const input = $('shareLinkInput');
+                if (!input || !input.value) return;
+                navigator.clipboard.writeText(input.value).then(() => {
+                    this.textContent = '✓ Copied!';
+                    this.classList.add('copied');
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    input.select();
+                    document.execCommand('copy');
+                    alert('Link copied!');
+                });
+            });
+        }
+
+        const whatsappBtn = $('whatsappBtn');
+        if (whatsappBtn) {
+            whatsappBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.open('https://wa.me/?text=' + encodeURIComponent('◆ A Nexus celebration for you! ' + link),
+                    '_blank');
+            });
+        }
+
+        const emailBtn = $('emailBtn');
+        if (emailBtn) {
+            emailBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.location.href = 'mailto:?subject=A Nexus Celebration&body=◆ A Nexus celebration for you! ' +
+                    link;
+            });
+        }
+
+        const openGiftBtn = $('openGiftBtn');
+        if (openGiftBtn) {
+            openGiftBtn.addEventListener('click', function() {
+                const id = currentGiftId;
+                if (id) loadFromId(id);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  LOAD FROM ID (FIXED)
+        // ═══════════════════════════════════════════════════════════════
+        function loadFromId(id) {
+            console.log('🔍 Loading Nexus gift with ID:', id);
+
+            // Try v6 first
+            let raw = localStorage.getItem('nexus_v6_' + id);
+
+            // Fallback to v5 if not found
+            if (!raw) {
+                console.log('🔄 Trying v5 format...');
+                raw = localStorage.getItem('nexus_v5_' + id);
+                if (raw) {
+                    console.log('✅ Found in v5 format, converting to v6');
+                    localStorage.setItem('nexus_v6_' + id, raw);
+                    localStorage.removeItem('nexus_v5_' + id);
+                    // Update IDs list
+                    let allIds = JSON.parse(localStorage.getItem('nexus_v6_ids') || '[]');
+                    if (!allIds.includes(id)) allIds.push(id);
+                    localStorage.setItem('nexus_v6_ids', JSON.stringify(allIds));
+                    raw = localStorage.getItem('nexus_v6_' + id);
+                }
+            }
+
+            // Fallback to v4
+            if (!raw) {
+                console.log('🔄 Trying v4 format...');
+                raw = localStorage.getItem('nexus_v4_' + id);
+                if (raw) {
+                    console.log('✅ Found in v4 format, converting to v6');
+                    localStorage.setItem('nexus_v6_' + id, raw);
+                    localStorage.removeItem('nexus_v4_' + id);
+                    let allIds = JSON.parse(localStorage.getItem('nexus_v6_ids') || '[]');
+                    if (!allIds.includes(id)) allIds.push(id);
+                    localStorage.setItem('nexus_v6_ids', JSON.stringify(allIds));
+                    raw = localStorage.getItem('nexus_v6_' + id);
+                }
+            }
+
+            if (!raw) {
+                console.warn('⚠️ Gift not found in localStorage:', id);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'This Nexus link no longer exists.';
+                showScreen('expired');
+                return false;
+            }
+
+            try {
+                const data = JSON.parse(raw);
+                const now = Date.now();
+                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                if (expTime > 0 && now > expTime) {
+                    const d = new Date(expTime);
+                    const detail = $('expiryDetail');
+                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                    showScreen('expired');
+                    return false;
+                }
+
+                // Apply data to state
+                state.name = data.name || 'you';
+                state.occasion = data.occasion || 'birthday';
+                state.wish = data.wish || 'You are the nexus of my world.';
+                state.letter = data.letter || 'You are amazing.';
+                state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+                state.photos = data.photos || [];
+                state.expiresIn = data.expiresIn || 24;
+                state.createdAt = data.createdAt || Date.now();
+                state.cardOpened = false;
+                state.unlocked = false;
+                state.passEntry = '';
+                currentGiftId = id;
+
+                // Reset UI
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const card = $('smartCard');
+                if (card) card.classList.remove('opened');
+
+                // Apply to UI
+                applyStateToUI();
+
+                // Show card screen
+                showScreen('card');
+                console.log('✅ Nexus gift loaded successfully!');
+                return true;
+
+            } catch (e) {
+                console.error('❌ Error loading gift:', e);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'Error loading Nexus link.';
+                showScreen('expired');
+                return false;
+            }
+        }
+
+        // ─── Auto-load from URL ───
+        (function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                console.log('🔗 Loading from URL with ID:', id);
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                loadFromId(id);
+            }
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SMART CARD
+        // ═══════════════════════════════════════════════════════════════
+        const cardContainer = $('cardTap');
+        const smartCard = $('smartCard');
+        if (cardContainer) {
+            cardContainer.addEventListener('click', function() {
+                if (smartCard.classList.contains('opened')) return;
+                smartCard.classList.add('opened');
+                state.cardOpened = true;
+                setTimeout(() => {
+                    showScreen('hero');
+                    spawnNexusParticles();
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.5 } });
+                    }
+                }, 700);
+            });
+        }
+
+        // ─── Nexus particles ───
+        function spawnNexusParticles() {
+            const container = document.getElementById('hero-screen');
+            if (!container) return;
+            const emojis = ['◆', '✦', '◈', '◇', '☆', '★', '⟡', '⟢'];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.style.cssText = `
+              position: absolute;
+              pointer-events: none;
+              font-size: ${14 + Math.random() * 26}px;
+              left: ${Math.random() * 100}%;
+              top: ${10 + Math.random() * 80}%;
+              opacity: 0;
+              z-index: 1;
+              transform: rotate(${Math.random() * 360}deg);
+              transition: all ${3 + Math.random() * 4}s cubic-bezier(.34,1.56,.64,1);
+            `;
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                container.appendChild(p);
+                requestAnimationFrame(() => {
+                    p.style.opacity = '0.85';
+                    p.style.transform =
+                        `translate(${(Math.random()-0.5)*180}px, ${-80 - Math.random()*160}px) rotate(${Math.random()*720}deg)`;
+                });
+                setTimeout(() => {
+                    p.style.opacity = '0';
+                    setTimeout(() => p.remove(), 800);
+                }, 4000 + Math.random() * 1500);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  HERO → WISH
+        // ═══════════════════════════════════════════════════════════════
+        const toWishBtn = $('toWishBtn');
+        if (toWishBtn) {
+            toWishBtn.addEventListener('click', function() {
+                showScreen('wish');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  WISH → PASSKEY
+        // ═══════════════════════════════════════════════════════════════
+        const toPassBtn = $('toPassBtn');
+        if (toPassBtn) {
+            toPassBtn.addEventListener('click', function() {
+                showScreen('pass');
+                state.passEntry = '';
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const passError = $('passError');
+                if (passError) passError.textContent = '';
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PASSKEY KEYPAD
+        // ═══════════════════════════════════════════════════════════════
+        const passDots = document.querySelectorAll('#passDots span');
+        const passError = $('passError');
+
+        function updatePassDots() {
+            const len = state.passEntry.length;
+            passDots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < len);
+            });
+        }
+
+        document.querySelectorAll('#keypad button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const key = this.dataset.k;
+                if (key === 'clear') {
+                    state.passEntry = '';
+                    if (passError) passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (key === 'back') {
+                    state.passEntry = state.passEntry.slice(0, -1);
+                    if (passError) passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '◈ Wrong key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PHOTOS → LETTER
+        // ═══════════════════════════════════════════════════════════════
+        const toLetterBtn = $('toLetterBtn');
+        if (toLetterBtn) {
+            toLetterBtn.addEventListener('click', function() {
+                showScreen('letter');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  RESTART
+        // ═══════════════════════════════════════════════════════════════
+        function goToSetup() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            showScreen('setup');
+            if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', window.location.pathname);
+            }
+        }
+
+        const restartBtn = $('restartBtn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', goToSetup);
+        }
+
+        const expiredRestartBtn = $('expiredRestartBtn');
+        if (expiredRestartBtn) {
+            expiredRestartBtn.addEventListener('click', goToSetup);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  KEYBOARD SUPPORT
+        // ═══════════════════════════════════════════════════════════════
+        document.addEventListener('keydown', function(e) {
+            if (state.currentScreen !== 'pass') return;
+            if (e.key >= '0' && e.key <= '9') {
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += e.key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '◈ Wrong key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            }
+            if (e.key === 'Backspace') {
+                state.passEntry = state.passEntry.slice(0, -1);
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+            if (e.key === 'Escape' || e.key === 'c') {
+                state.passEntry = '';
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  AUTO-DATE
+        // ═══════════════════════════════════════════════════════════════
+        const dateInput = $('inpDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+        setTimeout(autoWish, 100);
+
+        // ═══════════════════════════════════════════════════════════════
+        //  LEGACY PRESET SUPPORT
+        // ═══════════════════════════════════════════════════════════════
+        if (window.__PRESET__) {
+            const data = window.__PRESET__;
+            state.name = data.name || 'you';
+            state.occasion = data.occasion || 'birthday';
+            state.wish = data.wish || 'You are the nexus of my world.';
+            state.letter = data.letter || 'You are amazing.';
+            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+            state.photos = data.photos || [];
+            state.expiresIn = data.expiresIn || 24;
+            state.createdAt = data.createdAt || Date.now();
+            delete window.__PRESET__;
+            applyStateToUI();
+            showScreen('card');
+        }
+
+        console.log('◆ Nexus v6 — Professional Celebration with Shareable Links (FIXED)');
+        console.log('◈ Use "Create Link" to generate a unique, time-limited URL.');
+        console.log('✦ All data stored locally in your browser.');
+    </script>
+</body>
+</html>

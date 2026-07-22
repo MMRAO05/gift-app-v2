@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <title>🌌 Starlight Surprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
+    </script>
+    <style>
+        /* ────────── ROOT ────────── */
+        :root {
+            --bg-deep: #070b1a;
+            --bg-mid: #111b3a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --border-glow: rgba(120, 180, 255, 0.15);
+            --gold: #f7d875;
+            --gold-glow: rgba(247, 216, 117, 0.25);
+            --purple: #a78bfa;
+            --purple-glow: rgba(167, 139, 250, 0.3);
+            --pink: #f472b6;
+            --pink-glow: rgba(244, 114, 182, 0.25);
+            --cyan: #67e8f9;
+            --text-light: #f1f5f9;
+            --text-soft: #94a3b8;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: var(--bg-deep);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        /* ────────── STAGE ────────── */
+        #stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 20%, #1a2a5e 0%, var(--bg-deep) 70%);
+        }
+
+        /* ── stars ── */
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--d, 3s) ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: .15;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: .95;
+                transform: scale(1.3);
+            }
+        }
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.3);
+            animation: shoot 4s linear infinite;
+        }
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.6), transparent);
+            transform: rotate(0deg) translateX(0);
+        }
+        @keyframes shoot {
+            0% {
+                transform: translate(0, 0) rotate(-35deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            15% {
+                opacity: 1;
+            }
+            20% {
+                opacity: 0;
+                transform: translate(-300px, 200px) rotate(-35deg);
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ────────── SCREENS ────────── */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 22px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s ease, transform 0.7s ease;
+            transform: scale(0.95) translateY(12px);
+            z-index: 2;
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 28px;
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        /* ────────── SETUP ────────── */
+        #scr-setup {
+            background: radial-gradient(ellipse at 50% 30%, #141e42 0%, var(--bg-deep) 80%);
+        }
+        .setup-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 28px 24px 32px;
+            max-height: 92vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--purple) transparent;
+        }
+        .setup-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        .setup-card::-webkit-scrollbar-thumb {
+            background: var(--purple);
+            border-radius: 8px;
+        }
+        .setup-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .setup-card .logo {
+            font-size: 44px;
+            margin-bottom: 2px;
+        }
+        .setup-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 32px;
+            margin: 0 0 4px;
+            background: linear-gradient(135deg, var(--gold), var(--purple), var(--pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .setup-card p.sub {
+            color: var(--text-soft);
+            font-size: 13px;
+            margin: 0 0 22px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .field {
+            text-align: left;
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-soft);
+            margin-bottom: 5px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--purple);
+            box-shadow: 0 0 20px var(--purple-glow);
+        }
+        .field select option {
+            background: #111b3a;
+            color: #fff;
+        }
+        .field textarea {
+            min-height: 80px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .field small {
+            display: block;
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 10.5px;
+        }
+        .row2 {
+            display: flex;
+            gap: 10px;
+        }
+        .row2 .field {
+            flex: 1;
+        }
+
+        .photo-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .photo-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .upload-btn {
+            border: 1.5px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text-soft);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s;
+        }
+        .upload-btn:hover {
+            border-color: var(--purple);
+            color: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            color: #fff;
+            box-shadow: 0 8px 30px var(--purple-glow);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #d4a830);
+            color: #0a0e1a;
+            box-shadow: 0 8px 30px var(--gold-glow);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            padding: 12px 8px;
+        }
+
+        .ghost-hint {
+            margin-top: 14px;
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* ────────── SHARE SCREEN ────────── */
+        .share-card .success-icon {
+            font-size: 52px;
+            margin-bottom: 6px;
+            animation: bounceIn 0.8s ease;
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .share-link-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 18px;
+        }
+        .share-link-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: var(--text-light);
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            min-width: 0;
+        }
+        .copy-btn {
+            background: var(--gold);
+            color: #0a0e1a;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .copy-btn:hover {
+            background: #f7e08a;
+        }
+        .copy-btn.copied {
+            background: #34d399;
+            color: #0a0e1a;
+        }
+        .share-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .share-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 80px;
+        }
+        .share-actions button:hover {
+            transform: translateY(-2px);
+        }
+        .share-actions .whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+        .share-actions .whatsapp:hover {
+            background: #1da851;
+        }
+        .share-actions .email {
+            background: #EA4335;
+            color: #fff;
+        }
+        .share-actions .email:hover {
+            background: #c62828;
+        }
+        .share-actions .open-gift {
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            color: #fff;
+            flex: 1.5;
+        }
+        .expiry-hint {
+            margin-top: 14px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* ────────── EXPIRED SCREEN ────────── */
+        .expired-card .icon {
+            font-size: 60px;
+            margin-bottom: 8px;
+        }
+        .expired-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #f472b6;
+            margin: 0;
+            font-size: 26px;
+        }
+        .expired-card p {
+            color: var(--text-soft);
+            font-size: 14px;
+            margin: 12px 0 24px;
+            line-height: 1.6;
+        }
+
+        /* ────────── ENVELOPE ────────── */
+        .env-orb {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 30%, #7c3aed, #4f46e5, #1e1b4b);
+            box-shadow: 0 0 80px rgba(124, 58, 237, 0.3), inset 0 -20px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .env-orb::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(167, 139, 250, 0.2);
+            animation: orbPulse 2s ease-in-out infinite;
+        }
+        @keyframes orbPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 0.2;
+            }
+        }
+        .env-orb.opened {
+            transform: scale(0) rotate(180deg);
+            opacity: 0;
+        }
+        .env-name {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 28px;
+            margin: 16px 0 28px;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .tap-caption {
+            font-size: 12.5px;
+            color: var(--text-soft);
+            margin-top: 22px;
+            letter-spacing: 0.04em;
+        }
+
+        /* ────────── HERO ────────── */
+        #hero-screen {
+            overflow: hidden;
+        }
+        .hero-cosmic {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 10px 0;
+        }
+        .hero-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid rgba(167, 139, 250, 0.15);
+            animation: spinRing 12s linear infinite;
+        }
+        .hero-ring:nth-child(2) {
+            width: 140%;
+            height: 140%;
+            top: -20%;
+            left: -20%;
+            border-color: rgba(244, 114, 182, 0.1);
+            animation-duration: 18s;
+            animation-direction: reverse;
+        }
+        .hero-ring:nth-child(3) {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border-color: rgba(247, 216, 117, 0.12);
+            animation-duration: 8s;
+        }
+        @keyframes spinRing {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .hero-icon-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            animation: heroPop 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 0 30px rgba(167, 139, 250, 0.3));
+        }
+        @keyframes heroPop {
+            0% {
+                transform: scale(0.2) rotate(-20deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 30px;
+            margin: 8px 0 4px;
+            background: linear-gradient(135deg, var(--gold), var(--purple), var(--pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-sub {
+            font-size: 14px;
+            color: var(--text-soft);
+            max-width: 320px;
+            line-height: 1.6;
+        }
+        .hero-continue {
+            margin-top: 24px;
+            border: none;
+            background: none;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--gold);
+            padding-bottom: 2px;
+            z-index: 2;
+            position: relative;
+        }
+
+        /* ────────── WISH / NOTE ────────── */
+        .wish-card {
+            padding: 34px 28px;
+            max-width: 380px;
+        }
+        .wish-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+        .wish-text .hl {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .continue-btn {
+            margin-top: 26px;
+            border: none;
+            background: none;
+            color: var(--purple);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1.5px solid var(--purple);
+            padding-bottom: 2px;
+        }
+
+        /* ────────── PASSKEY ────────── */
+        .pass-dots {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+        .pass-dots span {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 2px solid var(--purple);
+            transition: all 0.25s;
+        }
+        .pass-dots span.filled {
+            background: var(--purple);
+            box-shadow: 0 0 16px var(--purple-glow);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            gap: 12px;
+        }
+        .keypad button {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+        }
+        .keypad button:active {
+            background: rgba(167, 139, 250, 0.2);
+            transform: scale(0.92);
+        }
+        .keypad button.clear {
+            font-size: 10px;
+            color: var(--pink);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .pass-error {
+            margin-top: 14px;
+            color: var(--pink);
+            font-size: 12.5px;
+            min-height: 18px;
+        }
+        .pass-hint {
+            margin-top: 12px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        /* ────────── UNLOCK ────────── */
+        .unlock-icon {
+            font-size: 48px;
+            animation: heroPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .unlock-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        /* ────────── PHOTOS ────────── */
+        .photo-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 26px;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+        .photo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            max-width: 400px;
+            max-height: 52vh;
+            overflow-y: auto;
+            padding: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--purple) transparent;
+        }
+        .photo-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        .photo-grid::-webkit-scrollbar-thumb {
+            background: var(--purple);
+            border-radius: 8px;
+        }
+        .polaroid-star {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 6px 6px 18px;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 110px;
+            transform: rotate(var(--r, 0deg));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .polaroid-star img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+        .no-photos {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--text-soft);
+            font-size: 16px;
+        }
+
+        /* ────────── LETTER ────────── */
+        .letter-paper {
+            max-width: 400px;
+            width: 100%;
+            padding: 32px 26px;
+            max-height: 60vh;
+            overflow-y: auto;
+            text-align: left;
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
+        }
+        .letter-paper::-webkit-scrollbar {
+            width: 4px;
+        }
+        .letter-paper::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 8px;
+        }
+        .letter-paper .salutation {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 14px;
+        }
+        .letter-paper .body-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-light);
+            white-space: pre-wrap;
+        }
+        .letter-paper .sign {
+            margin-top: 22px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--purple);
+        }
+        .restart-btn {
+            margin-top: 18px;
+            border: none;
+            background: none;
+            color: #64748b;
+            font-size: 11.5px;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ────────── RESPONSIVE ────────── */
+        @media(max-width:440px) {
+            .setup-card {
+                padding: 20px 16px 24px;
+            }
+            .setup-card h1 {
+                font-size: 26px;
+            }
+            .row2 {
+                flex-direction: column;
+                gap: 0;
+            }
+            .keypad {
+                gap: 10px;
+            }
+            .keypad button {
+                width: 54px;
+                height: 54px;
+                font-size: 16px;
+            }
+            .wish-text {
+                font-size: 19px;
+            }
+            .hero-title {
+                font-size: 24px;
+            }
+            .hero-cosmic {
+                width: 140px;
+                height: 140px;
+            }
+            .hero-icon-center {
+                font-size: 50px;
+            }
+            .env-orb {
+                width: 110px;
+                height: 110px;
+                font-size: 38px;
+            }
+            .env-name {
+                font-size: 22px;
+            }
+            .polaroid-star {
+                width: 90px;
+            }
+            .polaroid-star img {
+                height: 82px;
+            }
+            .letter-paper .body-text {
+                font-size: 14px;
+            }
+            .btn-group {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+        @media(max-width:360px) {
+            .keypad {
+                gap: 8px;
+            }
+            .keypad button {
+                width: 46px;
+                height: 46px;
+                font-size: 14px;
+            }
+            .pass-dots {
+                gap: 8px;
+            }
+            .pass-dots span {
+                width: 10px;
+                height: 10px;
+            }
+            .hero-cosmic {
+                width: 110px;
+                height: 110px;
+            }
+            .hero-icon-center {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stage">
+        <!-- ─── STARFIELD ─── -->
+        <div id="starfield"></div>
+        <div class="shooting-star" style="top:10%;left:80%;animation-delay:0s;"></div>
+        <div class="shooting-star" style="top:20%;left:60%;animation-delay:2.5s;"></div>
+        <div class="shooting-star" style="top:5%;left:40%;animation-delay:5s;"></div>
+
+        <!-- ─── SETUP ─── -->
+        <div class="screen active" id="scr-setup">
+            <div class="setup-card glass">
+                <div class="logo">🌌</div>
+                <h1>Starlight Surprise</h1>
+                <p class="sub">Create a cosmic celebration and share it with a unique link.</p>
+
+                <div class="field">
+                    <label>✨ Their name</label>
+                    <input type="text" id="inpName" placeholder="e.g. Zara" maxlength="30" value="MM Rao" />
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label>🎯 Occasion</label>
+                        <select id="inpOccasion">
+                            <option value="birthday">🎂 Birthday</option>
+                            <option value="anniversary">💞 Anniversary</option>
+                            <option value="valentine">💘 Valentine's Day</option>
+                            <option value="mothersday">💐 Mother's Day</option>
+                            <option value="fathersday">🦸 Father's Day</option>
+                            <option value="justbecause">🌠 Just Because</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>📅 Date</label>
+                        <input type="date" id="inpDate" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>🌠 Short wish (shown early)</label>
+                    <input type="text" id="inpWish" placeholder="You light up my world..." maxlength="90" value="You light up my world like the stars light up the night." />
+                </div>
+
+                <div class="field">
+                    <label>💫 Full message</label>
+                    <textarea id="inpLetter" rows="3">I wanted to send you something that feels as magical as you are. You are the brightest star in my sky, and every moment with you is a treasure I hold close to my heart. Thank you for being you.</textarea>
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label>🔑 Passkey (4 digits)</label>
+                        <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122" />
+                    </div>
+                    <div class="field">
+                        <label>⏳ Expires (hours)</label>
+                        <input type="number" id="inpExpires" min="1" max="720" value="24" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>🖼️ Photos (optional)</label>
+                    <div class="photo-row">
+                        <label class="upload-btn" for="photoInput">+ Add memories</label>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" />
+                        <div id="photoPreview" class="photo-row"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="previewBtn">👀 Preview</button>
+                    <button class="btn btn-gold" id="createLinkBtn">🔗 Create Link</button>
+                </div>
+                <div class="ghost-hint">"Preview" plays it here. "Create Link" generates a shareable URL with expiration.</div>
+            </div>
+        </div>
+
+        <!-- ─── SHARE ─── -->
+        <div class="screen" id="scr-share">
+            <div class="glass" style="width:100%;max-width:440px;padding:30px 24px;">
+                <div class="success-icon">🌠</div>
+                <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0;font-size:26px;">Starlight Ready!</h2>
+                <p style="color:var(--text-soft);font-size:13px;margin:4px 0 20px;">Share this cosmic link with your special person.</p>
+                <div class="share-link-box">
+                    <input type="text" id="shareLinkInput" readonly />
+                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
+                </div>
+                <div class="share-actions">
+                    <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+                    <button class="email" id="emailBtn">✉️ Email</button>
+                    <button class="open-gift" id="openGiftBtn">Open Surprise →</button>
+                </div>
+                <div class="expiry-hint" id="expiryHint"></div>
+            </div>
+        </div>
+
+        <!-- ─── EXPIRED ─── -->
+        <div class="screen" id="scr-expired">
+            <div class="glass expired-card" style="width:100%;max-width:400px;padding:40px 30px;">
+                <div class="icon">🌠</div>
+                <h2>Link Expired</h2>
+                <p>This cosmic link has faded. The magic was meant to be experienced in the moment.</p>
+                <button class="btn btn-primary" id="expiredRestartBtn">Create a New Surprise</button>
+                <div style="margin-top:12px;font-size:11px;color:#64748b;" id="expiryDetail"></div>
+            </div>
+        </div>
+
+        <!-- ─── ENVELOPE ─── -->
+        <div class="screen" id="scr-envelope">
+            <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft);margin-bottom:6px;">A cosmic gift for</div>
+            <div class="env-name" id="displayName">someone special</div>
+            <div class="env-orb" id="orbTap">💫</div>
+            <div class="tap-caption">(tap the orb to unlock the cosmos)</div>
+        </div>
+
+        <!-- ─── HERO ─── -->
+        <div class="screen" id="scr-hero">
+            <div class="hero-cosmic">
+                <div class="hero-ring"></div>
+                <div class="hero-ring"></div>
+                <div class="hero-ring"></div>
+                <div class="hero-icon-center" id="heroIcon">🌌</div>
+            </div>
+            <div class="hero-title" id="heroTitle">A Cosmic Celebration</div>
+            <div class="hero-sub" id="heroSub"></div>
+            <button class="hero-continue" id="toWishBtn">Continue →</button>
+        </div>
+
+        <!-- ─── WISH ─── -->
+        <div class="screen" id="scr-wish">
+            <div class="wish-card glass">
+                <div class="wish-text" id="wishLine">You light up my world like the <span class="hl">stars</span> light up the night.</div>
+                <button class="continue-btn" id="toPassBtn">Continue →</button>
+            </div>
+        </div>
+
+        <!-- ─── PASSKEY ─── -->
+        <div class="screen" id="scr-pass">
+            <div style="font-size:28px;">🔮</div>
+            <h3 style="font-family:'Playfair Display',serif;margin:6px 0 4px;color:var(--gold);">Enter the Cosmic Key</h3>
+            <p style="font-size:11.5px;color:var(--text-soft);margin:0 0 6px;">4-digit passkey</p>
+            <div class="pass-dots" id="passDots"><span></span><span></span><span></span><span></span></div>
+            <div class="keypad" id="keypad">
+                <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+                <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+                <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+                <button class="clear" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
+            </div>
+            <div class="pass-error" id="passError"></div>
+            <div class="pass-hint">Hint: the passkey you set</div>
+        </div>
+
+        <!-- ─── UNLOCK ─── -->
+        <div class="screen" id="scr-unlock">
+            <div class="unlock-icon">🌟</div>
+            <div class="unlock-text">Cosmos Unlocked</div>
+        </div>
+
+        <!-- ─── PHOTOS ─── -->
+        <div class="screen" id="scr-photos">
+            <div class="photo-title">Constellations of You</div>
+            <div class="photo-grid" id="photoGrid"></div>
+            <button class="continue-btn" id="toLetterBtn" style="color:var(--gold);border-color:var(--gold);">Read the message →</button>
+        </div>
+
+        <!-- ─── LETTER ─── -->
+        <div class="screen" id="scr-letter">
+            <div class="letter-paper glass">
+                <div class="salutation" id="letterSalutation">Dear friend,</div>
+                <div class="body-text" id="letterBody"></div>
+                <div class="sign" id="letterSign">— with all my light</div>
+          <!--  </div>
+            <button class="restart-btn" id="restartBtn">⟳ Create another</button>
+        </div> -->
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  STARFIELD
+        // ═══════════════════════════════════════════════════════════════
+        (function makeStars() {
+            const el = document.getElementById('starfield');
+            for (let i = 0; i < 160; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = 0.8 + Math.random() * 2.2;
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--d', (2 + Math.random() * 4) + 's');
+                s.style.animationDelay = (Math.random() * 6) + 's';
+                el.appendChild(s);
+            }
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        //  DOM REFS
+        // ═══════════════════════════════════════════════════════════════
+        const $ = id => document.getElementById(id);
+        const screens = {
+            setup: $('scr-setup'),
+            share: $('scr-share'),
+            expired: $('scr-expired'),
+            envelope: $('scr-envelope'),
+            hero: $('scr-hero'),
+            wish: $('scr-wish'),
+            pass: $('scr-pass'),
+            unlock: $('scr-unlock'),
+            photos: $('scr-photos'),
+            letter: $('scr-letter'),
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        //  STATE
+        // ═══════════════════════════════════════════════════════════════
+        const state = {
+            name: '',
+            occasion: 'birthday',
+            wish: '',
+            letter: '',
+            passkey: '1122',
+            photos: [],
+            expiresIn: 24,
+            createdAt: 0,
+            currentScreen: 'setup',
+            passEntry: '',
+            orbOpened: false,
+            unlocked: false,
+        };
+        let currentGiftId = null;
+        const photoData = [];
+
+        // ═══════════════════════════════════════════════════════════════
+        //  HELPERS
+        // ═══════════════════════════════════════════════════════════════
+        function showScreen(id) {
+            Object.keys(screens).forEach(k => {
+                if (screens[k]) screens[k].classList.toggle('active', k === id);
+            });
+            state.currentScreen = id;
+        }
+
+        function getOccasionIcon(occ) {
+            const map = {
+                birthday: '🎂',
+                anniversary: '💞',
+                valentine: '💘',
+                mothersday: '💐',
+                fathersday: '🦸',
+                justbecause: '🌠'
+            };
+            return map[occ] || '🌌';
+        }
+
+        function getOccasionTitle(occ) {
+            const map = {
+                birthday: 'Happy Birthday',
+                anniversary: 'Happy Anniversary',
+                valentine: 'Happy Valentine\'s Day',
+                mothersday: 'Happy Mother\'s Day',
+                fathersday: 'Happy Father\'s Day',
+                justbecause: 'A Starlight Surprise'
+            };
+            return map[occ] || 'Celebration';
+        }
+
+        function getDefaultWish(occ, name) {
+            const map = {
+                birthday: `Every year with ${name} is a gift from the stars.`,
+                anniversary: `${name}, you are my forever constellation.`,
+                valentine: `My heart orbits only around you, ${name}.`,
+                mothersday: `Thank you for being my guiding star, ${name}.`,
+                fathersday: `You're my superhero, ${name}. Love you to the cosmos.`,
+                justbecause: `Just because you shine brighter than all the stars, ${name}. ✨`
+            };
+            return map[occ] || `You are my favorite star, ${name}. ✨`;
+        }
+
+        // ─── Auto-wish ───
+        const nameInput = $('inpName');
+        const occSelect = $('inpOccasion');
+        const wishInput = $('inpWish');
+
+        function autoWish() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            if (wishInput && (!wishInput.value || wishInput.value === getDefaultWish(occ, 'you') || wishInput.value ===
+                    getDefaultWish(occ, name))) {
+                wishInput.value = getDefaultWish(occ, name);
+            }
+        }
+        if (nameInput) nameInput.addEventListener('input', autoWish);
+        if (occSelect) occSelect.addEventListener('change', autoWish);
+
+        // ─── Photos ───
+        const photoInput = $('photoInput');
+        const photoPreview = $('photoPreview');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        photoData.push(ev.target.result);
+                        renderPhotoPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                photoInput.value = '';
+            });
+        }
+
+        function renderPhotoPreviews() {
+            if (!photoPreview) return;
+            photoPreview.innerHTML = '';
+            photoData.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.className = 'photo-thumb';
+                img.src = url;
+                img.alt = 'photo';
+                const wrap = document.createElement('span');
+                wrap.style.position = 'relative';
+                wrap.appendChild(img);
+                const del = document.createElement('span');
+                del.textContent = '✕';
+                del.style.cssText =
+                    'position:absolute;top:-6px;right:-6px;background:#f472b6;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.2);';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    photoData.splice(i, 1);
+                    renderPhotoPreviews();
+                });
+                wrap.appendChild(del);
+                photoPreview.appendChild(wrap);
+            });
+        }
+
+        // ─── Read form ───
+        function readFormIntoState() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            const wish = wishInput ? wishInput.value.trim() || getDefaultWish(occ, name) : getDefaultWish(occ, name);
+            const letter = $('inpLetter') ? $('inpLetter').value.trim() || 'You are amazing.' :
+            'You are amazing.';
+            const pass = $('inpPasskey') ? $('inpPasskey').value.trim() || '1122' : '1122';
+            const expires = parseInt($('inpExpires') ? $('inpExpires').value : '24') || 24;
+            state.name = name;
+            state.occasion = occ;
+            state.wish = wish;
+            state.letter = letter;
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            state.photos = [...photoData];
+            state.expiresIn = Math.min(Math.max(expires, 1), 720);
+            state.createdAt = Date.now();
+        }
+
+        // ─── Apply state to UI ───
+        function applyStateToUI() {
+            const nameDisplay = $('displayName');
+            if (nameDisplay) nameDisplay.textContent = state.name;
+
+            const orb = $('orbTap');
+            if (orb) orb.classList.remove('opened');
+
+            const heroIcon = $('heroIcon');
+            if (heroIcon) heroIcon.textContent = getOccasionIcon(state.occasion);
+            const heroTitle = $('heroTitle');
+            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
+            const heroSub = $('heroSub');
+            if (heroSub) heroSub.textContent = state.wish;
+
+            const wishLine = $('wishLine');
+            if (wishLine) {
+                const text = state.wish.replace(/\[name\]/g, state.name);
+                wishLine.innerHTML = text.replace(/\b(you|your)\b/gi, (m) => `<span class="hl">${m}</span>`);
+                if (!wishLine.querySelector('.hl')) {
+                    wishLine.innerHTML = text + ` <span class="hl">${state.name}</span>`;
+                }
+            }
+
+            const salutation = $('letterSalutation');
+            if (salutation) salutation.textContent = `Dear ${state.name},`;
+            const body = $('letterBody');
+            if (body) body.textContent = state.letter;
+            const sign = $('letterSign');
+            if (sign) sign.textContent = '— with all my light';
+
+            // Photos
+            const grid = $('photoGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                if (!state.photos || state.photos.length === 0) {
+                    grid.innerHTML = '<div class="no-photos">Even without photos, your light is enough.</div>';
+                } else {
+                    state.photos.forEach((url) => {
+                        const div = document.createElement('div');
+                        div.className = 'polaroid-star';
+                        const rot = (Math.random() - 0.5) * 8;
+                        div.style.setProperty('--r', rot + 'deg');
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'memory';
+                        div.appendChild(img);
+                        grid.appendChild(div);
+                    });
+                }
+            }
+
+            // Reset pass
+            state.passEntry = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+            const passError = $('passError');
+            if (passError) passError.textContent = '';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PREVIEW
+        // ═══════════════════════════════════════════════════════════════
+        const previewBtn = $('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                readFormIntoState();
+                applyStateToUI();
+                showScreen('envelope');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  ID GENERATION
+        // ═══════════════════════════════════════════════════════════════
+        function genId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  CREATE SHAREABLE LINK
+        // ═══════════════════════════════════════════════════════════════
+        const createLinkBtn = $('createLinkBtn');
+        if (createLinkBtn) {
+            createLinkBtn.addEventListener('click', function() {
+                readFormIntoState();
+                if (!state.letter) {
+                    alert('💫 Please write a message before creating a link!');
+                    return;
+                }
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && state.photos.length === 0) {
+                    const evt = new Event('change');
+                    photoInput.dispatchEvent(evt);
+                    setTimeout(() => doCreateLink(), 200);
+                    return;
+                }
+                doCreateLink();
+            });
+        }
+
+        function doCreateLink() {
+            state.createdAt = Date.now();
+            const id = genId();
+            currentGiftId = id;
+            const dataToStore = JSON.parse(JSON.stringify(state));
+            localStorage.setItem('starlight_v4_' + id, JSON.stringify(dataToStore));
+
+            let allIds = JSON.parse(localStorage.getItem('starlight_v4_ids') || '[]');
+            if (!allIds.includes(id)) allIds.push(id);
+            localStorage.setItem('starlight_v4_ids', JSON.stringify(allIds));
+
+            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
+            const input = $('shareLinkInput');
+            if (input) input.value = shareUrl;
+            const hint = $('expiryHint');
+            if (hint) hint.textContent = '🔗 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                's' : '');
+
+            showScreen('share');
+            console.log('🌌 Starlight link created! ID:', id);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  SHARE BUTTONS
+        // ═══════════════════════════════════════════════════════════════
+        const copyBtn = $('copyLinkBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const input = $('shareLinkInput');
+                if (!input || !input.value) return;
+                navigator.clipboard.writeText(input.value).then(() => {
+                    this.textContent = '✓ Copied!';
+                    this.classList.add('copied');
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    input.select();
+                    document.execCommand('copy');
+                    alert('Link copied!');
+                });
+            });
+        }
+
+        const whatsappBtn = $('whatsappBtn');
+        if (whatsappBtn) {
+            whatsappBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.open('https://wa.me/?text=' + encodeURIComponent('🌌 A cosmic surprise for you! ' + link),
+                    '_blank');
+            });
+        }
+
+        const emailBtn = $('emailBtn');
+        if (emailBtn) {
+            emailBtn.addEventListener('click', () => {
+                const link = $('shareLinkInput')?.value || '';
+                window.location.href = 'mailto:?subject=A Cosmic Surprise&body=🌌 A cosmic surprise for you! ' + link;
+            });
+        }
+
+        const openGiftBtn = $('openGiftBtn');
+        if (openGiftBtn) {
+            openGiftBtn.addEventListener('click', function() {
+                const id = currentGiftId;
+                if (id) loadFromId(id);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  LOAD FROM ID (FIXED)
+        // ═══════════════════════════════════════════════════════════════
+        function loadFromId(id) {
+            console.log('🔍 Loading cosmic gift with ID:', id);
+
+            // Try v4 first
+            let raw = localStorage.getItem('starlight_v4_' + id);
+
+            // If not found, try v3 for backward compatibility
+            if (!raw) {
+                console.log('🔄 Trying v3 format...');
+                raw = localStorage.getItem('starlight_v3_' + id);
+                if (raw) {
+                    console.log('✅ Found in v3 format, converting...');
+                    // Migrate to v4
+                    localStorage.setItem('starlight_v4_' + id, raw);
+                    // Remove v3 to clean up
+                    localStorage.removeItem('starlight_v3_' + id);
+                    // Update IDs list
+                    let allIds = JSON.parse(localStorage.getItem('starlight_v4_ids') || '[]');
+                    if (!allIds.includes(id)) allIds.push(id);
+                    localStorage.setItem('starlight_v4_ids', JSON.stringify(allIds));
+                    // Now load from v4
+                    raw = localStorage.getItem('starlight_v4_' + id);
+                }
+            }
+
+            if (!raw) {
+                console.warn('⚠️ Gift not found in localStorage:', id);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'This cosmic link no longer exists.';
+                showScreen('expired');
+                return false;
+            }
+
+            try {
+                const data = JSON.parse(raw);
+                const now = Date.now();
+                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                if (expTime > 0 && now > expTime) {
+                    const d = new Date(expTime);
+                    const detail = $('expiryDetail');
+                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                    showScreen('expired');
+                    return false;
+                }
+
+                // Apply data to state
+                state.name = data.name || 'you';
+                state.occasion = data.occasion || 'birthday';
+                state.wish = data.wish || getDefaultWish(state.occasion, state.name);
+                state.letter = data.letter || 'You are amazing.';
+                state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+                state.photos = data.photos || [];
+                state.expiresIn = data.expiresIn || 24;
+                state.createdAt = data.createdAt || Date.now();
+                state.orbOpened = false;
+                state.unlocked = false;
+                state.passEntry = '';
+                currentGiftId = id;
+
+                // Reset UI
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const orb = $('orbTap');
+                if (orb) orb.classList.remove('opened');
+
+                // Apply to UI
+                applyStateToUI();
+
+                // Show envelope screen
+                showScreen('envelope');
+                console.log('✅ Cosmic gift loaded successfully!');
+                return true;
+
+            } catch (e) {
+                console.error('❌ Error loading gift:', e);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'Error loading cosmic link.';
+                showScreen('expired');
+                return false;
+            }
+        }
+
+        // ─── Auto-load from URL ───
+        (function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                console.log('🔗 Loading from URL with ID:', id);
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                loadFromId(id);
+            }
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        //  ORB (Envelope)
+        // ═══════════════════════════════════════════════════════════════
+        const orb = $('orbTap');
+        if (orb) {
+            orb.addEventListener('click', function() {
+                if (this.classList.contains('opened')) return;
+                this.classList.add('opened');
+                state.orbOpened = true;
+                setTimeout(() => {
+                    showScreen('hero');
+                    spawnCosmicParticles();
+                }, 600);
+            });
+        }
+
+        // ─── Cosmic particles ───
+        function spawnCosmicParticles() {
+            const container = document.getElementById('hero-screen');
+            if (!container) return;
+            const emojis = ['✨', '🌟', '⭐', '🌠', '💫', '🌌', '🪐', '☄️'];
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.style.cssText = `
+              position: absolute;
+              pointer-events: none;
+              font-size: ${18 + Math.random() * 30}px;
+              left: ${Math.random() * 100}%;
+              top: ${10 + Math.random() * 80}%;
+              opacity: 0;
+              z-index: 1;
+              transform: rotate(${Math.random() * 360}deg);
+              transition: all ${3 + Math.random() * 4}s cubic-bezier(.34,1.56,.64,1);
+            `;
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                container.appendChild(p);
+                requestAnimationFrame(() => {
+                    p.style.opacity = '0.95';
+                    p.style.transform =
+                        `translate(${(Math.random()-0.5)*200}px, ${-100 - Math.random()*200}px) rotate(${Math.random()*720}deg)`;
+                });
+                setTimeout(() => {
+                    p.style.opacity = '0';
+                    setTimeout(() => p.remove(), 800);
+                }, 4000 + Math.random() * 2000);
+            }
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.5 } });
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  HERO → WISH
+        // ═══════════════════════════════════════════════════════════════
+        const toWishBtn = $('toWishBtn');
+        if (toWishBtn) {
+            toWishBtn.addEventListener('click', function() {
+                showScreen('wish');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  WISH → PASSKEY
+        // ═══════════════════════════════════════════════════════════════
+        const toPassBtn = $('toPassBtn');
+        if (toPassBtn) {
+            toPassBtn.addEventListener('click', function() {
+                showScreen('pass');
+                state.passEntry = '';
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const passError = $('passError');
+                if (passError) passError.textContent = '';
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PASSKEY KEYPAD
+        // ═══════════════════════════════════════════════════════════════
+        const passDots = document.querySelectorAll('#passDots span');
+        const passError = $('passError');
+
+        function updatePassDots() {
+            const len = state.passEntry.length;
+            passDots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < len);
+            });
+        }
+
+        document.querySelectorAll('#keypad button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const key = this.dataset.k;
+                if (key === 'clear') {
+                    state.passEntry = '';
+                    if (passError) passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (key === 'back') {
+                    state.passEntry = state.passEntry.slice(0, -1);
+                    if (passError) passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '❌ Wrong cosmic key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PHOTOS → LETTER
+        // ═══════════════════════════════════════════════════════════════
+        const toLetterBtn = $('toLetterBtn');
+        if (toLetterBtn) {
+            toLetterBtn.addEventListener('click', function() {
+                showScreen('letter');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  RESTART
+        // ═══════════════════════════════════════════════════════════════
+        function goToSetup() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            showScreen('setup');
+            if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', window.location.pathname);
+            }
+        }
+
+        const restartBtn = $('restartBtn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', goToSetup);
+        }
+
+        const expiredRestartBtn = $('expiredRestartBtn');
+        if (expiredRestartBtn) {
+            expiredRestartBtn.addEventListener('click', goToSetup);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  KEYBOARD SUPPORT (passkey)
+        // ═══════════════════════════════════════════════════════════════
+        document.addEventListener('keydown', function(e) {
+            if (state.currentScreen !== 'pass') return;
+            if (e.key >= '0' && e.key <= '9') {
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += e.key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '❌ Wrong cosmic key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            }
+            if (e.key === 'Backspace') {
+                state.passEntry = state.passEntry.slice(0, -1);
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+            if (e.key === 'Escape' || e.key === 'c') {
+                state.passEntry = '';
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  AUTO-DATE
+        // ═══════════════════════════════════════════════════════════════
+        const dateInput = $('inpDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+        setTimeout(autoWish, 100);
+
+        // ═══════════════════════════════════════════════════════════════
+        //  LEGACY PRESET SUPPORT
+        // ═══════════════════════════════════════════════════════════════
+        if (window.__PRESET__) {
+            const data = window.__PRESET__;
+            state.name = data.name || 'you';
+            state.occasion = data.occasion || 'birthday';
+            state.wish = data.wish || getDefaultWish(state.occasion, state.name);
+            state.letter = data.letter || 'You are amazing.';
+            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+            state.photos = data.photos || [];
+            state.expiresIn = data.expiresIn || 24;
+            state.createdAt = data.createdAt || Date.now();
+            delete window.__PRESET__;
+            applyStateToUI();
+            showScreen('envelope');
+        }
+
+        console.log('🌌 Starlight Surprise v4 — with shareable link system (FIXED)!');
+        console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
+        console.log('✨ All data stored locally in your browser.');
+    </script>
+</body>
+</html>
