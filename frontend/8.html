@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌊 Ocean of Love</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
+  </script>
+  <!-- LZ‑String for short URLs -->
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js">
   </script>
   <style>
     /* ────────── ROOT ────────── */
@@ -61,7 +64,6 @@
       display: block;
     }
 
-    /* ────────── SCREENS ────────── */
     .screen {
       position: absolute;
       inset: 0;
@@ -372,16 +374,18 @@
       align-items: center;
       border: 1px solid rgba(255, 255, 255, 0.04);
       margin-bottom: 18px;
+      overflow: hidden;
     }
     .share-link-box input {
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-light);
       outline: none;
       font-family: 'Poppins', sans-serif;
       min-width: 0;
+      word-break: break-all;
     }
     .copy-btn {
       background: var(--gold);
@@ -393,6 +397,8 @@
       cursor: pointer;
       font-weight: 600;
       transition: all 0.3s;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .copy-btn:hover {
       background: #f7e08a;
@@ -456,6 +462,18 @@
       text-decoration: underline;
       cursor: pointer;
       font-family: 'Poppins', sans-serif;
+    }
+    .url-length-warn {
+      font-size: 10px;
+      color: var(--pink);
+      margin: 6px 0 0;
+      display: none;
+    }
+    .url-length-ok {
+      font-size: 10px;
+      color: #34d399;
+      margin: 6px 0 0;
+      display: none;
     }
 
     /* ────────── EXPIRED ────────── */
@@ -629,8 +647,7 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    /* ────────── RESPONSIVE ────────── */
-    @media(max-width: 440px) {
+    @media(max-width:440px) {
       .setup-card {
         padding: 20px 16px;
       }
@@ -666,7 +683,6 @@
 <body>
 
   <div id="stage">
-    <!-- ─── CANVAS WAVE BACKGROUND ─── -->
     <canvas id="waveCanvas"></canvas>
 
     <!-- ─── SETUP ─── -->
@@ -676,7 +692,7 @@
           <span class="brand-icon">🌊</span>
           <h1>Ocean of Love</h1>
         </div>
-        <p class="sub">Create a sea‑spired surprise with music, video & passkey</p>
+        <p class="sub">Create a sea‑spired surprise with music, video &amp; passkey</p>
 
         <div class="field">
           <label>🎯 Occasion</label>
@@ -736,6 +752,8 @@
           <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
         </div>
         <div class="ghost-hint">"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</div>
+        <div id="urlWarn" class="url-length-warn"></div>
+        <div id="urlOk" class="url-length-ok"></div>
       </div>
     </div>
 
@@ -770,7 +788,7 @@
       </div>
     </div>
 
-    <!-- ─── PASSKEY SCREEN ─── -->
+    <!-- ─── PASSKEY ─── -->
     <div class="screen" id="scr-pass">
       <div class="glass" style="width:100%; max-width:380px; padding:32px 24px;">
         <div style="font-size:32px;">🔒</div>
@@ -790,7 +808,7 @@
       </div>
     </div>
 
-    <!-- ─── OCEAN EXPERIENCE ─── -->
+    <!-- ─── OCEAN ─── -->
     <div class="screen" id="scr-ocean">
       <div class="glass ocean-card">
         <div class="wave-overlay"></div>
@@ -803,7 +821,7 @@
       </div>
     </div>
 
-    <!-- ─── VIDEO RECORD / SKIP ─── -->
+    <!-- ─── VIDEO ─── -->
     <div class="screen" id="scr-video">
       <div class="glass" style="width:100%; max-width:400px; padding:24px 20px;">
         <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0 0 4px;font-size:24px;">Capture the Memory</h2>
@@ -812,7 +830,7 @@
           <canvas id="videoCanvas"></canvas>
         </div>
         <div class="record-btns">
-          <button class="btn btn-primary" id="recordBtn">⏺ Record & Download</button>
+          <button class="btn btn-primary" id="recordBtn">⏺ Record &amp; Download</button>
           <button class="btn btn-pink" id="skipBtn">⏭ Skip</button>
         </div>
         <div class="record-status" id="recordStatus">⏳ Ready to record</div>
@@ -828,7 +846,6 @@
         <button class="restart-link" id="restartBtn">✨ create another one</button>
       </div>
     </div>
-
   </div>
 
   <script>
@@ -916,7 +933,7 @@
     };
 
     // ═══════════════════════════════════════════════════════════════
-    //  WAVE CANVAS BACKGROUND WITH OCCASION PARTICLES
+    //  WAVES
     // ═══════════════════════════════════════════════════════════════
     (function initWaves() {
       const canvas = document.getElementById('waveCanvas');
@@ -939,7 +956,6 @@
         { r: 180, g: 220, b: 235 },
       ];
 
-      // Occasion particle system
       let particleEmojis = ['✨', '💖', '⭐'];
       let particleColors = ['#f7d875', '#ff6b9d', '#7ac7d4'];
 
@@ -948,7 +964,6 @@
         particleEmojis = occ.particles || ['✨', '💖', '⭐'];
         const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
         particleColors = colors;
-        // Reset particles
         occasionParticles = [];
         for (let i = 0; i < 25; i++) {
           occasionParticles.push({
@@ -969,14 +984,12 @@
         time += 0.008;
         ctx.clearRect(0, 0, w, h);
 
-        // Draw wave layers
         for (let layer = 0; layer < 4; layer++) {
           const offset = layer * 0.7 + time * 0.2;
           const baseY = h * (0.5 + layer * 0.08);
           const amp = 50 + layer * 20 + Math.sin(time * 0.5 + layer) * 10;
           const freq = 0.008 + layer * 0.002;
 
-          ctx.beginPath();
           const points = [];
           const steps = 140;
           for (let i = 0; i <= steps; i++) {
@@ -1012,7 +1025,6 @@
           ctx.fillStyle = grad;
           ctx.fill();
 
-          // Glow stroke
           ctx.beginPath();
           for (let i = 0; i < points.length; i++) {
             const p = points[i];
@@ -1032,7 +1044,6 @@
           ctx.shadowBlur = 0;
         }
 
-        // ─── Draw occasion particles ───
         occasionParticles.forEach(p => {
           p.x += p.vx;
           p.y += p.vy;
@@ -1057,7 +1068,6 @@
           ctx.globalAlpha = 1;
         });
 
-        // Add some sparkles
         for (let i = 0; i < 12; i++) {
           const x = (Math.sin(i * 1.7 + time * 0.6) * 0.5 + 0.5) * w;
           const y = (Math.cos(i * 2.1 + time * 0.5) * 0.3 + 0.5) * h;
@@ -1075,7 +1085,6 @@
       }
       drawWaves();
 
-      // Expose update function
       window.updateOccasionParticles = function(occKey) {
         updateParticlesForOccasion(occKey);
       };
@@ -1100,9 +1109,6 @@
     let photoDataURL = '';
     let passEntry = '';
 
-    // ═══════════════════════════════════════════════════════════════
-    //  DOM REFS
-    // ═══════════════════════════════════════════════════════════════
     const $ = id => document.getElementById(id);
     const screens = {
       'scr-setup': $('scr-setup'),
@@ -1163,7 +1169,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  OCCASION UI APPLY
+    //  OCCASION UI
     // ═══════════════════════════════════════════════════════════════
     function applyOceanUI() {
       const occKey = state.occasion || 'birthday';
@@ -1185,12 +1191,10 @@
       if (finalMsg) finalMsg.textContent = occ.finalMsg;
       if (finalIcon) finalIcon.textContent = occ.icon;
 
-      // Update particle system
       if (window.updateOccasionParticles) {
         window.updateOccasionParticles(occKey);
       }
 
-      // Update CSS theme colors
       const root = document.documentElement;
       const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
       root.style.setProperty('--theme-color', colors[0]);
@@ -1227,7 +1231,7 @@
     });
 
     // ═══════════════════════════════════════════════════════════════
-    //  PASSKEY SYSTEM
+    //  PASSKEY
     // ═══════════════════════════════════════════════════════════════
     function updatePassDots() {
       const dots = document.querySelectorAll('#passDots span');
@@ -1311,6 +1315,267 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    //  ENCODE / DECODE — SHORTER URL using compressToEncodedURIComponent
+    // ═══════════════════════════════════════════════════════════════
+    function encodeData(data) {
+      try {
+        // Use shorter keys to reduce size
+        const compact = {
+          oc: data.occasion || 'birthday',
+          nm: data.name || '',
+          ms: data.message || '',
+          pk: data.passkey || '',
+          ph: data.photo || '',
+          mu: data.music || '',
+          ex: data.expiresIn || 24,
+          ca: data.createdAt || 0,
+          id: data.id || ''
+        };
+        const json = JSON.stringify(compact);
+        if (typeof LZString !== 'undefined' && LZString.compressToEncodedURIComponent) {
+          return LZString.compressToEncodedURIComponent(json);
+        }
+        return encodeURIComponent(json);
+      } catch (e) {
+        console.warn('encodeData error:', e);
+        return '';
+      }
+    }
+
+    function decodeData(str) {
+      if (!str) return null;
+      try {
+        let json;
+        if (typeof LZString !== 'undefined' && LZString.decompressFromEncodedURIComponent) {
+          const decompressed = LZString.decompressFromEncodedURIComponent(str);
+          if (decompressed) {
+            json = decompressed;
+          } else {
+            json = decodeURIComponent(str);
+          }
+        } else {
+          json = decodeURIComponent(str);
+        }
+        const parsed = JSON.parse(json);
+        // Map back to full keys
+        return {
+          occasion: parsed.oc || 'birthday',
+          name: parsed.nm || '',
+          message: parsed.ms || '',
+          passkey: parsed.pk || '',
+          photo: parsed.ph || '',
+          music: parsed.mu || '',
+          expiresIn: parsed.ex || 24,
+          createdAt: parsed.ca || 0,
+          id: parsed.id || ''
+        };
+      } catch (e) {
+        console.warn('decodeData error:', e);
+        return null;
+      }
+    }
+
+    function genId() {
+      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  CREATE LINK
+    // ═══════════════════════════════════════════════════════════════
+    const createLinkBtn = $('btnCreateLink');
+    if (createLinkBtn) {
+      createLinkBtn.addEventListener('click', function() {
+        readFormIntoState();
+        if (!state.name) {
+          alert('🌊 Please enter a name before creating a link!');
+          return;
+        }
+        state.createdAt = Date.now();
+
+        const id = genId();
+        currentGiftId = id;
+        try { localStorage.setItem('ocean_' + id, JSON.stringify(state)); } catch (e) {}
+
+        const fullData = {
+          occasion: state.occasion,
+          name: state.name,
+          message: state.message,
+          passkey: state.passkey,
+          photo: state.photo || '',
+          music: state.music || '',
+          expiresIn: state.expiresIn,
+          createdAt: state.createdAt,
+          id: id
+        };
+
+        const encoded = encodeData(fullData);
+        let shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
+
+        const warnEl = $('urlWarn');
+        const okEl = $('urlOk');
+        if (shareUrl.length > 2048) {
+          if (warnEl) {
+            warnEl.style.display = 'block';
+            warnEl.textContent = '⚠️ Link is ' + shareUrl.length + ' chars (large media). Use smaller files or share via WhatsApp/Email.';
+          }
+          if (okEl) okEl.style.display = 'none';
+        } else if (shareUrl.length > 800) {
+          if (warnEl) {
+            warnEl.style.display = 'block';
+            warnEl.textContent = '📏 Link is ' + shareUrl.length + ' chars — still shareable but consider smaller media for shorter links.';
+          }
+          if (okEl) okEl.style.display = 'none';
+        } else {
+          if (warnEl) { warnEl.style.display = 'none'; }
+          if (okEl) {
+            okEl.style.display = 'block';
+            okEl.textContent = '✅ Link is ' + shareUrl.length + ' chars — nice and short!';
+          }
+        }
+
+        const input = $('shareLinkInput');
+        if (input) input.value = shareUrl;
+        const hint = $('expiryHint');
+        if (hint) hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+          's' : '');
+
+        nav('scr-share');
+        console.log('🌊 Ocean link created! ID:', id, 'Length:', shareUrl.length);
+        return id;
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SHARE BUTTONS
+    // ═══════════════════════════════════════════════════════════════
+    const copyBtn = $('copyLinkBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        const input = $('shareLinkInput');
+        if (!input || !input.value) return;
+        navigator.clipboard.writeText(input.value).then(() => {
+          this.textContent = '✓ Copied!';
+          this.classList.add('copied');
+          setTimeout(() => {
+            this.textContent = 'Copy';
+            this.classList.remove('copied');
+          }, 2000);
+        }).catch(() => {
+          input.select();
+          document.execCommand('copy');
+          alert('Link copied!');
+        });
+      });
+    }
+
+    const whatsappBtn = $('whatsappBtn');
+    if (whatsappBtn) {
+      whatsappBtn.addEventListener('click', () => {
+        const link = $('shareLinkInput')?.value || '';
+        window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link), '_blank');
+      });
+    }
+
+    const emailBtn = $('emailBtn');
+    if (emailBtn) {
+      emailBtn.addEventListener('click', () => {
+        const link = $('shareLinkInput')?.value || '';
+        window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
+      });
+    }
+
+    const openGiftBtn = $('openGiftBtn');
+    if (openGiftBtn) {
+      openGiftBtn.addEventListener('click', function() {
+        window.location.reload();
+      });
+    }
+
+    const shareBackBtn = $('shareBackBtn');
+    if (shareBackBtn) {
+      shareBackBtn.addEventListener('click', () => {
+        nav('scr-setup');
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  LOAD FROM URL
+    // ═══════════════════════════════════════════════════════════════
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get('d');
+      if (!encoded) return false;
+
+      const data = decodeData(encoded);
+      if (!data) {
+        const detail = $('expiryDetail');
+        if (detail) detail.textContent = 'The link is corrupted. Please create a new one.';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const expired = $('scr-expired');
+        if (expired) expired.classList.add('active');
+        return false;
+      }
+
+      const now = Date.now();
+      const createdAt = typeof data.createdAt === 'number' ? data.createdAt : parseInt(data.createdAt) || 0;
+      const expiresIn = typeof data.expiresIn === 'number' ? data.expiresIn : parseInt(data.expiresIn) || 0;
+      const expTime = createdAt + expiresIn * 3600000;
+
+      if (expiresIn > 0 && expTime > 0 && now > expTime) {
+        const d = new Date(expTime);
+        const detail = $('expiryDetail');
+        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const expired = $('scr-expired');
+        if (expired) expired.classList.add('active');
+        return false;
+      }
+
+      state.occasion = data.occasion || 'birthday';
+      state.name = data.name || DEFAULTS.name;
+      state.message = data.message || DEFAULTS.message;
+      state.passkey = data.passkey || '';
+      state.photo = data.photo || '';
+      state.music = data.music || '';
+      state.expiresIn = expiresIn || DEFAULTS.expiresIn;
+      state.createdAt = createdAt || 0;
+      musicDataURL = state.music || '';
+      photoDataURL = state.photo || '';
+      currentGiftId = data.id || null;
+
+      if (data.id) {
+        try { localStorage.setItem('ocean_' + data.id, JSON.stringify(state)); } catch (e) {}
+      }
+
+      applyState();
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+      if (state.passkey) {
+        passEntry = '';
+        updatePassDots();
+        const errEl = $('passError');
+        if (errEl) errEl.textContent = '';
+        nav('scr-pass');
+      } else {
+        nav('scr-ocean');
+      }
+
+      console.log('✅ Ocean loaded from URL. Expires in ' + expiresIn + 'h');
+      return true;
+    }
+
+    // ─── Auto-load ──────────────────────────────────────────────────
+    (function init() {
+      const loaded = loadFromUrl();
+      if (!loaded) {
+        const setup = $('scr-setup');
+        if (setup) setup.classList.add('active');
+      }
+      setupPasskeyHandler();
+    })();
+
+    // ═══════════════════════════════════════════════════════════════
     //  VIDEO RECORDING
     // ═══════════════════════════════════════════════════════════════
     let videoCanvas = null;
@@ -1359,7 +1624,6 @@
           ctx.shadowBlur = 0;
         }
 
-        // Draw occasion icon
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '48px sans-serif';
@@ -1492,197 +1756,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  ENCODE / DECODE (ALL DATA IN URL)
-    // ═══════════════════════════════════════════════════════════════
-    function encodeData(data) {
-      try {
-        return encodeURIComponent(JSON.stringify(data));
-      } catch (e) { return ''; }
-    }
-
-    function decodeData(str) {
-      try {
-        return JSON.parse(decodeURIComponent(str));
-      } catch (e) { return null; }
-    }
-
-    function genId() {
-      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  SHAREABLE LINK SYSTEM
-    // ═══════════════════════════════════════════════════════════════
-    const createLinkBtn = $('btnCreateLink');
-    if (createLinkBtn) {
-      createLinkBtn.addEventListener('click', function() {
-        readFormIntoState();
-        if (!state.name) {
-          alert('🌊 Please enter a name before creating a link!');
-          return;
-        }
-        state.createdAt = Date.now();
-
-        const id = genId();
-        currentGiftId = id;
-        try { localStorage.setItem('ocean_' + id, JSON.stringify(state)); } catch (e) {}
-
-        const fullData = {
-          occasion: state.occasion,
-          name: state.name,
-          message: state.message,
-          passkey: state.passkey,
-          photo: state.photo || '',
-          music: state.music || '',
-          expiresIn: state.expiresIn,
-          createdAt: state.createdAt,
-          id: id
-        };
-        const encoded = encodeData(fullData);
-        const shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
-
-        const input = $('shareLinkInput');
-        if (input) input.value = shareUrl;
-        const hint = $('expiryHint');
-        if (hint) hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-          's' : '');
-
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        nav('scr-share');
-        console.log('🌊 Ocean link created! ID:', id);
-        return id;
-      });
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  SHARE BUTTONS
-    // ═══════════════════════════════════════════════════════════════
-    const copyBtn = $('copyLinkBtn');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', function() {
-        const input = $('shareLinkInput');
-        if (!input || !input.value) return;
-        navigator.clipboard.writeText(input.value).then(() => {
-          this.textContent = '✓ Copied!';
-          this.classList.add('copied');
-          setTimeout(() => {
-            this.textContent = 'Copy';
-            this.classList.remove('copied');
-          }, 2000);
-        }).catch(() => {
-          input.select();
-          document.execCommand('copy');
-          alert('Link copied!');
-        });
-      });
-    }
-
-    const whatsappBtn = $('whatsappBtn');
-    if (whatsappBtn) {
-      whatsappBtn.addEventListener('click', () => {
-        const link = $('shareLinkInput')?.value || '';
-        window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link), '_blank');
-      });
-    }
-
-    const emailBtn = $('emailBtn');
-    if (emailBtn) {
-      emailBtn.addEventListener('click', () => {
-        const link = $('shareLinkInput')?.value || '';
-        window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
-      });
-    }
-
-    const openGiftBtn = $('openGiftBtn');
-    if (openGiftBtn) {
-      openGiftBtn.addEventListener('click', function() {
-        window.location.reload();
-      });
-    }
-
-    const shareBackBtn = $('shareBackBtn');
-    if (shareBackBtn) {
-      shareBackBtn.addEventListener('click', () => {
-        nav('scr-setup');
-      });
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  LOAD FROM URL
-    // ═══════════════════════════════════════════════════════════════
-    function loadFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const encoded = params.get('d');
-      if (!encoded) return false;
-
-      const data = decodeData(encoded);
-      if (!data) {
-        const detail = $('expiryDetail');
-        if (detail) detail.textContent = 'The link is corrupted. Please create a new one.';
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const expired = $('scr-expired');
-        if (expired) expired.classList.add('active');
-        return false;
-      }
-
-      const now = Date.now();
-      const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-      if (expTime > 0 && now > expTime) {
-        const d = new Date(expTime);
-        const detail = $('expiryDetail');
-        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const expired = $('scr-expired');
-        if (expired) expired.classList.add('active');
-        return false;
-      }
-
-      state.occasion = data.occasion || 'birthday';
-      state.name = data.name || DEFAULTS.name;
-      state.message = data.message || DEFAULTS.message;
-      state.passkey = data.passkey || '';
-      state.photo = data.photo || '';
-      state.music = data.music || '';
-      state.expiresIn = data.expiresIn || DEFAULTS.expiresIn;
-      state.createdAt = data.createdAt || 0;
-      musicDataURL = state.music || '';
-      photoDataURL = state.photo || '';
-      currentGiftId = data.id || null;
-
-      if (data.id) {
-        try { localStorage.setItem('ocean_' + data.id, JSON.stringify(state)); } catch (e) {}
-      }
-
-      applyState();
-
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-
-      if (state.passkey) {
-        passEntry = '';
-        updatePassDots();
-        const errEl = $('passError');
-        if (errEl) errEl.textContent = '';
-        nav('scr-pass');
-      } else {
-        nav('scr-ocean');
-      }
-
-      console.log('✅ Ocean loaded from URL successfully!');
-      return true;
-    }
-
-    // ─── Auto-load ──────────────────────────────────────────────────
-    (function init() {
-      const loaded = loadFromUrl();
-      if (!loaded) {
-        const setup = $('scr-setup');
-        if (setup) setup.classList.add('active');
-      }
-      setupPasskeyHandler();
-    })();
-
-    // ═══════════════════════════════════════════════════════════════
-    //  RESTART / GO TO SETUP
+    //  RESTART
     // ═══════════════════════════════════════════════════════════════
     function goToSetup() {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1695,6 +1769,10 @@
         mediaRecorder.stop();
         recording = false;
       }
+      const warnEl = $('urlWarn');
+      if (warnEl) warnEl.style.display = 'none';
+      const okEl = $('urlOk');
+      if (okEl) okEl.style.display = 'none';
     }
 
     const restartBtn = $('restartBtn');
@@ -1703,34 +1781,19 @@
     const expiredRestartBtn = $('expiredRestartBtn');
     if (expiredRestartBtn) expiredRestartBtn.addEventListener('click', goToSetup);
 
-    // ─── Legacy preset support ──────────────────────────────────
-    if (window.__PRESET__) {
-      state = Object.assign({}, DEFAULTS, window.__PRESET__);
-      applyState();
-      if (state.passkey) {
-        passEntry = '';
-        updatePassDots();
-        nav('scr-pass');
-      } else {
-        nav('scr-ocean');
-      }
-      delete window.__PRESET__;
-    }
-
     // ─── Occasion change preview in setup ──────────────────────────
     const occSelect = $('inpOccasion');
     if (occSelect) {
       occSelect.addEventListener('change', function() {
-        // Preview the occasion icon in the brand area
         const occ = OCCASIONS[this.value] || OCCASIONS.justbecause;
         const iconEl = document.querySelector('.brand-icon');
         if (iconEl) iconEl.textContent = occ.icon;
       });
     }
 
-    console.log('🌊 Ocean of Love — Style 7 (with Occasion Themes) loaded!');
-    console.log('🎯 Choose an occasion to change the theme and animations.');
-    console.log('🔗 ALL data encoded in URL — works across any device.');
+    console.log('🌊 Ocean of Love — EXTRA SHORT URL (compressed + short keys)');
+    console.log('📦 Uses LZString.compressToEncodedURIComponent + compact JSON keys');
+    console.log('⏳ Expiration check with robust type handling');
   </script>
 </body>
 </html>
