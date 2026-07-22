@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Custom Surprise Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+  :root {
+    --bg-pink: #fdf0f4;
+    --card-white: #ffffff;
+    --accent-pink: #e63956;
+    --soft-text: #6d595e;
+    --heading-color: #2b1e22;
+    --shadow: 0 10px 30px rgba(230, 57, 86, 0.08);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg-pink); color: var(--heading-color); overflow-x: hidden; }
+
+  .app-viewport {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 15px;
+    position: relative;
+  }
+
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 400px;
+    animation: fadeIn 0.4s ease-in-out forwards;
+  }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .v-card {
+    background: var(--card-white);
+    border-radius: 28px;
+    padding: 30px 22px;
+    width: 100%;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .script-font {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--accent-pink);
+    font-weight: 600;
+  }
+
+  h1.main-title { font-size: 34px; margin: 10px 0 5px 0; font-weight: 600; }
+  p.sub-quote { font-size: 13px; color: var(--soft-text); font-style: italic; margin-bottom: 20px; line-height: 1.5; white-space: pre-wrap; }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-pink); font-weight: 600; }
+
+  .pin-container { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+  .pin-box {
+    width: 50px; height: 55px; border: 2px solid #f3cfd6; border-radius: 14px;
+    font-size: 22px; font-weight: 600; text-align: center; color: var(--accent-pink);
+    outline: none; background: #fff; transition: all 0.2s;
+  }
+  .pin-box:focus { border-color: var(--accent-pink); box-shadow: 0 0 10px rgba(230, 57, 86, 0.2); }
+
+  .btn-pink {
+    background: var(--accent-pink); color: white; border: none; padding: 14px 28px;
+    border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(230, 57, 86, 0.3); transition: transform 0.2s; width: 100%;
+  }
+  .btn-pink:active { transform: scale(0.96); }
+
+  .btn-outline {
+    background: transparent; color: var(--soft-text); border: 1px solid #e2c0c7;
+    padding: 12px 24px; border-radius: 50px; font-size: 13px; cursor: pointer;
+    margin-top: 10px; transition: all 0.2s; width: 100%;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: #1e1e1e; border: none; padding: 14px 28px;
+    border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3); transition: transform 0.2s; width: 100%;
+  }
+  .btn-gold:active { transform: scale(0.96); }
+
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+  .btn-group .btn-pink, .btn-group .btn-gold { flex: 1; min-width: 100px; }
+
+  .toast-popup {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #2b1e22; color: #fff; padding: 10px 20px; border-radius: 30px;
+    font-size: 12px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 100;
+    animation: popUp 0.3s ease; max-width: 80vw; text-align: center;
+  }
+  @keyframes popUp { from { transform: translate(-50%,20px); opacity: 0; } to { transform: translate(-50%,0); opacity: 1; } }
+
+  .field { text-align: left; margin-bottom: 14px; width: 100%; }
+  .field label { font-size: 11px; font-weight: 600; color: var(--soft-text); display: block; margin-bottom: 4px; }
+  .field input, .field textarea { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #f0cad2; background: white; font-family: inherit; font-size: 13px; }
+  .field input:focus, .field textarea:focus { outline: 2px solid var(--accent-pink); outline-offset: 2px; }
+  .field small { display: block; margin-top: 4px; color: #b98c95; font-size: 10.5px; }
+  .section-label { text-align: left; width: 100%; font-size: 11px; font-weight: 700; color: var(--accent-pink); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; border-top: 1px dashed #f0cad2; padding-top: 14px; }
+  .section-label:first-of-type { border-top: none; margin-top: 4px; padding-top: 0; }
+
+  .note-list { text-align: left; font-size: 13px; line-height: 1.8; color: #4a3a3e; margin: 15px 0; }
+  .note-list p { margin-bottom: 12px; position: relative; padding-left: 18px; }
+  .note-list p::before { content: '🌸'; position: absolute; left: 0; font-size: 10px; top: 2px; }
+
+  .frame-box {
+    width: 100%; border-radius: 20px; overflow: hidden; margin: 15px 0;
+    border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  .frame-box img { width: 100%; height: auto; display: block; }
+  .pin-error { min-height: 16px; font-size: 12px; color: var(--accent-pink); margin-bottom: 8px; }
+  @keyframes shakePin { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+
+  /* Share screen */
+  .share-card .success-icon{font-size:50px;margin-bottom:6px;animation:bounceIn 0.8s ease;}
+  @keyframes bounceIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+  .share-link-box{background:rgba(0,0,0,.04);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;border:1px solid rgba(230,57,86,.15);margin-bottom:18px;}
+  .share-link-box input{flex:1;border:none;background:transparent;font-size:12px;color:var(--heading-color);outline:none;font-family:'Poppins',sans-serif;min-width:0;}
+  .copy-btn{background:var(--accent-pink);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;}
+  .copy-btn:hover{background:#c92a47;}
+  .copy-btn.copied{background:#27ae60;}
+
+  .share-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .share-actions button{padding:10px 18px;border:none;border-radius:12px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;flex:1;min-width:80px;font-family:'Poppins',sans-serif;}
+  .share-actions button:hover{transform:translateY(-2px);}
+  .share-actions .whatsapp{background:#25D366;color:#fff;}
+  .share-actions .whatsapp:hover{background:#1da851;}
+  .share-actions .email{background:#EA4335;color:#fff;}
+  .share-actions .email:hover{background:#c62828;}
+  .share-actions .open-gift{background:linear-gradient(135deg,var(--accent-pink),#c92a47);color:#fff;flex:1.5;}
+  .expiry-hint{margin-top:14px;font-size:11px;color:#b98c95;}
+  .share-back-link{margin-top:14px;background:none;border:none;color:#b98c95;font-size:11px;text-decoration:underline;cursor:pointer;font-family:'Poppins',sans-serif;}
+
+  /* Expired screen */
+  .expired-card .icon{font-size:60px;margin-bottom:8px;}
+  .expired-card h2{font-family:'Playfair Display',serif;color:#e74c3c;margin:0;font-size:28px;font-style:italic;}
+  .expired-card p{color:var(--soft-text);font-size:14px;margin:12px 0 24px;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="app-viewport">
+
+  <!-- SETUP SCREEN -->
+  <div class="screen active" id="scr-setup">
+    <div class="v-card">
+      <h2 class="script-font" style="font-size: 26px;">Build Your Surprise</h2>
+      <p class="sub-quote" style="margin-bottom:10px;">Customize everything, then create a shareable link with time expiration.</p>
+
+      <div class="section-label">Screen 1 — Lock Screen</div>
+      <div class="field">
+        <label>Main Name / Title</label>
+        <input type="text" id="inpTitle" value="Your Name Here">
+      </div>
+      <div class="field">
+        <label>Small Tag Line (above the title)</label>
+        <input type="text" id="inpEyebrow1" value="A Little Surprise ✨">
+      </div>
+      <div class="field">
+        <label>Quote / Subtitle</label>
+        <textarea id="inpQuote1" rows="2">Something made just for you.</textarea>
+      </div>
+      <div class="field">
+        <label>4-Digit Pin Code</label>
+        <input type="text" id="inpPin" maxlength="4" value="">
+        <small>Leave blank to skip the passcode step entirely</small>
+      </div>
+      <div class="field">
+        <label>Pin Hint Text</label>
+        <input type="text" id="inpPinHint" value="Enter the code to continue 🗝️">
+      </div>
+      <div class="field">
+        <label>Unlock Button Text</label>
+        <input type="text" id="inpBtn1" value="Unlock ✨">
+      </div>
+
+      <div class="section-label">Screen 2 — A Little Question</div>
+      <div class="field">
+        <label>Question / Heading</label>
+        <input type="text" id="inpQ2" value="Ready for this?">
+      </div>
+      <div class="field">
+        <label>Yes Button Text</label>
+        <input type="text" id="inpBtn2Yes" value="Yes, Let's Go 💫">
+      </div>
+      <div class="field">
+        <label>"No / Think About It" Button Text</label>
+        <input type="text" id="inpBtn2No" value="Wait, Let Me Think">
+      </div>
+      <div class="field">
+        <label>Popup Text (shown if they hesitate)</label>
+        <input type="text" id="inpToast" value="You know you want to 😉">
+      </div>
+
+      <div class="section-label">Screen 3 — Your Message</div>
+      <div class="field">
+        <label>Small Badge Text</label>
+        <input type="text" id="inpBadge" value="A Little Something">
+      </div>
+      <div class="field">
+        <label>Heading</label>
+        <input type="text" id="inpHeading3" value="Here's What I Want To Say">
+      </div>
+      <div class="field">
+        <label>Points (one per line)</label>
+        <textarea id="inpNotes" rows="4">This is the first thing I want you to know.
+And here's the second.
+Add as many lines as you like — each one becomes its own point.</textarea>
+      </div>
+      <div class="field">
+        <label>Continue Button Text</label>
+        <input type="text" id="inpBtn3" value="Continue ➔">
+      </div>
+
+      <div class="section-label">Screen 4 — Photo</div>
+      <div class="field">
+        <label>Small Tag Line</label>
+        <input type="text" id="inpEyebrow4" value="A Moment To Remember">
+      </div>
+      <div class="field">
+        <label>Photo</label>
+        <input type="file" id="inpPhoto" accept="image/*">
+        <small id="photoHint">Optional — a default photo will show if you skip this</small>
+      </div>
+      <div class="field">
+        <label>Caption Below Photo</label>
+        <textarea id="inpCaption4" rows="2">Every memory with you matters.</textarea>
+      </div>
+      <div class="field">
+        <label>Continue Button Text</label>
+        <input type="text" id="inpBtn4" value="Continue ➔">
+      </div>
+
+      <div class="section-label">Screen 5 — Final Message</div>
+      <div class="field">
+        <label>Final Heading</label>
+        <input type="text" id="inpHeading5" value="With Love">
+      </div>
+      <div class="field">
+        <label>Final Message</label>
+        <textarea id="inpQuote5" rows="2">Wishing you all the happiness in the world.</textarea>
+      </div>
+      <div class="field">
+        <label>Replay Button Text</label>
+        <input type="text" id="inpBtn5" value="🔄 Replay Again">
+      </div>
+
+      <div class="field">
+        <label>⏳ Link Expires In (hours)</label>
+        <input type="number" id="inpExpires" min="1" max="720" value="24">
+        <small>After this many hours, the link will expire. (1–720 hours)</small>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-pink" id="btnPreview">👀 Preview</button>
+        <button class="btn-gold" id="btnCreateLink">🔗 Create Link</button>
+      </div>
+      <small style="display:block;margin-top:10px;color:#b98c95;">"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</small>
+    </div>
+  </div>
+
+  <!-- SHARE SCREEN -->
+  <div class="screen" id="scr-share">
+    <div class="v-card share-card">
+      <div class="success-icon">🎁</div>
+      <h2 class="script-font" style="font-size:24px;margin:0;">Surprise Ready!</h2>
+      <p style="font-size:13px;color:var(--soft-text);margin:4px 0 20px;">Share this link with your special person.</p>
+      <div class="share-link-box">
+        <input type="text" id="shareLinkInput" readonly>
+        <button class="copy-btn" id="copyLinkBtn">Copy</button>
+      </div>
+      <div class="share-actions">
+        <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+        <button class="email" id="emailBtn">✉️ Email</button>
+        <button class="open-gift" id="openGiftBtn">Open 🎁</button>
+      </div>
+      <div class="expiry-hint" id="expiryHint"></div>
+      <button class="share-back-link" id="shareBackBtn">← Back to setup</button>
+    </div>
+  </div>
+
+  <!-- EXPIRED SCREEN -->
+  <div class="screen" id="scr-expired">
+    <div class="v-card expired-card">
+      <div class="icon">⏳</div>
+      <h2>Link Expired</h2>
+      <p>This surprise link has expired. The magic was meant to be cherished in the moment.</p>
+      <button class="btn-pink" id="expiredRestartBtn">Create a New One</button>
+      <div style="margin-top:12px;font-size:11px;color:#b98c95;" id="expiryDetail"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: PASSCODE LOGIN -->
+  <div class="screen" id="scr-1">
+    <div class="v-card">
+      <div class="eyebrow" id="dispEyebrow1"></div>
+      <h1 class="main-title script-font" id="dispTitle"></h1>
+      <p class="sub-quote" id="dispQuote1"></p>
+
+      <div class="pin-container" id="pinWrap">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 0)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 1)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 2)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 3)">
+      </div>
+      <div class="pin-error" id="pinError"></div>
+
+      <div style="font-size: 11px; color: var(--soft-text); margin-bottom: 15px;" id="dispPinHint"></div>
+      <button class="btn-pink" onclick="checkPin()" id="dispBtn1"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: INTERACTIVE DECISION -->
+  <div class="screen" id="scr-2">
+    <div class="v-card">
+      <h2 class="script-font" style="font-size: 28px; margin-bottom: 25px;" id="dispQ2"></h2>
+      <button class="btn-pink" onclick="nav('scr-3')" id="dispBtn2Yes"></button>
+      <button class="btn-outline" onclick="showThinkToast()" id="dispBtn2No"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: MESSAGE & NOTES -->
+  <div class="screen" id="scr-3">
+    <div class="v-card">
+      <div class="eyebrow" id="dispBadge"></div>
+      <h2 class="script-font" style="font-size: 28px; margin: 10px 0 15px;" id="dispHeading3"></h2>
+      <div class="note-list" id="dispNotes"></div>
+      <button class="btn-pink" onclick="nav('scr-4')" style="margin-top: 15px;" id="dispBtn3"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: PHOTO -->
+  <div class="screen" id="scr-4">
+    <div class="v-card">
+      <div class="eyebrow" id="dispEyebrow4"></div>
+      <div class="frame-box">
+        <img id="dispPhoto" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" alt="Memory">
+      </div>
+      <p class="sub-quote" style="margin-bottom: 15px;" id="dispCaption4"></p>
+      <button class="btn-pink" onclick="nav('scr-5')" id="dispBtn4"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: FINAL -->
+  <div class="screen" id="scr-5">
+    <div class="v-card">
+      <h1 class="script-font" style="font-size: 32px; color: var(--accent-pink); margin-bottom: 10px;" id="dispHeading5"></h1>
+      <p class="sub-quote" id="dispQuote5"></p>
+      <button class="btn-outline" id="replayBtn"></button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast element -->
+<div class="toast-popup" id="thinkToast"></div>
+
+<script>
+  // ============================================================
+  //  CONFIG & DEFAULTS
+  // ============================================================
+  const DEFAULT_PHOTO = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500";
+
+  const DEFAULTS = {
+    title: 'Your Name Here',
+    eyebrow1: 'A Little Surprise ✨',
+    quote1: 'Something made just for you.',
+    pin: '',
+    pinHint: 'Enter the code to continue 🗝️',
+    btn1: 'Unlock ✨',
+    q2: 'Ready for this?',
+    btn2Yes: "Yes, Let's Go 💫",
+    btn2No: 'Wait, Let Me Think',
+    toast: 'You know you want to 😉',
+    badge: 'A Little Something',
+    heading3: "Here's What I Want To Say",
+    notes: "This is the first thing I want you to know.\nAnd here's the second.\nAdd as many lines as you like — each one becomes its own point.",
+    btn3: 'Continue ➔',
+    eyebrow4: 'A Moment To Remember',
+    caption4: 'Every memory with you matters.',
+    btn4: 'Continue ➔',
+    heading5: 'With Love',
+    quote5: 'Wishing you all the happiness in the world.',
+    btn5: '🔄 Replay Again',
+    photo: DEFAULT_PHOTO,
+    expiresIn: 24,
+    createdAt: 0
+  };
+
+  let state = Object.assign({}, DEFAULTS);
+  let currentGiftId = null;
+
+  // ============================================================
+  //  DOM REFS
+  // ============================================================
+  const $ = id => document.getElementById(id);
+
+  // ============================================================
+  //  NAVIGATION
+  // ============================================================
+  function nav(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = $(screenId);
+    if(target) target.classList.add('active');
+    if(screenId === 'scr-1'){
+      document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+      $('pinError').innerText = '';
+    }
+    if(screenId === 'scr-5') {
+      if(typeof confetti !== 'undefined') {
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+  }
+
+  // ============================================================
+  //  PIN FUNCTIONS
+  // ============================================================
+  function movePin(current, index) {
+    if(current.value.length >= 1 && index < 3) {
+      document.querySelectorAll('.pin-box')[index + 1].focus();
+    }
+  }
+
+  function checkPin() {
+    let inputs = document.querySelectorAll('.pin-box');
+    let entered = Array.from(inputs).map(i => i.value).join('');
+    if(entered === state.pin || state.pin === "") {
+      nav('scr-2');
+    } else {
+      $('pinError').innerText = 'Wrong passcode, try again';
+      const wrap = $('pinWrap');
+      wrap.style.animation = 'shakePin .4s';
+      setTimeout(()=> wrap.style.animation = '', 400);
+      inputs.forEach(i => i.value = '');
+      inputs[0].focus();
+    }
+  }
+
+  function showThinkToast() {
+    let t = $('thinkToast');
+    t.innerText = state.toast;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 2000);
+  }
+
+  // ============================================================
+  //  STATE READ / APPLY
+  // ============================================================
+  function readFormIntoState(){
+    state.title = $('inpTitle').value.trim() || DEFAULTS.title;
+    state.eyebrow1 = $('inpEyebrow1').value.trim() || DEFAULTS.eyebrow1;
+    state.quote1 = $('inpQuote1').value.trim() || DEFAULTS.quote1;
+    state.pin = $('inpPin').value.trim();
+    state.pinHint = $('inpPinHint').value.trim() || DEFAULTS.pinHint;
+    state.btn1 = $('inpBtn1').value.trim() || DEFAULTS.btn1;
+    state.q2 = $('inpQ2').value.trim() || DEFAULTS.q2;
+    state.btn2Yes = $('inpBtn2Yes').value.trim() || DEFAULTS.btn2Yes;
+    state.btn2No = $('inpBtn2No').value.trim() || DEFAULTS.btn2No;
+    state.toast = $('inpToast').value.trim() || DEFAULTS.toast;
+    state.badge = $('inpBadge').value.trim() || DEFAULTS.badge;
+    state.heading3 = $('inpHeading3').value.trim() || DEFAULTS.heading3;
+    state.notes = $('inpNotes').value.trim() || DEFAULTS.notes;
+    state.btn3 = $('inpBtn3').value.trim() || DEFAULTS.btn3;
+    state.eyebrow4 = $('inpEyebrow4').value.trim() || DEFAULTS.eyebrow4;
+    state.caption4 = $('inpCaption4').value.trim() || DEFAULTS.caption4;
+    state.btn4 = $('inpBtn4').value.trim() || DEFAULTS.btn4;
+    state.heading5 = $('inpHeading5').value.trim() || DEFAULTS.heading5;
+    state.quote5 = $('inpQuote5').value.trim() || DEFAULTS.quote5;
+    state.btn5 = $('inpBtn5').value.trim() || DEFAULTS.btn5;
+    const exp = parseInt($('inpExpires').value) || 24;
+    state.expiresIn = Math.min(Math.max(exp, 1), 720);
+    state.createdAt = Date.now();
+  }
+
+  function applyState(){
+    $('dispTitle').innerText = state.title;
+    $('dispEyebrow1').innerText = state.eyebrow1;
+    $('dispQuote1').innerText = state.quote1;
+    $('dispPinHint').innerText = state.pinHint;
+    $('dispBtn1').innerText = state.btn1;
+
+    $('dispQ2').innerText = state.q2;
+    $('dispBtn2Yes').innerText = state.btn2Yes;
+    $('dispBtn2No').innerText = state.btn2No;
+
+    $('dispBadge').innerText = state.badge;
+    $('dispHeading3').innerText = state.heading3;
+    $('dispBtn3').innerText = state.btn3;
+
+    $('dispEyebrow4').innerText = state.eyebrow4;
+    $('dispPhoto').src = state.photo;
+    $('dispCaption4').innerText = state.caption4;
+    $('dispBtn4').innerText = state.btn4;
+
+    $('dispHeading5').innerText = state.heading5;
+    $('dispQuote5').innerText = state.quote5;
+    $('replayBtn').innerText = state.btn5;
+
+    let notesArray = state.notes.split('\n');
+    let container = $('dispNotes');
+    container.innerHTML = '';
+    notesArray.forEach(n => {
+      if(n.trim()) {
+        let p = document.createElement('p');
+        p.innerText = n.trim();
+        container.appendChild(p);
+      }
+    });
+  }
+
+  // ============================================================
+  //  PHOTO HANDLING
+  // ============================================================
+  $('inpPhoto').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if(file){
+      let reader = new FileReader();
+      reader.onload = function(evt) {
+        state.photo = evt.target.result;
+        $('photoHint').innerText = 'Photo selected ✓';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // ============================================================
+  //  ENCODE / DECODE HELPERS
+  // ============================================================
+  function encodeData(data){
+    try {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    } catch(e) {
+      // Fallback for large data
+      return encodeURIComponent(JSON.stringify(data));
+    }
+  }
+  function decodeData(str){
+    try {
+      return JSON.parse(decodeURIComponent(escape(atob(str))));
+    } catch(e) {
+      try {
+        return JSON.parse(decodeURIComponent(str));
+      } catch(e2) {
+        return null;
+      }
+    }
+  }
+
+  // ============================================================
+  //  PREVIEW
+  // ============================================================
+  $('btnPreview').addEventListener('click', () => {
+    readFormIntoState();
+    applyState();
+    // Reset pin inputs
+    document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+    $('pinError').innerText = '';
+    nav('scr-1');
+  });
+
+  // ============================================================
+  //  REPLAY BUTTON
+  // ============================================================
+  $('replayBtn').addEventListener('click', () => {
+    document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+    $('pinError').innerText = '';
+    nav('scr-1');
+  });
+
+  // ============================================================
+  //  ID GENERATION
+  // ============================================================
+  function genId() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ============================================================
+  //  SHAREABLE LINK SYSTEM
+  // ============================================================
+  function createShareableLink() {
+    readFormIntoState();
+    if (!state.title) {
+      alert('🎁 Please enter a title before creating a link!');
+      return;
+    }
+    state.createdAt = Date.now();
+
+    const id = genId();
+    currentGiftId = id;
+
+    // Cache in localStorage for faster loads on same device
+    const dataToStore = JSON.parse(JSON.stringify(state));
+    localStorage.setItem('surprise_' + id, JSON.stringify(dataToStore));
+
+    let allIds = JSON.parse(localStorage.getItem('surprise_ids') || '[]');
+    if (!allIds.includes(id)) allIds.push(id);
+    localStorage.setItem('surprise_ids', JSON.stringify(allIds));
+
+    // Encode data into URL
+    const encodedData = encodeData(state);
+    const shareUrl = window.location.origin + window.location.pathname + '?d=' + encodedData;
+
+    $('shareLinkInput').value = shareUrl;
+    $('expiryHint').innerText = '🎁 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    nav('scr-share');
+    console.log('🎁 Surprise link created! Data embedded in URL.');
+    return id;
+  }
+
+  $('btnCreateLink').addEventListener('click', createShareableLink);
+
+  // ============================================================
+  //  SHARE BUTTONS
+  // ============================================================
+  $('copyLinkBtn').addEventListener('click', function() {
+    const input = $('shareLinkInput');
+    if (!input || !input.value) return;
+    navigator.clipboard.writeText(input.value).then(() => {
+      this.textContent = '✓ Copied!';
+      this.classList.add('copied');
+      setTimeout(() => {
+        this.textContent = 'Copy';
+        this.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      input.select();
+      document.execCommand('copy');
+      alert('Link copied!');
+    });
+  });
+
+  $('whatsappBtn').addEventListener('click', () => {
+    const link = $('shareLinkInput')?.value || '';
+    window.open('https://wa.me/?text=' + encodeURIComponent('🎁 A special surprise for you! ' + link), '_blank');
+  });
+
+  $('emailBtn').addEventListener('click', () => {
+    const link = $('shareLinkInput')?.value || '';
+    window.location.href = 'mailto:?subject=A Special Surprise&body=🎁 A special surprise for you! ' + link;
+  });
+
+  $('openGiftBtn').addEventListener('click', function() {
+    window.location.reload();
+  });
+
+  $('shareBackBtn').addEventListener('click', () => {
+    nav('scr-setup');
+  });
+
+  // ============================================================
+  //  LOAD FROM URL
+  // ============================================================
+  function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+
+    // Check for embedded data
+    const encodedData = params.get('d');
+    if (encodedData) {
+      const data = decodeData(encodedData);
+      if (data) {
+        console.log('📦 Data loaded from URL:', data);
+
+        // Check expiration
+        const now = Date.now();
+        const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+        if (expTime > 0 && now > expTime) {
+          const d = new Date(expTime);
+          $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          $('scr-expired').classList.add('active');
+          return false;
+        }
+
+        state = data;
+        applyState();
+
+        // Reset pin inputs
+        document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+        $('pinError').innerText = '';
+
+        // Cache for faster subsequent loads
+        localStorage.setItem('surprise_cached', JSON.stringify(data));
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        nav('scr-1');
+        console.log('✅ Surprise loaded from URL successfully!');
+        return true;
+      }
+    }
+
+    // Fallback: check for ID in URL
+    const id = params.get('id');
+    if (id) {
+      const raw = localStorage.getItem('surprise_' + id);
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          const now = Date.now();
+          const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+          if (expTime > 0 && now > expTime) {
+            const d = new Date(expTime);
+            $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            $('scr-expired').classList.add('active');
+            return false;
+          }
+          state = data;
+          applyState();
+          document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+          $('pinError').innerText = '';
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          nav('scr-1');
+          console.log('✅ Surprise loaded from localStorage (ID fallback)!');
+          return true;
+        } catch(e) { console.warn('Fallback parse error:', e); }
+      }
+    }
+
+    return false;
+  }
+
+  // ============================================================
+  //  AUTO-LOAD ON PAGE LOAD
+  // ============================================================
+  (function init() {
+    const loaded = loadFromUrl();
+    if (!loaded) {
+      // No data, show setup
+      $('scr-setup').classList.add('active');
+    }
+  })();
+
+  // ============================================================
+  //  RESTART / GO TO SETUP
+  // ============================================================
+  function goToSetup() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    nav('scr-setup');
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+    currentGiftId = null;
+  }
+
+  $('expiredRestartBtn').addEventListener('click', goToSetup);
+
+  // ============================================================
+  //  LEGACY PRESET SUPPORT
+  // ============================================================
+  if (window.__PRESET__) {
+    state = Object.assign({}, DEFAULTS, window.__PRESET__);
+    applyState();
+    nav('scr-1');
+    delete window.__PRESET__;
+  }
+
+  console.log('🎁 Custom Surprise Builder — Shareable Edition');
+  console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
+  console.log('⏳ Links expire after the set hours (default 24h).');
+</script>
+
+</body>
+</html>
