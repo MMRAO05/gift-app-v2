@@ -73,8 +73,10 @@
     width: 50px; height: 55px; border: 2px solid #f3cfd6; border-radius: 14px;
     font-size: 22px; font-weight: 600; text-align: center; color: var(--accent-pink);
     outline: none; background: #fff; transition: all 0.2s;
+    font-family: 'Poppins', sans-serif;
   }
   .pin-box:focus { border-color: var(--accent-pink); box-shadow: 0 0 10px rgba(230, 57, 86, 0.2); }
+  .pin-box::placeholder { color: #ddd; font-size: 14px; }
 
   .btn-pink {
     background: var(--accent-pink); color: white; border: none; padding: 14px 28px;
@@ -314,15 +316,15 @@ Add as many lines as you like — each one becomes its own point.</textarea>
       <p class="sub-quote" id="dispQuote1"></p>
 
       <div class="pin-container" id="pinWrap">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 0)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 1)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 2)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 3)">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin0" autofocus>
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin1">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin2">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin3">
       </div>
       <div class="pin-error" id="pinError"></div>
 
       <div style="font-size: 11px; color: var(--soft-text); margin-bottom: 15px;" id="dispPinHint"></div>
-      <button class="btn-pink" onclick="checkPin()" id="dispBtn1"></button>
+      <button class="btn-pink" id="unlockBtn">Unlock ✨</button>
     </div>
   </div>
 
@@ -330,8 +332,8 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   <div class="screen" id="scr-2">
     <div class="v-card">
       <h2 class="script-font" style="font-size: 28px; margin-bottom: 25px;" id="dispQ2"></h2>
-      <button class="btn-pink" onclick="nav('scr-3')" id="dispBtn2Yes"></button>
-      <button class="btn-outline" onclick="showThinkToast()" id="dispBtn2No"></button>
+      <button class="btn-pink" id="yesBtn2">Yes, Let's Go 💫</button>
+      <button class="btn-outline" id="noBtn2">Wait, Let Me Think</button>
     </div>
   </div>
 
@@ -341,7 +343,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
       <div class="eyebrow" id="dispBadge"></div>
       <h2 class="script-font" style="font-size: 28px; margin: 10px 0 15px;" id="dispHeading3"></h2>
       <div class="note-list" id="dispNotes"></div>
-      <button class="btn-pink" onclick="nav('scr-4')" style="margin-top: 15px;" id="dispBtn3"></button>
+      <button class="btn-pink" id="btn3Continue">Continue ➔</button>
     </div>
   </div>
 
@@ -353,7 +355,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
         <img id="dispPhoto" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" alt="Memory">
       </div>
       <p class="sub-quote" style="margin-bottom: 15px;" id="dispCaption4"></p>
-      <button class="btn-pink" onclick="nav('scr-5')" id="dispBtn4"></button>
+      <button class="btn-pink" id="btn4Continue">Continue ➔</button>
     </div>
   </div>
 
@@ -362,7 +364,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     <div class="v-card">
       <h1 class="script-font" style="font-size: 32px; color: var(--accent-pink); margin-bottom: 10px;" id="dispHeading5"></h1>
       <p class="sub-quote" id="dispQuote5"></p>
-      <button class="btn-outline" id="replayBtn"></button>
+      <button class="btn-outline" id="replayBtn">🔄 Replay Again</button>
     </div>
   </div>
 
@@ -419,8 +421,10 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     const target = $(screenId);
     if(target) target.classList.add('active');
     if(screenId === 'scr-1'){
-      document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+      const boxes = document.querySelectorAll('.pin-box');
+      boxes.forEach(i => i.value = '');
       $('pinError').innerText = '';
+      setTimeout(() => { boxes[0].focus(); }, 100);
     }
     if(screenId === 'scr-5') {
       if(typeof confetti !== 'undefined') {
@@ -432,27 +436,143 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   // ============================================================
   //  PIN FUNCTIONS
   // ============================================================
-  function movePin(current, index) {
-    if(current.value.length >= 1 && index < 3) {
-      document.querySelectorAll('.pin-box')[index + 1].focus();
+  function setupPinHandlers() {
+    const boxes = document.querySelectorAll('.pin-box');
+    boxes.forEach((box, index) => {
+      box.addEventListener('input', function(e) {
+        if (this.value.length > 1) {
+          this.value = this.value.slice(0, 1);
+        }
+        if (this.value.length === 1 && index < 3) {
+          boxes[index + 1].focus();
+        }
+        $('pinError').innerText = '';
+      });
+
+      box.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '' && index > 0) {
+          boxes[index - 1].focus();
+        }
+        if (e.key === 'Enter') {
+          checkPin();
+        }
+      });
+
+      box.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const digits = paste.replace(/\D/g, '').slice(0, 4);
+        if (digits) {
+          boxes.forEach((b, i) => {
+            if (i < digits.length) b.value = digits[i];
+          });
+          const lastIndex = Math.min(digits.length, 4) - 1;
+          if (lastIndex < 3) {
+            boxes[lastIndex + 1].focus();
+          } else {
+            boxes[3].focus();
+          }
+          $('pinError').innerText = '';
+        }
+      });
+
+      box.addEventListener('focus', function() {
+        let firstEmpty = null;
+        for (let i = 0; i < boxes.length; i++) {
+          if (boxes[i].value === '') {
+            firstEmpty = boxes[i];
+            break;
+          }
+        }
+        if (firstEmpty && firstEmpty !== this && this.value === '') {
+          firstEmpty.focus();
+        }
+      });
+    });
+
+    const wrap = $('pinWrap');
+    if (wrap) {
+      wrap.addEventListener('click', function(e) {
+        if (e.target.classList.contains('pin-box')) return;
+        const boxes = document.querySelectorAll('.pin-box');
+        let firstEmpty = null;
+        for (let i = 0; i < boxes.length; i++) {
+          if (boxes[i].value === '') {
+            firstEmpty = boxes[i];
+            break;
+          }
+        }
+        if (firstEmpty) firstEmpty.focus();
+        else boxes[3].focus();
+      });
     }
   }
 
   function checkPin() {
-    let inputs = document.querySelectorAll('.pin-box');
-    let entered = Array.from(inputs).map(i => i.value).join('');
-    if(entered === state.pin || state.pin === "") {
+    const boxes = document.querySelectorAll('.pin-box');
+    const entered = Array.from(boxes).map(i => i.value).join('');
+    const pin = state.pin || '';
+
+    if (pin === '') {
+      nav('scr-2');
+      return;
+    }
+
+    if (entered === pin) {
       nav('scr-2');
     } else {
       $('pinError').innerText = 'Wrong passcode, try again';
       const wrap = $('pinWrap');
       wrap.style.animation = 'shakePin .4s';
-      setTimeout(()=> wrap.style.animation = '', 400);
-      inputs.forEach(i => i.value = '');
-      inputs[0].focus();
+      setTimeout(() => wrap.style.animation = '', 400);
+      boxes.forEach(i => i.value = '');
+      setTimeout(() => { boxes[0].focus(); }, 200);
     }
   }
 
+  // ============================================================
+  //  SCREEN 2 HANDLERS
+  // ============================================================
+  function setupScreen2Handlers() {
+    const yesBtn = $('yesBtn2');
+    const noBtn = $('noBtn2');
+
+    if (yesBtn) {
+      yesBtn.addEventListener('click', function() {
+        nav('scr-3');
+      });
+    }
+    if (noBtn) {
+      noBtn.addEventListener('click', function() {
+        showThinkToast();
+      });
+    }
+  }
+
+  // ============================================================
+  //  SCREEN 3 & 4 HANDLERS
+  // ============================================================
+  function setupScreen3Handlers() {
+    const btn = $('btn3Continue');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        nav('scr-4');
+      });
+    }
+  }
+
+  function setupScreen4Handlers() {
+    const btn = $('btn4Continue');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        nav('scr-5');
+      });
+    }
+  }
+
+  // ============================================================
+  //  SHOW THINK TOAST
+  // ============================================================
   function showThinkToast() {
     let t = $('thinkToast');
     t.innerText = state.toast;
@@ -494,20 +614,20 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     $('dispEyebrow1').innerText = state.eyebrow1;
     $('dispQuote1').innerText = state.quote1;
     $('dispPinHint').innerText = state.pinHint;
-    $('dispBtn1').innerText = state.btn1;
+    $('unlockBtn').innerText = state.btn1;
 
     $('dispQ2').innerText = state.q2;
-    $('dispBtn2Yes').innerText = state.btn2Yes;
-    $('dispBtn2No').innerText = state.btn2No;
+    $('yesBtn2').innerText = state.btn2Yes;
+    $('noBtn2').innerText = state.btn2No;
 
     $('dispBadge').innerText = state.badge;
     $('dispHeading3').innerText = state.heading3;
-    $('dispBtn3').innerText = state.btn3;
+    $('btn3Continue').innerText = state.btn3;
 
     $('dispEyebrow4').innerText = state.eyebrow4;
     $('dispPhoto').src = state.photo;
     $('dispCaption4').innerText = state.caption4;
-    $('dispBtn4').innerText = state.btn4;
+    $('btn4Continue').innerText = state.btn4;
 
     $('dispHeading5').innerText = state.heading5;
     $('dispQuote5').innerText = state.quote5;
@@ -523,6 +643,12 @@ Add as many lines as you like — each one becomes its own point.</textarea>
         container.appendChild(p);
       }
     });
+
+    // Re-attach handlers after applying state (for safety)
+    setupPinHandlers();
+    setupScreen2Handlers();
+    setupScreen3Handlers();
+    setupScreen4Handlers();
   }
 
   // ============================================================
@@ -541,10 +667,9 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   });
 
   // ============================================================
-  //  ENCODE / DECODE HELPERS (robust URL-safe)
+  //  ENCODE / DECODE
   // ============================================================
   function encodeData(data){
-    // Use URI encoding – safe for URLs, works across all devices
     return encodeURIComponent(JSON.stringify(data));
   }
 
@@ -564,9 +689,6 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   $('btnPreview').addEventListener('click', () => {
     readFormIntoState();
     applyState();
-    // Reset pin inputs
-    document.querySelectorAll('.pin-box').forEach(i => i.value = '');
-    $('pinError').innerText = '';
     nav('scr-1');
   });
 
@@ -574,10 +696,13 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   //  REPLAY BUTTON
   // ============================================================
   $('replayBtn').addEventListener('click', () => {
-    document.querySelectorAll('.pin-box').forEach(i => i.value = '');
-    $('pinError').innerText = '';
     nav('scr-1');
   });
+
+  // ============================================================
+  //  UNLOCK BUTTON
+  // ============================================================
+  $('unlockBtn').addEventListener('click', checkPin);
 
   // ============================================================
   //  ID GENERATION
@@ -587,7 +712,7 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   }
 
   // ============================================================
-  //  SHAREABLE LINK SYSTEM (FIXED)
+  //  SHAREABLE LINK SYSTEM
   // ============================================================
   function createShareableLink() {
     readFormIntoState();
@@ -600,7 +725,6 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     const id = genId();
     currentGiftId = id;
 
-    // Cache in localStorage for faster loads on same device
     const dataToStore = JSON.parse(JSON.stringify(state));
     localStorage.setItem('surprise_' + id, JSON.stringify(dataToStore));
 
@@ -608,7 +732,6 @@ Add as many lines as you like — each one becomes its own point.</textarea>
     if (!allIds.includes(id)) allIds.push(id);
     localStorage.setItem('surprise_ids', JSON.stringify(allIds));
 
-    // Encode data into URL using robust URI encoding
     const encodedData = encodeData(state);
     const shareUrl = window.location.origin + window.location.pathname + '?d=' + encodedData;
 
@@ -662,12 +785,10 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   });
 
   // ============================================================
-  //  LOAD FROM URL (FIXED)
+  //  LOAD FROM URL
   // ============================================================
   function loadFromUrl() {
     const params = new URLSearchParams(window.location.search);
-
-    // Check for embedded data
     const encodedData = params.get('d');
     if (encodedData) {
       console.log('🔍 Found encoded data in URL, decoding...');
@@ -675,7 +796,6 @@ Add as many lines as you like — each one becomes its own point.</textarea>
       if (data) {
         console.log('📦 Data loaded from URL:', data);
 
-        // Check expiration
         const now = Date.now();
         const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
         if (expTime > 0 && now > expTime) {
@@ -689,21 +809,26 @@ Add as many lines as you like — each one becomes its own point.</textarea>
         state = data;
         applyState();
 
-        // Reset pin inputs
         document.querySelectorAll('.pin-box').forEach(i => i.value = '');
         $('pinError').innerText = '';
 
-        // Cache for faster subsequent loads
         localStorage.setItem('surprise_cached', JSON.stringify(data));
 
-        // Hide setup and show the first surprise screen
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         nav('scr-1');
+
+        // Handlers are set inside applyState, but call again for safety
+        setTimeout(() => {
+          setupPinHandlers();
+          setupScreen2Handlers();
+          setupScreen3Handlers();
+          setupScreen4Handlers();
+        }, 100);
+
         console.log('✅ Surprise loaded from URL successfully!');
         return true;
       } else {
         console.warn('⚠️ Failed to decode data from URL.');
-        // Show a user-friendly error
         $('expiryDetail').innerText = 'The link is corrupted. Please try creating a new one.';
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         $('scr-expired').classList.add('active');
@@ -711,7 +836,6 @@ Add as many lines as you like — each one becomes its own point.</textarea>
       }
     }
 
-    // Fallback: check for ID in URL (legacy support)
     const id = params.get('id');
     if (id) {
       const raw = localStorage.getItem('surprise_' + id);
@@ -733,6 +857,12 @@ Add as many lines as you like — each one becomes its own point.</textarea>
           $('pinError').innerText = '';
           document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
           nav('scr-1');
+          setTimeout(() => {
+            setupPinHandlers();
+            setupScreen2Handlers();
+            setupScreen3Handlers();
+            setupScreen4Handlers();
+          }, 100);
           console.log('✅ Surprise loaded from localStorage (ID fallback)!');
           return true;
         } catch(e) { console.warn('Fallback parse error:', e); }
@@ -743,18 +873,24 @@ Add as many lines as you like — each one becomes its own point.</textarea>
   }
 
   // ============================================================
-  //  AUTO-LOAD ON PAGE LOAD
+  //  INIT
   // ============================================================
   (function init() {
     const loaded = loadFromUrl();
     if (!loaded) {
-      // No data, show setup
       $('scr-setup').classList.add('active');
     }
+    // Ensure handlers are attached even if no data
+    setTimeout(() => {
+      setupPinHandlers();
+      setupScreen2Handlers();
+      setupScreen3Handlers();
+      setupScreen4Handlers();
+    }, 200);
   })();
 
   // ============================================================
-  //  RESTART / GO TO SETUP
+  //  RESTART
   // ============================================================
   function goToSetup() {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -767,19 +903,22 @@ Add as many lines as you like — each one becomes its own point.</textarea>
 
   $('expiredRestartBtn').addEventListener('click', goToSetup);
 
-  // ============================================================
-  //  LEGACY PRESET SUPPORT
-  // ============================================================
   if (window.__PRESET__) {
     state = Object.assign({}, DEFAULTS, window.__PRESET__);
     applyState();
     nav('scr-1');
+    setTimeout(() => {
+      setupPinHandlers();
+      setupScreen2Handlers();
+      setupScreen3Handlers();
+      setupScreen4Handlers();
+    }, 100);
     delete window.__PRESET__;
   }
 
-  console.log('🎁 Custom Surprise Builder — Shareable Edition (FIXED)');
+  console.log('🎁 Custom Surprise Builder — ALL FIXED');
   console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-  console.log('⏳ Links expire after the set hours (default 24h).');
+  console.log('✅ All screens and buttons work after opening a shared link.');
 </script>
 
 </body>
