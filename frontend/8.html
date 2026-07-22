@@ -1,1697 +1,519 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💕 Do You Love Me?</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
-    </script>
-    <style>
-        /* ────────── ROOT ────────── */
-        :root {
-            --pink: #ff4d6d;
-            --pink-dark: #d6335a;
-            --pink-light: #ffb3c6;
-            --pink-glow: rgba(255, 77, 109, 0.3);
-            --gold: #f7c948;
-            --gold-glow: rgba(247, 201, 72, 0.25);
-            --bg-start: #fff5f7;
-            --bg-end: #fce4ec;
-            --text: #2d1b20;
-            --soft: #7a4a5a;
-            --shadow: 0 20px 60px rgba(255, 77, 109, 0.12);
-            --radius: 28px;
-            --toast-bg: rgba(0, 0, 0, 0.8);
-            --chat-bg: #f8f0f2;
-            --chat-sent: #ff4d6d;
-            --chat-received: #f1e5e8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Do You Love Me?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root{ --pink:#ff4d6d; --bg:#fff0f3; --text:#592532; --soft:#8a5a63; --shadow:0 10px 28px rgba(255,77,109,.18); }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);font-family:'Poppins',sans-serif;color:var(--text);overflow:hidden;}
+  #stage{position:relative;width:100%;height:100dvh;overflow:hidden;
+    background:radial-gradient(circle at 50% 0%, #ffe3e9 0%, var(--bg) 60%);}
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-        html,
-        body {
-            height: 100%;
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-start);
-            color: var(--text);
-            overflow: hidden;
-        }
+  .floating-heart{position:absolute;color:rgba(255,77,109,.35);font-size:16px;pointer-events:none;
+    animation:floatUp 7s linear infinite;user-select:none;}
+  @keyframes floatUp{0%{transform:translateY(0) scale(.8);opacity:1;}100%{transform:translateY(-110vh) scale(1.3);opacity:0;}}
 
-        /* ────────── STAGE ────────── */
-        #stage {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            background: radial-gradient(ellipse at 50% 0%, #ffe8ed 0%, var(--bg-start) 50%, var(--bg-end) 100%);
-        }
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s ease;z-index:2;overflow-y:auto;}
+  .screen.active{opacity:1;pointer-events:auto;}
 
-        /* ────────── ANIMATED BACKGROUND ────────── */
-        .bg-heart {
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-            font-size: 18px;
-            opacity: 0.15;
-            animation: bgFloat linear infinite;
-        }
-        @keyframes bgFloat {
-            0% {
-                transform: translateY(100vh) scale(0.6) rotate(0deg);
-                opacity: 0.08;
-            }
-            10% {
-                opacity: 0.2;
-            }
-            90% {
-                opacity: 0.2;
-            }
-            100% {
-                transform: translateY(-10vh) scale(1.2) rotate(720deg);
-                opacity: 0;
-            }
-        }
+  .card{background:#fff;border-radius:24px;padding:28px 24px;width:100%;max-width:380px;box-shadow:var(--shadow);
+    border:1px solid rgba(255,255,255,.9);}
+  .script{font-family:'Dancing Script',cursive;font-weight:700;color:var(--pink);}
 
-        .sparkle {
-            position: absolute;
-            pointer-events: none;
-            border-radius: 50%;
-            background: var(--pink);
-            opacity: 0;
-            animation: sparkleFloat 6s ease-in-out infinite;
-        }
-        @keyframes sparkleFloat {
-            0%,
-            100% {
-                opacity: 0;
-                transform: translate(0, 0) scale(0);
-            }
-            20% {
-                opacity: 0.6;
-            }
-            80% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--tx, 60px), var(--ty, -80px)) scale(1.5);
-            }
-        }
+  .field{text-align:left;margin-bottom:14px;}
+  .field label{display:block;font-size:11px;font-weight:600;color:var(--soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
+  .field input, .field textarea{width:100%;padding:10px 13px;border-radius:12px;border:1px solid #ffd0d8;background:#fffafb;font-family:inherit;font-size:13px;}
+  .field input:focus, .field textarea:focus{outline:2px solid var(--pink);outline-offset:2px;}
+  .btn{width:100%;padding:13px;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;
+    background:var(--pink);color:#fff;box-shadow:0 8px 20px rgba(255,77,109,.35);margin-top:8px;transition:transform .15s;}
+  .btn:active{transform:scale(.96);}
+  .btn.ghost{background:transparent;color:var(--soft);border:1px solid #f0c7cf;box-shadow:none;width:auto;padding:12px 24px;}
+  .btn-secondary{background:linear-gradient(135deg, #f39c12, #e67e22);color:#1e1e1e;box-shadow:0 8px 25px rgba(243,156,18,0.3);}
+  .btn-group{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn-group .btn{flex:1;min-width:100px;}
 
-        /* ────────── SCREENS ────────── */
-        .screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 20px;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: scale(0.95) translateY(16px);
-            z-index: 2;
-            overflow-y: auto;
-        }
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1) translateY(0);
-        }
+  /* main question screen */
+  #scr-question h1{font-size:34px;margin:0 0 40px;position:relative;z-index:3;}
+  .qs-btns{position:relative;width:100%;max-width:340px;height:70px;}
+  #yesBtn{width:auto;padding:14px 34px;position:relative;z-index:3;}
+  #noBtn{position:absolute;z-index:3;transition:left .2s ease, top .2s ease;}
 
-        /* ────────── GLASS CARD ────────── */
-        .card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            padding: 32px 28px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent 60%);
-            pointer-events: none;
-        }
+  /* final */
+  #scr-final .card{max-height:80vh;}
+  .heart-burst{font-size:56px;margin-bottom:10px;}
+  .final-msg{font-size:15px;color:var(--soft);margin-top:6px;line-height:1.5;}
+  .restart-link{margin-top:18px;background:none;border:none;color:#c290a0;font-size:11px;text-decoration:underline;cursor:pointer;}
 
-        .script {
-            font-family: 'Dancing Script', cursive;
-            font-weight: 700;
-            color: var(--pink);
-            background: linear-gradient(135deg, var(--pink), var(--gold));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+  #scr-setup .card{max-height:90vh;overflow-y:auto;}
+  small{display:block;margin-top:4px;color:#c290a0;font-size:10.5px;}
 
-        /* ────────── SETUP ────────── */
-        #scr-setup .card {
-            max-height: 92vh;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--pink-light) transparent;
-        }
-        #scr-setup .card::-webkit-scrollbar {
-            width: 4px;
-        }
-        #scr-setup .card::-webkit-scrollbar-thumb {
-            background: var(--pink-light);
-            border-radius: 8px;
-        }
+  /* Share screen */
+  .share-card .success-icon{font-size:50px;margin-bottom:6px;animation:bounceIn 0.8s ease;}
+  @keyframes bounceIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+  .share-link-box{background:rgba(0,0,0,.04);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;border:1px solid rgba(255,77,109,.15);margin-bottom:18px;}
+  .share-link-box input{flex:1;border:none;background:transparent;font-size:13px;color:var(--text);outline:none;font-family:'Poppins',sans-serif;min-width:0;}
+  .copy-btn{background:var(--pink);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;}
+  .copy-btn:hover{background:#e63e5e;}
+  .copy-btn.copied{background:#27ae60;}
 
-        .setup-title {
-            font-size: 28px;
-            margin-bottom: 2px;
-        }
-        .setup-sub {
-            font-size: 13px;
-            color: var(--soft);
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
+  .share-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .share-actions button{padding:10px 18px;border:none;border-radius:12px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;flex:1;min-width:80px;}
+  .share-actions button:hover{transform:translateY(-2px);}
+  .share-actions .whatsapp{background:#25D366;color:#fff;}
+  .share-actions .whatsapp:hover{background:#1da851;}
+  .share-actions .email{background:#EA4335;color:#fff;}
+  .share-actions .email:hover{background:#c62828;}
+  .share-actions .open-gift{background:linear-gradient(135deg,var(--pink),#ff6b81);color:#fff;flex:1.5;}
+  .expiry-hint{margin-top:14px;font-size:11px;color:#c290a0;}
 
-        .field {
-            text-align: left;
-            margin-bottom: 14px;
-        }
-        .field label {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--soft);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .field input,
-        .field textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1.5px solid rgba(255, 77, 109, 0.12);
-            background: rgba(255, 255, 255, 0.6);
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            color: var(--text);
-            transition: all 0.3s;
-        }
-        .field input:focus,
-        .field textarea:focus {
-            outline: none;
-            border-color: var(--pink);
-            box-shadow: 0 0 0 4px var(--pink-glow);
-        }
-        .field textarea {
-            min-height: 60px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-        .field small {
-            display: block;
-            margin-top: 4px;
-            color: #b090a0;
-            font-size: 10px;
-        }
-
-        /* ────────── BUTTONS ────────── */
-        .btn {
-            padding: 13px 28px;
-            border: none;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-family: 'Poppins', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
-            pointer-events: none;
-        }
-        .btn:active {
-            transform: scale(0.95);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-            color: #fff;
-            box-shadow: 0 8px 30px var(--pink-glow);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--pink-glow);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold), #d4a830);
-            color: #1a1a1a;
-            box-shadow: 0 8px 30px var(--gold-glow);
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--gold-glow);
-        }
-        .btn-ghost {
-            background: rgba(255, 255, 255, 0.5);
-            color: var(--soft);
-            border: 1.5px solid rgba(255, 77, 109, 0.15);
-            box-shadow: none;
-            backdrop-filter: blur(4px);
-        }
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.8);
-        }
-        .btn-danger-ghost {
-            background: rgba(255, 0, 0, 0.05);
-            color: #c0392b;
-            border: 1.5px solid rgba(255, 0, 0, 0.12);
-            box-shadow: none;
-            font-size: 11px;
-            padding: 8px 16px;
-        }
-        .btn-danger-ghost:hover {
-            background: rgba(255, 0, 0, 0.08);
-        }
-        .btn-send {
-            background: var(--pink);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
-            white-space: nowrap;
-        }
-        .btn-send:hover {
-            background: var(--pink-dark);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .btn-group .btn {
-            flex: 1;
-            min-width: 100px;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        /* ────────── TOAST ────────── */
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: var(--toast-bg);
-            color: #fff;
-            padding: 12px 28px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 9999;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: 'Poppins', sans-serif;
-            white-space: nowrap;
-            max-width: 90%;
-        }
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ────────── QUESTION SCREEN ────────── */
-        #scr-question h1 {
-            font-size: 38px;
-            margin: 0 0 32px;
-            position: relative;
-            z-index: 3;
-        }
-        .qs-btns {
-            position: relative;
-            width: 100%;
-            max-width: 340px;
-            min-height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        #yesBtn {
-            padding: 14px 40px;
-            position: relative;
-            z-index: 3;
-            font-size: 16px;
-        }
-        #noBtn {
-            padding: 14px 32px;
-            position: relative;
-            z-index: 3;
-            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #noBtn.dodging {
-            position: fixed;
-            z-index: 999;
-        }
-
-        /* ────────── CHAT SCREEN ────────── */
-        #scr-chat {
-            padding: 12px 12px;
-        }
-        #scr-chat .card {
-            max-height: 94vh;
-            padding: 16px 14px 14px;
-            display: flex;
-            flex-direction: column;
-            max-width: 420px;
-        }
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 10px;
-            border-bottom: 1.5px solid rgba(255, 77, 109, 0.12);
-            flex-shrink: 0;
-        }
-        .chat-header .chat-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--pink), var(--gold));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .chat-header .chat-timer {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--pink);
-            font-variant-numeric: tabular-nums;
-            min-width: 60px;
-        }
-        .chat-header .chat-timer.warning {
-            color: #e74c3c;
-            animation: timerPulse 0.8s ease-in-out infinite;
-        }
-        @keyframes timerPulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.08);
-            }
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 4px;
-            max-height: 50vh;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            scroll-behavior: smooth;
-        }
-        .chat-messages::-webkit-scrollbar {
-            width: 3px;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: var(--pink-light);
-            border-radius: 8px;
-        }
-
-        .chat-msg {
-            max-width: 80%;
-            padding: 8px 14px;
-            border-radius: 16px;
-            font-size: 13px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            animation: msgIn 0.25s ease;
-        }
-        @keyframes msgIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.9) translateY(8px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        .chat-msg.sent {
-            background: var(--chat-sent);
-            color: #fff;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        .chat-msg.received {
-            background: var(--chat-received);
-            color: var(--text);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        .chat-msg .msg-time {
-            font-size: 9px;
-            opacity: 0.6;
-            margin-top: 3px;
-            display: block;
-        }
-        .chat-msg.sent .msg-time {
-            color: rgba(255, 255, 255, 0.7);
-            text-align: right;
-        }
-        .chat-msg.received .msg-time {
-            color: var(--soft);
-        }
-
-        .chat-empty {
-            color: #c290a0;
-            font-size: 13px;
-            text-align: center;
-            padding: 30px 10px;
-            font-style: italic;
-        }
-
-        .chat-input-wrap {
-            display: flex;
-            gap: 8px;
-            padding-top: 10px;
-            border-top: 1.5px solid rgba(255, 77, 109, 0.08);
-            flex-shrink: 0;
-            align-items: center;
-        }
-        .chat-input-wrap input {
-            flex: 1;
-            padding: 10px 14px;
-            border-radius: 50px;
-            border: 1.5px solid rgba(255, 77, 109, 0.12);
-            background: rgba(255, 255, 255, 0.5);
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            color: var(--text);
-            outline: none;
-            transition: all 0.3s;
-            min-width: 0;
-        }
-        .chat-input-wrap input:focus {
-            border-color: var(--pink);
-            box-shadow: 0 0 0 3px var(--pink-glow);
-        }
-        .chat-input-wrap input:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .chat-status {
-            text-align: center;
-            font-size: 11px;
-            color: var(--soft);
-            padding: 4px 0 2px;
-            min-height: 22px;
-            flex-shrink: 0;
-        }
-        .chat-status .online {
-            color: #27ae60;
-        }
-        .chat-status .offline {
-            color: #e74c3c;
-        }
-        .chat-status .typing {
-            color: var(--pink);
-            animation: typingDots 1s ease-in-out infinite;
-        }
-        @keyframes typingDots {
-            0%,
-            100% {
-                opacity: 0.3;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-
-        /* ────────── FINAL SCREEN ────────── */
-        #scr-final .card {
-            text-align: center;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 36px 28px 32px;
-        }
-        .heart-burst {
-            font-size: 64px;
-            animation: heartPulse 1.2s ease-in-out infinite;
-        }
-        @keyframes heartPulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.15);
-            }
-        }
-        .final-head {
-            font-size: 32px;
-            margin: 8px 0 4px;
-        }
-        .final-msg {
-            font-size: 15px;
-            color: var(--soft);
-            margin-top: 6px;
-            line-height: 1.7;
-            font-weight: 300;
-        }
-        .restart-link {
-            margin-top: 20px;
-            background: none;
-            border: none;
-            color: #c290a0;
-            font-size: 11.5px;
-            text-decoration: underline;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: color 0.3s;
-        }
-        .restart-link:hover {
-            color: var(--pink);
-        }
-
-        /* ────────── SHARE SCREEN ────────── */
-        .share-card .success-icon {
-            font-size: 52px;
-            margin-bottom: 4px;
-            animation: bounceIn 0.8s ease;
-        }
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.15);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        .share-link-box {
-            background: rgba(0, 0, 0, 0.04);
-            border-radius: 14px;
-            padding: 12px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            border: 1px solid rgba(255, 77, 109, 0.1);
-            margin-bottom: 18px;
-        }
-        .share-link-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 12px;
-            color: var(--text);
-            outline: none;
-            font-family: 'Poppins', sans-serif;
-            min-width: 0;
-        }
-        .copy-btn {
-            background: var(--pink);
-            color: #fff;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
-        }
-        .copy-btn:hover {
-            background: var(--pink-dark);
-        }
-        .copy-btn.copied {
-            background: #27ae60;
-        }
-
-        .share-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .share-actions button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            flex: 1;
-            min-width: 80px;
-            font-family: 'Poppins', sans-serif;
-        }
-        .share-actions button:hover {
-            transform: translateY(-2px);
-        }
-        .share-actions .whatsapp {
-            background: #25D366;
-            color: #fff;
-        }
-        .share-actions .whatsapp:hover {
-            background: #1da851;
-        }
-        .share-actions .email {
-            background: #EA4335;
-            color: #fff;
-        }
-        .share-actions .email:hover {
-            background: #c62828;
-        }
-        .share-actions .open-gift {
-            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-            color: #fff;
-            flex: 1.5;
-        }
-        .expiry-hint {
-            margin-top: 14px;
-            font-size: 11px;
-            color: #c290a0;
-        }
-
-        /* ────────── EXPIRED SCREEN ────────── */
-        .expired-card .icon {
-            font-size: 62px;
-            margin-bottom: 6px;
-        }
-        .expired-card h2 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 28px;
-            margin: 0;
-            color: #e74c3c;
-        }
-        .expired-card p {
-            color: var(--soft);
-            font-size: 14px;
-            margin: 12px 0 24px;
-            line-height: 1.6;
-        }
-
-        /* ────────── RESPONSIVE ────────── */
-        @media(max-width: 440px) {
-            .card {
-                padding: 20px 14px;
-                border-radius: 24px;
-            }
-            .setup-title {
-                font-size: 22px;
-            }
-            #scr-question h1 {
-                font-size: 28px;
-            }
-            #yesBtn,
-            #noBtn {
-                padding: 10px 22px;
-                font-size: 13px;
-            }
-            .qs-btns {
-                min-height: 65px;
-                gap: 10px;
-            }
-            .final-head {
-                font-size: 24px;
-            }
-            .heart-burst {
-                font-size: 44px;
-            }
-            .btn-group {
-                flex-direction: column;
-            }
-            .btn-group .btn {
-                min-width: unset;
-            }
-            #toast {
-                font-size: 11px;
-                padding: 8px 16px;
-                white-space: normal;
-                max-width: 92%;
-            }
-            #scr-chat .card {
-                padding: 12px 10px;
-            }
-            .chat-header .chat-title {
-                font-size: 17px;
-            }
-            .chat-header .chat-timer {
-                font-size: 15px;
-                min-width: 50px;
-            }
-            .chat-msg {
-                font-size: 12px;
-                padding: 6px 12px;
-                max-width: 88%;
-            }
-            .chat-input-wrap input {
-                font-size: 12px;
-                padding: 8px 12px;
-            }
-            .btn-send {
-                font-size: 12px;
-                padding: 8px 16px;
-            }
-            .chat-messages {
-                min-height: 150px;
-                max-height: 40vh;
-            }
-        }
-        @media(max-width: 360px) {
-            .card {
-                padding: 16px 10px;
-            }
-            #scr-question h1 {
-                font-size: 22px;
-            }
-            #yesBtn,
-            #noBtn {
-                padding: 8px 16px;
-                font-size: 11px;
-            }
-            .chat-header .chat-title {
-                font-size: 14px;
-            }
-            .chat-header .chat-timer {
-                font-size: 13px;
-            }
-            .chat-msg {
-                font-size: 11px;
-                padding: 5px 10px;
-            }
-            .chat-messages {
-                min-height: 120px;
-                max-height: 35vh;
-            }
-        }
-    </style>
+  /* Expired screen */
+  .expired-card .icon{font-size:60px;margin-bottom:8px;}
+  .expired-card h2{font-family:'Dancing Script',cursive;color:#e74c3c;margin:0;font-size:28px;}
+  .expired-card p{color:var(--soft);font-size:14px;margin:12px 0 24px;line-height:1.6;}
+</style>
 </head>
 <body>
+<div id="stage">
+  <div id="hearts"></div>
 
-    <div id="stage">
-        <!-- ─── BACKGROUND HEARTS ─── -->
-        <div id="bgHearts"></div>
+  <!-- SETUP -->
+  <div class="screen active" id="scr-setup">
+    <div class="card">
+      <h2 class="script" style="font-size:26px;text-align:center;">Do You Love Me?</h2>
+      <p style="font-size:13px;color:var(--soft);text-align:center;margin-bottom:18px;">The classic un-clickable "No" button trick 😄</p>
 
-        <!-- ─── SPARKLES ─── -->
-        <div id="sparkles"></div>
+      <div class="field">
+        <label>The Question</label>
+        <input type="text" id="inpQuestion" value="Do you love me?">
+      </div>
+      <div class="field">
+        <label>Yes Button Text</label>
+        <input type="text" id="inpYesBtn" value="Yes 💕">
+      </div>
+      <div class="field">
+        <label>No Button Text (it'll run away)</label>
+        <input type="text" id="inpNoBtn" value="No">
+      </div>
+      <div class="field">
+        <label>Final Reveal Heading</label>
+        <input type="text" id="inpFinalHead" value="I knew it! 😏❤️">
+      </div>
+      <div class="field">
+        <label>Final Message</label>
+        <textarea id="inpFinalMsg" rows="2">There was never any escaping that answer. I love you too. 💗</textarea>
+      </div>
 
-        <!-- ─── TOAST NOTIFICATION ─── -->
-        <div id="toast"></div>
+      <div class="field">
+        <label>⏳ Link Expires In (hours)</label>
+        <input type="number" id="inpExpires" min="1" max="720" value="24">
+        <small>After this many hours, the link will expire. (1–720 hours)</small>
+      </div>
 
-        <!-- ─── SETUP ─── -->
-        <div class="screen active" id="scr-setup">
-            <div class="card">
-                <h2 class="script setup-title">💕 Do You Love Me?</h2>
-                <p class="setup-sub">The classic un-clickable "No" button trick — now with real-time chat ✨</p>
-
-                <div class="field">
-                    <label>💬 The Question</label>
-                    <input type="text" id="inpQuestion" value="Do you love me?" />
-                </div>
-                <div class="field">
-                    <label>✅ Yes Button Text</label>
-                    <input type="text" id="inpYesBtn" value="Yes 💕" />
-                </div>
-                <div class="field">
-                    <label>❌ No Button Text (it'll run away)</label>
-                    <input type="text" id="inpNoBtn" value="No" />
-                </div>
-                <div class="field">
-                    <label>💖 Final Heading</label>
-                    <input type="text" id="inpFinalHead" value="I knew it! 😏❤️" />
-                </div>
-                <div class="field">
-                    <label>💌 Final Message</label>
-                    <textarea id="inpFinalMsg" rows="2">There was never any escaping that answer. I love you too. 💗</textarea>
-                </div>
-
-                <div class="field">
-                    <label>⏳ Link Expires In (hours)</label>
-                    <input type="number" id="inpExpires" min="1" max="720" value="24" />
-                    <small>1–720 hours. After this, the link will expire.</small>
-                </div>
-
-                <div class="field">
-                    <label>💬 Chat Duration (minutes)</label>
-                    <input type="number" id="inpChatDuration" min="1" max="120" value="10" />
-                    <small>How long the chat stays open after "Yes" is clicked.</small>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-ghost" id="btnPreview">👀 Preview</button>
-                    <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
-                </div>
-
-                <div style="display:flex; gap:8px; margin-top:12px; justify-content:center; flex-wrap:wrap;">
-                    <button class="btn btn-danger-ghost" id="btnResetDefaults">↺ Reset to Defaults</button>
-                    <button class="btn btn-danger-ghost" id="btnClearData">🗑️ Clear All Data</button>
-                </div>
-
-                <small style="display:block;margin-top:8px;color:#b090a0;">"Preview" tests it here. "Create Link" generates a shareable URL.</small>
-            </div>
-        </div>
-
-        <!-- ─── SHARE ─── -->
-        <div class="screen" id="scr-share">
-            <div class="card share-card">
-                <div class="success-icon">💕</div>
-                <h2 class="script" style="font-size:24px;margin:0;">Link Ready!</h2>
-                <p style="font-size:13px;color:var(--soft);margin:4px 0 20px;">Share this love link with your special person.</p>
-                <div class="share-link-box">
-                    <input type="text" id="shareLinkInput" readonly />
-                    <button class="copy-btn" id="copyLinkBtn">Copy</button>
-                </div>
-                <div class="share-actions">
-                    <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
-                    <button class="email" id="emailBtn">✉️ Email</button>
-                    <button class="open-gift" id="openGiftBtn">Open ❤️</button>
-                </div>
-                <div class="expiry-hint" id="expiryHint"></div>
-                <button class="restart-link" id="shareBackBtn" style="margin-top:12px;">← Back to setup</button>
-            </div>
-        </div>
-
-        <!-- ─── EXPIRED ─── -->
-        <div class="screen" id="scr-expired">
-            <div class="card expired-card">
-                <div class="icon">⏳</div>
-                <h2>Link Expired</h2>
-                <p>This love link has expired. The magic was meant to be cherished in the moment.</p>
-                <button class="btn btn-primary btn-full" id="expiredRestartBtn">Create a New One</button>
-                <div style="margin-top:12px;font-size:11px;color:#c290a0;" id="expiryDetail"></div>
-            </div>
-        </div>
-
-        <!-- ─── QUESTION ─── -->
-        <div class="screen" id="scr-question">
-            <h1 class="script" id="dispQuestion">Do you love me?</h1>
-            <div class="qs-btns" id="qsBtns">
-                <button class="btn btn-primary" id="yesBtn">Yes 💕</button>
-                <button class="btn btn-ghost" id="noBtn">No</button>
-            </div>
-        </div>
-
-        <!-- ─── CHAT ─── -->
-        <div class="screen" id="scr-chat">
-            <div class="card">
-                <div class="chat-header">
-                    <span class="chat-title">💬 Love Chat</span>
-                    <span class="chat-timer" id="chatTimer">10:00</span>
-                </div>
-                <div class="chat-messages" id="chatMessages">
-                    <div class="chat-empty">💕 Say something to your love...</div>
-                </div>
-                <div class="chat-status" id="chatStatus">✨ Connecting...</div>
-                <div class="chat-input-wrap">
-                    <input type="text" id="chatInput" placeholder="Type a message..." maxlength="500" />
-                    <button class="btn-send" id="chatSendBtn">Send</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ─── FINAL ─── -->
-        <div class="screen" id="scr-final">
-            <div class="card">
-                <div class="heart-burst">💖</div>
-                <h1 class="script final-head" id="dispFinalHead">I knew it! 😏❤️</h1>
-                <p class="final-msg" id="dispFinalMsg">There was never any escaping that answer. I love you too. 💗</p>
-              <!--  <button class="restart-link" id="restartBtn">✨ create another one</button> -->
-            </div>
-        </div>
-
+      <div class="btn-group">
+        <button class="btn" id="btnPreview">👀 Preview</button>
+        <button class="btn btn-secondary" id="btnCreateLink">🔗 Create Link</button>
+      </div>
+      <small>"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</small>
     </div>
+  </div>
 
-    <script>
-        // ═══════════════════════════════════════════════════════════════
-        //  BACKGROUND HEARTS
-        // ═══════════════════════════════════════════════════════════════
-        (function initBg() {
-            const container = document.getElementById('bgHearts');
-            const emojis = ['💖', '💗', '💕', '❤️', '💘', '✨'];
-            for (let i = 0; i < 22; i++) {
-                const el = document.createElement('div');
-                el.className = 'bg-heart';
-                el.textContent = emojis[i % emojis.length];
-                el.style.left = Math.random() * 100 + '%';
-                el.style.fontSize = (14 + Math.random() * 20) + 'px';
-                el.style.animationDuration = (6 + Math.random() * 8) + 's';
-                el.style.animationDelay = (Math.random() * 10) + 's';
-                container.appendChild(el);
-            }
-        })();
+  <!-- SHARE -->
+  <div class="screen" id="scr-share">
+    <div class="card share-card">
+      <div class="success-icon">💕</div>
+      <h2 class="script" style="font-size:24px;margin:0;">Link Ready!</h2>
+      <p style="font-size:13px;color:var(--soft);margin:4px 0 20px;">Share this love link with your special person.</p>
+      <div class="share-link-box">
+        <input type="text" id="shareLinkInput" readonly>
+        <button class="copy-btn" id="copyLinkBtn">Copy</button>
+      </div>
+      <div class="share-actions">
+        <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+        <button class="email" id="emailBtn">✉️ Email</button>
+        <button class="open-gift" id="openGiftBtn">Open ❤️</button>
+      </div>
+      <div class="expiry-hint" id="expiryHint"></div>
+      <button class="restart-link" id="shareBackBtn" style="margin-top:12px;">← Back to setup</button>
+    </div>
+  </div>
 
-        // ─── SPARKLES ───
-        (function initSparkles() {
-            const container = document.getElementById('sparkles');
-            for (let i = 0; i < 16; i++) {
-                const el = document.createElement('div');
-                el.className = 'sparkle';
-                const size = 3 + Math.random() * 5;
-                el.style.width = size + 'px';
-                el.style.height = size + 'px';
-                el.style.left = Math.random() * 100 + '%';
-                el.style.top = Math.random() * 100 + '%';
-                el.style.setProperty('--tx', (Math.random() - 0.5) * 120 + 'px');
-                el.style.setProperty('--ty', -60 - Math.random() * 100 + 'px');
-                el.style.animationDuration = (4 + Math.random() * 5) + 's';
-                el.style.animationDelay = (Math.random() * 6) + 's';
-                el.style.background = Math.random() > 0.5 ? 'var(--pink)' : 'var(--gold)';
-                container.appendChild(el);
-            }
-        })();
+  <!-- EXPIRED -->
+  <div class="screen" id="scr-expired">
+    <div class="card expired-card">
+      <div class="icon">⏳</div>
+      <h2>Link Expired</h2>
+      <p>This love link has expired. The magic was meant to be cherished in the moment.</p>
+      <button class="btn" id="expiredRestartBtn">Create a New One</button>
+      <div style="margin-top:12px;font-size:11px;color:#c290a0;" id="expiryDetail"></div>
+    </div>
+  </div>
 
-        // ═══════════════════════════════════════════════════════════════
-        //  TOAST SYSTEM
-        // ═══════════════════════════════════════════════════════════════
-        let toastTimeout = null;
+  <!-- QUESTION -->
+  <div class="screen" id="scr-question">
+    <h1 class="script" id="dispQuestion">Do you love me?</h1>
+    <div class="qs-btns" id="qsBtns">
+      <button class="btn" id="yesBtn"></button>
+      <button class="btn ghost" id="noBtn"></button>
+    </div>
+  </div>
 
-        function showToast(message, duration = 2500) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            if (toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
+  <!-- FINAL -->
+  <div class="screen" id="scr-final">
+    <div class="card">
+      <div class="heart-burst">💖</div>
+      <h1 class="script" id="dispFinalHead" style="font-size:30px;margin:0;"></h1>
+      <p class="final-msg" id="dispFinalMsg"></p>
+      <button class="restart-link" id="restartBtn">create another one</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  //  CONFIG & STATE
+  // ============================================================
+  const DEFAULTS = {
+    question:'Do you love me?',
+    yesBtn:'Yes 💕',
+    noBtn:'No',
+    finalHead:'I knew it! 😏❤️',
+    finalMsg:'There was never any escaping that answer. I love you too. 💗',
+    expiresIn:24,
+    createdAt:0
+  };
+  let state = Object.assign({}, DEFAULTS);
+  let currentGiftId = null;
+
+  // ============================================================
+  //  FLOATING HEARTS
+  // ============================================================
+  const heartsWrap = document.getElementById('hearts');
+  for(let i=0;i<14;i++){
+    const h = document.createElement('div');
+    h.className='floating-heart';
+    h.innerText='💖';
+    h.style.left = Math.random()*100+'%';
+    h.style.animationDelay = (Math.random()*6)+'s';
+    h.style.fontSize = (14+Math.random()*10)+'px';
+    heartsWrap.appendChild(h);
+  }
+
+  // ============================================================
+  //  NAVIGATION
+  // ============================================================
+  function nav(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
+  }
+
+  // ============================================================
+  //  STATE READ / APPLY
+  // ============================================================
+  function readFormIntoState(){
+    state.question = document.getElementById('inpQuestion').value.trim() || DEFAULTS.question;
+    state.yesBtn = document.getElementById('inpYesBtn').value.trim() || DEFAULTS.yesBtn;
+    state.noBtn = document.getElementById('inpNoBtn').value.trim() || DEFAULTS.noBtn;
+    state.finalHead = document.getElementById('inpFinalHead').value.trim() || DEFAULTS.finalHead;
+    state.finalMsg = document.getElementById('inpFinalMsg').value.trim() || DEFAULTS.finalMsg;
+    const exp = parseInt(document.getElementById('inpExpires').value) || 24;
+    state.expiresIn = Math.min(Math.max(exp, 1), 720);
+    state.createdAt = Date.now();
+  }
+
+  function applyState(){
+    document.getElementById('dispQuestion').innerText = state.question;
+    document.getElementById('yesBtn').innerText = state.yesBtn;
+    document.getElementById('noBtn').innerText = state.noBtn;
+    document.getElementById('dispFinalHead').innerText = state.finalHead;
+    document.getElementById('dispFinalMsg').innerText = state.finalMsg;
+  }
+
+  // ============================================================
+  //  NO BUTTON DODGE
+  // ============================================================
+  function dodgeFullScreen(btn){
+    const bRect = btn.getBoundingClientRect();
+    const maxLeft = Math.max(window.innerWidth - bRect.width - 20, 20);
+    const maxTop = Math.max(window.innerHeight - bRect.height - 20, 20);
+    const newLeft = 20 + Math.random()*(maxLeft-20);
+    const newTop = 20 + Math.random()*(maxTop-20);
+    btn.style.position='fixed';
+    btn.style.left = newLeft + 'px';
+    btn.style.top = newTop + 'px';
+  }
+
+  const noBtn = document.getElementById('noBtn');
+  ['mouseenter','touchstart','click'].forEach(evt=>{
+    noBtn.addEventListener(evt, function(e){
+      e.preventDefault();
+      dodgeFullScreen(noBtn);
+    }, {passive:false});
+  });
+
+  document.getElementById('yesBtn').addEventListener('click', ()=>{
+    nav('scr-final');
+    if(typeof confetti !== 'undefined'){
+      confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0 } });
+      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1 } });
+    }
+  });
+
+  // ============================================================
+  //  PREVIEW
+  // ============================================================
+  document.getElementById('btnPreview').addEventListener('click', ()=>{
+    readFormIntoState();
+    applyState();
+    noBtn.style.position='';
+    noBtn.style.left=''; noBtn.style.top='';
+    nav('scr-question');
+  });
+
+  // ============================================================
+  //  ID GENERATION
+  // ============================================================
+  function genId() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ============================================================
+  //  ENCODE / DECODE HELPERS
+  // ============================================================
+  function encodeData(data){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  }
+  function decodeData(str){
+    try {
+      return JSON.parse(decodeURIComponent(escape(atob(str))));
+    } catch(e){ return null; }
+  }
+
+  // ============================================================
+  //  SHAREABLE LINK SYSTEM (FIXED — data embedded in URL)
+  // ============================================================
+  function createShareableLink() {
+    readFormIntoState();
+    if (!state.question) {
+      alert('💕 Please write a question before creating a link!');
+      return;
+    }
+    state.createdAt = Date.now();
+
+    // Generate a short ID for caching purposes
+    const id = genId();
+    currentGiftId = id;
+
+    // Store in localStorage for caching on this device
+    const dataToStore = JSON.parse(JSON.stringify(state));
+    localStorage.setItem('love_question_' + id, JSON.stringify(dataToStore));
+
+    let allIds = JSON.parse(localStorage.getItem('love_question_ids') || '[]');
+    if (!allIds.includes(id)) allIds.push(id);
+    localStorage.setItem('love_question_ids', JSON.stringify(allIds));
+
+    // ENCODE FULL DATA INTO URL — this works across any device!
+    const encodedData = encodeData(state);
+    const shareUrl = window.location.origin + window.location.pathname + '?d=' + encodedData;
+
+    document.getElementById('shareLinkInput').value = shareUrl;
+    document.getElementById('expiryHint').innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    nav('scr-share');
+    console.log('💕 Love link created! Data embedded in URL.');
+    return id;
+  }
+
+  document.getElementById('btnCreateLink').addEventListener('click', createShareableLink);
+
+  // ============================================================
+  //  SHARE BUTTONS
+  // ============================================================
+  document.getElementById('copyLinkBtn').addEventListener('click', function() {
+    const input = document.getElementById('shareLinkInput');
+    if (!input || !input.value) return;
+    navigator.clipboard.writeText(input.value).then(() => {
+      this.textContent = '✓ Copied!';
+      this.classList.add('copied');
+      setTimeout(() => {
+        this.textContent = 'Copy';
+        this.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      input.select();
+      document.execCommand('copy');
+      alert('Link copied!');
+    });
+  });
+
+  document.getElementById('whatsappBtn').addEventListener('click', () => {
+    const link = document.getElementById('shareLinkInput')?.value || '';
+    window.open('https://wa.me/?text=' + encodeURIComponent('💕 A love question for you! ' + link), '_blank');
+  });
+
+  document.getElementById('emailBtn').addEventListener('click', () => {
+    const link = document.getElementById('shareLinkInput')?.value || '';
+    window.location.href = 'mailto:?subject=A Love Question&body=💕 A love question for you! ' + link;
+  });
+
+  document.getElementById('openGiftBtn').addEventListener('click', function() {
+    // Reload the page with the current URL (which has the data)
+    window.location.reload();
+  });
+
+  document.getElementById('shareBackBtn').addEventListener('click', ()=>{
+    nav('scr-setup');
+  });
+
+  // ============================================================
+  //  LOAD FROM URL (FIXED — reads data directly from URL)
+  // ============================================================
+  function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+
+    // FIRST: Check for embedded data in URL (?d=...)
+    const encodedData = params.get('d');
+    if (encodedData) {
+      const data = decodeData(encodedData);
+      if (data) {
+        console.log('📦 Data loaded from URL:', data);
+
+        // Check expiration
+        const now = Date.now();
+        const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+        if (expTime > 0 && now > expTime) {
+          const d = new Date(expTime);
+          document.getElementById('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          document.getElementById('scr-expired').classList.add('active');
+          return false;
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE
-        // ═══════════════════════════════════════════════════════════════
-        const DEFAULTS = {
-            question: 'Do you love me?',
-            yesBtn: 'Yes 💕',
-            noBtn: 'No',
-            finalHead: 'I knew it! 😏❤️',
-            finalMsg: 'There was never any escaping that answer. I love you too. 💗',
-            expiresIn: 24,
-            chatDuration: 10,
-            createdAt: 0
-        };
-        let state = Object.assign({}, DEFAULTS);
-        let currentGiftId = null;
-        let chatTimerInterval = null;
-        let chatPollInterval = null;
-        let chatTimeRemaining = 0;
-        let chatActive = false;
-        let lastMessageId = 0;
-        let senderId = null;
+        // Apply data
+        state = data;
+        applyState();
 
-        // ═══════════════════════════════════════════════════════════════
-        //  DOM REFS
-        // ═══════════════════════════════════════════════════════════════
-        const $ = id => document.getElementById(id);
-        const screens = {
-            setup: $('scr-setup'),
-            share: $('scr-share'),
-            expired: $('scr-expired'),
-            question: $('scr-question'),
-            chat: $('scr-chat'),
-            final: $('scr-final'),
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        //  NAVIGATION
-        // ═══════════════════════════════════════════════════════════════
-        function nav(id) {
-            Object.keys(screens).forEach(k => {
-                if (screens[k]) screens[k].classList.toggle('active', k === id);
-            });
-            // Reset chat state when leaving chat
-            if (id !== 'chat') {
-                stopChatPolling();
-            }
-            // Focus chat input when entering chat
-            if (id === 'chat') {
-                setTimeout(() => {
-                    const input = $('chatInput');
-                    if (input) input.focus();
-                }, 300);
-            }
+        // Reset No button position
+        const noBtnEl = document.getElementById('noBtn');
+        if (noBtnEl) {
+          noBtnEl.style.position = '';
+          noBtnEl.style.left = '';
+          noBtnEl.style.top = '';
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE READ / APPLY
-        // ═══════════════════════════════════════════════════════════════
-        function readFormIntoState() {
-            state.question = $('inpQuestion').value.trim() || DEFAULTS.question;
-            state.yesBtn = $('inpYesBtn').value.trim() || DEFAULTS.yesBtn;
-            state.noBtn = $('inpNoBtn').value.trim() || DEFAULTS.noBtn;
-            state.finalHead = $('inpFinalHead').value.trim() || DEFAULTS.finalHead;
-            state.finalMsg = $('inpFinalMsg').value.trim() || DEFAULTS.finalMsg;
-            const exp = parseInt($('inpExpires').value) || 24;
-            state.expiresIn = Math.min(Math.max(exp, 1), 720);
-            const chatDur = parseInt($('inpChatDuration').value) || 10;
-            state.chatDuration = Math.min(Math.max(chatDur, 1), 120);
-            state.createdAt = Date.now();
-        }
+        // Cache the data in localStorage for faster subsequent loads on same device
+        const id = 'cached_' + Date.now().toString(36);
+        localStorage.setItem('love_question_cached', JSON.stringify(data));
 
-        function applyState() {
-            $('dispQuestion').innerText = state.question;
-            $('yesBtn').innerText = state.yesBtn;
-            $('noBtn').innerText = state.noBtn;
-            $('dispFinalHead').innerText = state.finalHead;
-            $('dispFinalMsg').innerText = state.finalMsg;
-        }
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        nav('scr-question');
+        console.log('✅ Love question loaded from URL successfully!');
+        return true;
+      }
+    }
 
-        // ─── Reset Form to Defaults ──────────────────────────────────
-        function resetFormToDefaults() {
-            $('inpQuestion').value = DEFAULTS.question;
-            $('inpYesBtn').value = DEFAULTS.yesBtn;
-            $('inpNoBtn').value = DEFAULTS.noBtn;
-            $('inpFinalHead').value = DEFAULTS.finalHead;
-            $('inpFinalMsg').value = DEFAULTS.finalMsg;
-            $('inpExpires').value = DEFAULTS.expiresIn;
-            $('inpChatDuration').value = DEFAULTS.chatDuration;
-            state = Object.assign({}, DEFAULTS);
-            showToast('✨ Reset to default values!', 1800);
-        }
-
-        // ─── Clear All Stored Data ──────────────────────────────────
-        function clearAllStoredData() {
-            const keys = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && (key.startsWith('love_question_') || key.startsWith('chat_messages_'))) {
-                    keys.push(key);
-                }
-            }
-            keys.forEach(key => localStorage.removeItem(key));
-            localStorage.removeItem('love_question_ids');
-            currentGiftId = null;
-            showToast('🗑️ All stored data cleared!', 2000);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  NO BUTTON DODGE (enhanced)
-        // ═══════════════════════════════════════════════════════════════
-        function dodgeNoButton(btn) {
-            const bRect = btn.getBoundingClientRect();
-            const margin = 20;
-            const maxX = window.innerWidth - bRect.width - margin;
-            const maxY = window.innerHeight - bRect.height - margin;
-            const newX = Math.max(margin, Math.random() * maxX);
-            const newY = Math.max(margin, Math.random() * maxY);
-            btn.style.position = 'fixed';
-            btn.style.left = newX + 'px';
-            btn.style.top = newY + 'px';
-            btn.style.zIndex = '999';
-            btn.classList.add('dodging');
-
-            btn.style.transform = 'scale(0.95)';
-            setTimeout(() => { btn.style.transform = ''; }, 150);
-        }
-
-        const noBtn = $('noBtn');
-        let dodgeTimeout = null;
-
-        function setupNoButtonDodge() {
-            const events = ['mouseenter', 'touchstart', 'click'];
-            events.forEach(evt => {
-                noBtn.addEventListener(evt, function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (dodgeTimeout) return;
-                    dodgeTimeout = setTimeout(() => {
-                        dodgeNoButton(noBtn);
-                        dodgeTimeout = null;
-                    }, 50);
-                }, { passive: false });
-            });
-        }
-        setupNoButtonDodge();
-
-        window.addEventListener('resize', () => {
-            if (noBtn.classList.contains('dodging')) {
-                dodgeNoButton(noBtn);
-            }
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  CHAT SYSTEM
-        // ═══════════════════════════════════════════════════════════════
-        function getChatKey(id) {
-            return 'chat_messages_' + id;
-        }
-
-        function getMessages() {
-            const key = getChatKey(currentGiftId);
-            const raw = localStorage.getItem(key);
-            if (!raw) return [];
-            try { return JSON.parse(raw); } catch (e) { return []; }
-        }
-
-        function saveMessages(messages) {
-            const key = getChatKey(currentGiftId);
-            localStorage.setItem(key, JSON.stringify(messages));
-        }
-
-        function addMessage(text, sender) {
-            const messages = getMessages();
-            const msg = {
-                id: Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                text: text.trim(),
-                sender: sender || (senderId || 'you'),
-                timestamp: Date.now()
-            };
-            messages.push(msg);
-            saveMessages(messages);
-            return msg;
-        }
-
-        function renderMessages() {
-            const container = $('chatMessages');
-            const messages = getMessages();
-            container.innerHTML = '';
-            if (messages.length === 0) {
-                container.innerHTML = '<div class="chat-empty">💕 Say something to your love...</div>';
-                return;
-            }
-            messages.forEach(msg => {
-                const div = document.createElement('div');
-                const isSent = msg.sender === senderId || msg.sender === 'you';
-                div.className = 'chat-msg ' + (isSent ? 'sent' : 'received');
-                const time = new Date(msg.timestamp);
-                const timeStr = time.getHours().toString().padStart(2, '0') + ':' +
-                    time.getMinutes().toString().padStart(2, '0');
-                div.innerHTML = msg.text + '<span class="msg-time">' + timeStr + '</span>';
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function sendChatMessage() {
-            const input = $('chatInput');
-            const text = input.value.trim();
-            if (!text || !chatActive || !currentGiftId) return;
-            addMessage(text, senderId || 'you');
-            input.value = '';
-            renderMessages();
-            // Update status
-            const status = $('chatStatus');
-            if (status) status.innerHTML = '💕 Message sent!';
-            setTimeout(() => updateChatStatus(), 1000);
-        }
-
-        function updateChatStatus() {
-            const status = $('chatStatus');
-            if (!status) return;
-            if (!chatActive) {
-                status.innerHTML = '⏳ Chat has ended.';
-                return;
-            }
-            const messages = getMessages();
-            const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
-            if (lastMsg) {
-                const time = new Date(lastMsg.timestamp);
-                const timeStr = time.getHours().toString().padStart(2, '0') + ':' +
-                    time.getMinutes().toString().padStart(2, '0');
-                const senderLabel = lastMsg.sender === senderId ? 'You' : '❤️ Love';
-                status.innerHTML = '💬 ' + senderLabel + ' at ' + timeStr;
-            } else {
-                status.innerHTML = '💕 Send the first message!';
-            }
-        }
-
-        function startChatPolling() {
-            if (chatPollInterval) clearInterval(chatPollInterval);
-            chatPollInterval = setInterval(() => {
-                if (!chatActive || !currentGiftId) return;
-                renderMessages();
-                updateChatStatus();
-            }, 800);
-        }
-
-        function stopChatPolling() {
-            if (chatPollInterval) {
-                clearInterval(chatPollInterval);
-                chatPollInterval = null;
-            }
-        }
-
-        function startChatTimer(durationMinutes) {
-            chatTimeRemaining = durationMinutes * 60;
-            updateTimerDisplay();
-            if (chatTimerInterval) clearInterval(chatTimerInterval);
-            chatTimerInterval = setInterval(() => {
-                chatTimeRemaining--;
-                updateTimerDisplay();
-                if (chatTimeRemaining <= 0) {
-                    clearInterval(chatTimerInterval);
-                    chatTimerInterval = null;
-                    chatActive = false;
-                    const input = $('chatInput');
-                    if (input) input.disabled = true;
-                    const sendBtn = $('chatSendBtn');
-                    if (sendBtn) sendBtn.disabled = true;
-                    const status = $('chatStatus');
-                    if (status) status.innerHTML = '⏳ Chat time is up! 💕';
-                    showToast('⏳ Chat time is up!', 3000);
-                    // Show final after 3 seconds
-                    setTimeout(() => {
-                        nav('final');
-                        if (typeof confetti !== 'undefined') {
-                            confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
-                        }
-                    }, 2500);
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const el = $('chatTimer');
-            if (!el) return;
-            const mins = Math.floor(Math.max(0, chatTimeRemaining) / 60);
-            const secs = Math.floor(Math.max(0, chatTimeRemaining) % 60);
-            el.textContent = mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
-            if (chatTimeRemaining < 60) {
-                el.classList.add('warning');
-            } else {
-                el.classList.remove('warning');
-            }
-        }
-
-        function openChat() {
-            if (!currentGiftId) {
-                showToast('❌ No active chat session.', 2000);
-                return;
-            }
-            // Generate a unique sender ID for this session
-            senderId = 'user_' + Date.now().toString(36).slice(2, 8);
-
-            // Clear any previous chat state
-            stopChatPolling();
-            if (chatTimerInterval) {
-                clearInterval(chatTimerInterval);
-                chatTimerInterval = null;
-            }
-
-            chatActive = true;
-            const input = $('chatInput');
-            if (input) {
-                input.disabled = false;
-                input.value = '';
-                setTimeout(() => input.focus(), 400);
-            }
-            const sendBtn = $('chatSendBtn');
-            if (sendBtn) sendBtn.disabled = false;
-
-            // Set initial status
-            const status = $('chatStatus');
-            if (status) status.innerHTML = '💕 Chat started! Send a message...';
-
-            // Render existing messages
-            renderMessages();
-            updateChatStatus();
-
-            // Start timer
-            const duration = state.chatDuration || 10;
-            startChatTimer(duration);
-
-            // Start polling for new messages
-            startChatPolling();
-
-            nav('chat');
-            showToast('💬 Chat started! You have ' + duration + ' minutes.', 2500);
-        }
-
-        function closeChat() {
-            chatActive = false;
-            stopChatPolling();
-            if (chatTimerInterval) {
-                clearInterval(chatTimerInterval);
-                chatTimerInterval = null;
-            }
-            const input = $('chatInput');
-            if (input) input.disabled = true;
-            const sendBtn = $('chatSendBtn');
-            if (sendBtn) sendBtn.disabled = true;
-            const status = $('chatStatus');
-            if (status) status.innerHTML = '⏳ Chat ended.';
-        }
-
-        // ─── Chat Event Listeners ─────────────────────────────────────
-        $('chatSendBtn').addEventListener('click', sendChatMessage);
-        $('chatInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  YES BUTTON (opens chat instead of final)
-        // ═══════════════════════════════════════════════════════════════
-        $('yesBtn').addEventListener('click', function() {
-            // Check if chat is available
-            if (!currentGiftId) {
-                // If preview mode (no gift ID), just go to final
-                nav('final');
-                if (typeof confetti !== 'undefined') {
-                    confetti({ particleCount: 180, spread: 100, origin: { y: 0.5 } });
-                    setTimeout(() => {
-                        confetti({ particleCount: 80, angle: 50, spread: 60, origin: { x: 0 } });
-                        confetti({ particleCount: 80, angle: 130, spread: 60, origin: { x: 1 } });
-                    }, 200);
-                }
-                return;
-            }
-            // Open chat
-            openChat();
-            // Confetti celebration for starting chat
-            if (typeof confetti !== 'undefined') {
-                confetti({ particleCount: 80, spread: 60, origin: { y: 0.4 } });
-                setTimeout(() => {
-                    confetti({ particleCount: 40, angle: 70, spread: 40, origin: { x: 0 } });
-                    confetti({ particleCount: 40, angle: 110, spread: 40, origin: { x: 1 } });
-                }, 300);
-            }
-            // Reset no button position
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  PREVIEW
-        // ═══════════════════════════════════════════════════════════════
-        $('btnPreview').addEventListener('click', () => {
-            readFormIntoState();
-            applyState();
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-            // For preview, we don't have a gift ID, so chat won't work
-            // But we still show the question screen
-            currentGiftId = null; // Reset any previous ID
-            nav('question');
-            showToast('👀 Preview mode — chat will not be active.', 2000);
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  ID GENERATION
-        // ═══════════════════════════════════════════════════════════════
-        function genId() {
-            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  SHAREABLE LINK SYSTEM
-        // ═══════════════════════════════════════════════════════════════
-        function createShareableLink() {
-            readFormIntoState();
-            if (!state.question) {
-                showToast('💕 Please write a question first!', 2200);
-                return;
-            }
-            state.createdAt = Date.now();
-
-            const id = genId();
-            currentGiftId = id;
-            const dataToStore = JSON.parse(JSON.stringify(state));
-            localStorage.setItem('love_question_' + id, JSON.stringify(dataToStore));
-
-            let allIds = JSON.parse(localStorage.getItem('love_question_ids') || '[]');
-            if (!allIds.includes(id)) allIds.push(id);
-            localStorage.setItem('love_question_ids', JSON.stringify(allIds));
-
-            // Clear any existing chat messages for this ID
-            const chatKey = getChatKey(id);
-            localStorage.removeItem(chatKey);
-
-            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
-            $('shareLinkInput').value = shareUrl;
-            $('expiryHint').innerText = '💕 Link expires in ' + state.expiresIn + 'h · Chat: ' + state.chatDuration +
-                'min';
-
+    // SECOND: Fallback — check for ID in URL (?id=...) and try localStorage
+    const id = params.get('id');
+    if (id) {
+      const raw = localStorage.getItem('love_question_' + id);
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          const now = Date.now();
+          const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+          if (expTime > 0 && now > expTime) {
+            const d = new Date(expTime);
+            document.getElementById('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            nav('share');
-            showToast('✅ Link created successfully!', 2000);
-            console.log('💕 Love link created! ID:', id);
-            return id;
-        }
+            document.getElementById('scr-expired').classList.add('active');
+            return false;
+          }
+          state = data;
+          applyState();
+          const noBtnEl = document.getElementById('noBtn');
+          if (noBtnEl) {
+            noBtnEl.style.position = '';
+            noBtnEl.style.left = '';
+            noBtnEl.style.top = '';
+          }
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          nav('scr-question');
+          console.log('✅ Love question loaded from localStorage (ID fallback)!');
+          return true;
+        } catch(e) { console.warn('Fallback parse error:', e); }
+      }
+    }
 
-        $('btnCreateLink').addEventListener('click', createShareableLink);
+    // No data found — show setup
+    console.log('ℹ️ No data in URL or localStorage, showing setup.');
+    return false;
+  }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  SHARE BUTTONS
-        // ═══════════════════════════════════════════════════════════════
-        function copyToClipboard() {
-            const input = $('shareLinkInput');
-            if (!input || !input.value) return;
-            navigator.clipboard.writeText(input.value).then(() => {
-                const btn = $('copyLinkBtn');
-                btn.textContent = '✓ Copied!';
-                btn.classList.add('copied');
-                showToast('📋 Link copied to clipboard!', 1800);
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
-            }).catch(() => {
-                input.select();
-                document.execCommand('copy');
-                showToast('📋 Link copied!', 1500);
-            });
-        }
+  // ============================================================
+  //  AUTO-LOAD ON PAGE LOAD
+  // ============================================================
+  (function init() {
+    // Try to load from URL first
+    const loaded = loadFromUrl();
+    if (!loaded) {
+      // If no data, show setup
+      document.getElementById('scr-setup').classList.add('active');
+      // Check if there's cached data on this device
+      const cached = localStorage.getItem('love_question_cached');
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          // Don't auto-apply, just let user know they have a cached version
+          console.log('📦 Cached data found on this device:', data);
+        } catch(e) {}
+      }
+    }
+  })();
 
-        $('copyLinkBtn').addEventListener('click', copyToClipboard);
+  // ============================================================
+  //  RESTART / GO TO SETUP
+  // ============================================================
+  function goToSetup() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    nav('scr-setup');
+    // Clear URL parameters
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
+    currentGiftId = null;
+    const noBtnEl = document.getElementById('noBtn');
+    if (noBtnEl) {
+      noBtnEl.style.position = '';
+      noBtnEl.style.left = '';
+      noBtnEl.style.top = '';
+    }
+  }
 
-        $('whatsappBtn').addEventListener('click', () => {
-            const link = $('shareLinkInput')?.value || '';
-            window.open('https://wa.me/?text=' + encodeURIComponent('💕 A love question for you! ' + link), '_blank');
-        });
+  document.getElementById('restartBtn').addEventListener('click', goToSetup);
+  document.getElementById('expiredRestartBtn').addEventListener('click', goToSetup);
 
-        $('emailBtn').addEventListener('click', () => {
-            const link = $('shareLinkInput')?.value || '';
-            window.location.href = 'mailto:?subject=A Love Question&body=💕 A love question for you! ' + link;
-        });
+  // ============================================================
+  //  LEGACY PRESET SUPPORT (for exported files)
+  // ============================================================
+  if (window.__PRESET__) {
+    state = Object.assign({}, DEFAULTS, window.__PRESET__);
+    applyState();
+    nav('scr-question');
+    delete window.__PRESET__;
+  }
 
-        $('openGiftBtn').addEventListener('click', function() {
-            const id = currentGiftId;
-            if (id) loadFromId(id);
-        });
-
-        $('shareBackBtn').addEventListener('click', () => {
-            nav('setup');
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  LOAD FROM ID
-        // ═══════════════════════════════════════════════════════════════
-        function loadFromId(id) {
-            console.log('🔍 Loading love question with ID:', id);
-
-            let raw = localStorage.getItem('love_question_' + id);
-            if (!raw) {
-                console.warn('⚠️ Love question not found:', id);
-                const detailEl = $('expiryDetail');
-                if (detailEl) detailEl.textContent = 'This love link no longer exists.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('expired');
-                showToast('❌ Link not found or has been deleted.', 2500);
-                return false;
-            }
-
-            try {
-                const data = JSON.parse(raw);
-                const now = Date.now();
-                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                if (expTime > 0 && now > expTime) {
-                    const d = new Date(expTime);
-                    const detailEl = $('expiryDetail');
-                    if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    nav('expired');
-                    showToast('⏳ This link has expired.', 2500);
-                    return false;
-                }
-
-                state = data;
-                currentGiftId = id;
-                applyState();
-
-                // Reset sender ID
-                senderId = 'user_' + Date.now().toString(36).slice(2, 8);
-
-                noBtn.style.position = '';
-                noBtn.style.left = '';
-                noBtn.style.top = '';
-                noBtn.classList.remove('dodging');
-                noBtn.style.zIndex = '';
-
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('question');
-                console.log('✅ Love question loaded successfully!');
-                showToast('💕 Welcome! Click "Yes" to start chatting.', 2500);
-                return true;
-
-            } catch (e) {
-                console.error('❌ Error loading:', e);
-                const detailEl = $('expiryDetail');
-                if (detailEl) detailEl.textContent = 'Error loading love link.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('expired');
-                showToast('❌ Error loading link.', 2000);
-                return false;
-            }
-        }
-
-        // ─── Auto-load from URL ───
-        (function loadFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-            if (id) {
-                console.log('🔗 Loading from URL with ID:', id);
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                loadFromId(id);
-            }
-        })();
-
-        // ═══════════════════════════════════════════════════════════════
-        //  RESTART / GO TO SETUP
-        // ═══════════════════════════════════════════════════════════════
-        function goToSetup() {
-            // Close chat if active
-            closeChat();
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            nav('setup');
-            if (window.history && window.history.pushState) {
-                window.history.pushState({}, '', window.location.pathname);
-            }
-            currentGiftId = null;
-            noBtn.style.position = '';
-            noBtn.style.left = '';
-            noBtn.style.top = '';
-            noBtn.classList.remove('dodging');
-            noBtn.style.zIndex = '';
-            showToast('✨ Back to setup', 1200);
-        }
-
-        $('restartBtn').addEventListener('click', goToSetup);
-        $('expiredRestartBtn').addEventListener('click', goToSetup);
-
-        // ═══════════════════════════════════════════════════════════════
-        //  RESET & CLEAR BUTTONS
-        // ═══════════════════════════════════════════════════════════════
-        $('btnResetDefaults').addEventListener('click', resetFormToDefaults);
-        $('btnClearData').addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete all saved love links? This cannot be undone.')) {
-                clearAllStoredData();
-            }
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        //  LEGACY PRESET SUPPORT
-        // ═══════════════════════════════════════════════════════════════
-        if (window.__PRESET__) {
-            state = Object.assign({}, DEFAULTS, window.__PRESET__);
-            applyState();
-            nav('question');
-            delete window.__PRESET__;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  KEYBOARD SHORTCUTS
-        // ═══════════════════════════════════════════════════════════════
-        document.addEventListener('keydown', function(e) {
-            // Escape to go to setup from any screen (except chat, where it sends message)
-            if (e.key === 'Escape') {
-                const activeScreen = document.querySelector('.screen.active');
-                if (activeScreen && activeScreen.id === 'scr-chat') {
-                    // In chat, Escape closes the chat and goes to final
-                    if (chatActive) {
-                        closeChat();
-                        nav('final');
-                        showToast('💬 Chat ended early.', 1500);
-                    }
-                    return;
-                }
-                if (activeScreen && activeScreen.id !== 'scr-setup') {
-                    goToSetup();
-                }
-            }
-            // Enter on setup to preview
-            if (e.key === 'Enter' && document.activeElement && document.activeElement.closest('#scr-setup')) {
-                const btn = $('btnPreview');
-                if (btn) btn.click();
-            }
-        });
-
-        // ─── Clean up on page unload ──────────────────────────────────
-        window.addEventListener('beforeunload', function() {
-            stopChatPolling();
-            if (chatTimerInterval) {
-                clearInterval(chatTimerInterval);
-                chatTimerInterval = null;
-            }
-        });
-
-        console.log('💕 Do You Love Me? — Premium Shareable Edition with Chat');
-        console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-        console.log('💬 After "Yes", a real-time chat opens between both users.');
-        console.log('⏳ Chat duration: ' + (state.chatDuration || 10) + ' minutes.');
-        console.log('📋 Functions available:');
-        console.log('  • nav(id) - navigate to screen');
-        console.log('  • readFormIntoState() - read form data');
-        console.log('  • applyState() - apply state to UI');
-        console.log('  • createShareableLink() - create link');
-        console.log('  • loadFromId(id) - load from ID');
-        console.log('  • goToSetup() - go to setup');
-        console.log('  • openChat() - open chat screen');
-        console.log('  • sendChatMessage() - send message');
-        console.log('  • showToast(msg) - show notification');
-    </script>
-
+  console.log('💕 Do You Love Me? — Fixed Shareable Link System!');
+  console.log('🔗 Data is embedded directly in the URL — works across any device.');
+  console.log('⏳ Links expire after the set hours (default 24h).');
+</script>
 </body>
 </html>
