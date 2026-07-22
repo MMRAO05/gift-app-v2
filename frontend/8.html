@@ -8,16 +8,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
   </script>
-  <!-- LZ‑String for short URLs -->
-  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js">
-  </script>
   <style>
     /* ────────── ROOT ────────── */
     :root {
       --deep-blue: #0b1a30;
-      --wave-1: #1a4a7a;
-      --wave-2: #2a7a9a;
-      --wave-3: #5ab0c0;
       --gold: #f7d875;
       --pink: #ff6b9d;
       --card-bg: rgba(255, 255, 255, 0.08);
@@ -25,35 +19,29 @@
       --text-soft: #b0c8e0;
       --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
       --radius: 24px;
-      --theme-color: #f7d875;
-      --theme-glow: rgba(247, 216, 117, 0.3);
     }
-
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       margin: 0;
       padding: 0;
     }
-
     html,
     body {
       height: 100%;
       font-family: 'Poppins', sans-serif;
-      background: var(--deep-blue);
+      background: #0b1a30;
       color: var(--text-light);
       overflow: hidden;
     }
-
     #stage {
       position: relative;
       width: 100%;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background: var(--deep-blue);
+      background: #0b1a30;
     }
-
     #waveCanvas {
       position: absolute;
       inset: 0;
@@ -63,7 +51,6 @@
       pointer-events: none;
       display: block;
     }
-
     .screen {
       position: absolute;
       inset: 0;
@@ -85,7 +72,6 @@
       pointer-events: auto;
       transform: scale(1) translateY(0);
     }
-
     .glass {
       background: var(--card-bg);
       backdrop-filter: blur(18px);
@@ -94,8 +80,6 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
-
-    /* ────────── SETUP ────────── */
     .setup-card {
       width: 100%;
       max-width: 440px;
@@ -112,7 +96,6 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
     }
-
     .setup-card .brand {
       display: flex;
       align-items: center;
@@ -140,7 +123,6 @@
       margin: 0 0 20px;
       font-weight: 300;
     }
-
     .field {
       text-align: left;
       margin-bottom: 14px;
@@ -220,7 +202,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
     .btn {
       width: 100%;
       padding: 13px;
@@ -255,7 +236,6 @@
     .btn:active {
       transform: translateY(0);
     }
-
     .btn-group {
       display: flex;
       gap: 10px;
@@ -265,15 +245,12 @@
       flex: 1;
       min-width: 100px;
     }
-
     .ghost-hint {
       margin-top: 14px;
       font-size: 10.5px;
       color: var(--text-soft);
       line-height: 1.6;
     }
-
-    /* ────────── PASSKEY ────────── */
     .pass-dots {
       display: flex;
       gap: 12px;
@@ -345,8 +322,6 @@
         transform: translateX(8px);
       }
     }
-
-    /* ────────── SHARE ────────── */
     .share-card .success-icon {
       font-size: 48px;
       margin-bottom: 4px;
@@ -373,14 +348,15 @@
       gap: 10px;
       align-items: center;
       border: 1px solid rgba(255, 255, 255, 0.04);
-      margin-bottom: 18px;
+      margin-bottom: 12px;
       overflow: hidden;
+      flex-wrap: wrap;
     }
     .share-link-box input {
       flex: 1;
       border: none;
       background: transparent;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-light);
       outline: none;
       font-family: 'Poppins', sans-serif;
@@ -407,12 +383,12 @@
       background: #34d399;
       color: #0b1a30;
     }
-
     .share-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
+      margin-top: 4px;
     }
     .share-actions button {
       padding: 10px 18px;
@@ -449,7 +425,7 @@
       flex: 1.5;
     }
     .expiry-hint {
-      margin-top: 14px;
+      margin-top: 6px;
       font-size: 11px;
       color: var(--text-soft);
     }
@@ -463,20 +439,31 @@
       cursor: pointer;
       font-family: 'Poppins', sans-serif;
     }
-    .url-length-warn {
-      font-size: 10px;
-      color: var(--pink);
-      margin: 6px 0 0;
-      display: none;
+    .share-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      justify-content: center;
     }
-    .url-length-ok {
-      font-size: 10px;
-      color: #34d399;
-      margin: 6px 0 0;
-      display: none;
+    .share-tabs button {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      color: var(--text-soft);
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s;
     }
-
-    /* ────────── EXPIRED ────────── */
+    .share-tabs button.active {
+      background: rgba(247, 216, 117, 0.15);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .share-tabs button:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
     .expired-card .icon {
       font-size: 60px;
       margin-bottom: 8px;
@@ -493,8 +480,6 @@
       margin: 12px 0 24px;
       line-height: 1.6;
     }
-
-    /* ────────── OCEAN EXPERIENCE ────────── */
     .ocean-card {
       max-width: 400px;
       padding: 32px 24px;
@@ -551,9 +536,6 @@
       background: rgba(0, 0, 0, 0.2);
       outline: none;
     }
-    .ocean-music audio::-webkit-media-controls-panel {
-      background: rgba(0, 0, 0, 0.2);
-    }
     .ocean-btn {
       margin-top: 12px;
     }
@@ -569,8 +551,6 @@
       letter-spacing: 0.04em;
       margin-bottom: 6px;
     }
-
-    /* ────────── VIDEO RECORD ────────── */
     .video-preview {
       width: 100%;
       max-width: 340px;
@@ -604,8 +584,6 @@
       margin-top: 6px;
       min-height: 20px;
     }
-
-    /* ────────── FINAL ────────── */
     .final-card .heart-burst {
       font-size: 56px;
       margin-bottom: 6px;
@@ -646,7 +624,22 @@
       cursor: pointer;
       font-family: 'Poppins', sans-serif;
     }
-
+    .notfound-card .icon {
+      font-size: 60px;
+      margin-bottom: 8px;
+    }
+    .notfound-card h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--pink);
+      margin: 0;
+      font-size: 26px;
+    }
+    .notfound-card p {
+      color: var(--text-soft);
+      font-size: 14px;
+      margin: 12px 0 24px;
+      line-height: 1.6;
+    }
     @media(max-width:440px) {
       .setup-card {
         padding: 20px 16px;
@@ -676,6 +669,13 @@
         width: 52px;
         height: 52px;
         font-size: 16px;
+      }
+      .share-link-box {
+        flex-wrap: wrap;
+      }
+      .share-link-box input {
+        font-size: 11px;
+        min-width: 100%;
       }
     }
   </style>
@@ -751,9 +751,7 @@
           <button class="btn btn-primary" id="btnPreview">👀 Preview</button>
           <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
         </div>
-        <div class="ghost-hint">"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</div>
-        <div id="urlWarn" class="url-length-warn"></div>
-        <div id="urlOk" class="url-length-ok"></div>
+        <div class="ghost-hint">"Preview" tests it here. "Create Link" generates a short ID link stored in your browser.</div>
       </div>
     </div>
 
@@ -762,17 +760,27 @@
       <div class="glass share-card" style="width:100%; max-width:440px; padding:30px 24px;">
         <div class="success-icon">🌊</div>
         <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0;font-size:24px;">Ocean Ready!</h2>
-        <p style="color:var(--text-soft);font-size:13px;margin:4px 0 20px;">Share this oceanic link with your special person.</p>
+        <p style="color:var(--text-soft);font-size:13px;margin:4px 0 16px;">Share this oceanic link with your special person.</p>
+
+        <div class="share-tabs">
+          <button class="active" data-tab="short">🔗 Short ID</button>
+          <button data-tab="full">📦 Full URL</button>
+        </div>
+
         <div class="share-link-box">
           <input type="text" id="shareLinkInput" readonly />
           <button class="copy-btn" id="copyLinkBtn">Copy</button>
         </div>
+
         <div class="share-actions">
           <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
           <button class="email" id="emailBtn">✉️ Email</button>
           <button class="open-gift" id="openGiftBtn">Open 🌊</button>
         </div>
         <div class="expiry-hint" id="expiryHint"></div>
+        <div style="margin-top:6px;font-size:10px;color:var(--text-soft);">
+          <span id="linkTypeLabel">📌 Short ID link — works on this device</span>
+        </div>
         <button class="share-back-link" id="shareBackBtn">← Back to setup</button>
       </div>
     </div>
@@ -785,6 +793,16 @@
         <p>This oceanic link has gently faded. The magic was meant to be cherished in the moment.</p>
         <button class="btn btn-primary" id="expiredRestartBtn">Create a New One</button>
         <div style="margin-top:12px;font-size:11px;color:var(--text-soft);" id="expiryDetail"></div>
+      </div>
+    </div>
+
+    <!-- ─── NOT FOUND ─── -->
+    <div class="screen" id="scr-notfound">
+      <div class="glass notfound-card" style="width:100%; max-width:400px; padding:40px 30px;">
+        <div class="icon">🔍</div>
+        <h2>Link Not Found</h2>
+        <p>The ocean memory you're looking for doesn't exist or has been cleared from this browser.</p>
+        <button class="btn btn-primary" id="notfoundRestartBtn">Create a New One</button>
       </div>
     </div>
 
@@ -843,7 +861,7 @@
         <div class="heart-burst" id="finalIcon">💖</div>
         <div class="final-head" id="finalHead">Forever Yours</div>
         <div class="final-msg" id="finalMsg">You are my ocean, my endless love. 🌊</div>
-        <button class="restart-link" id="restartBtn">✨ create another one</button>
+      <!--  <button class="restart-link" id="restartBtn">✨ create another one</button> -->
       </div>
     </div>
   </div>
@@ -861,8 +879,7 @@
         finalHead: 'Happy Birthday to You! 🎉',
         finalMsg: 'Wishing you the most beautiful day filled with joy, love, and everything you deserve.',
         colors: ['#ff6b6b', '#f7d875', '#ff6b9d'],
-        particles: ['🎂', '🎈', '🎉', '🎊', '⭐', '🎁'],
-        waveColors: [{ r: 255, g: 107, b: 107 }, { r: 247, g: 216, b: 117 }, { r: 255, g: 107, b: 157 }]
+        particles: ['🎂', '🎈', '🎉', '🎊', '⭐', '🎁']
       },
       mothersday: {
         label: "Mother's Day",
@@ -872,8 +889,7 @@
         finalHead: 'To the Most Amazing Mom 💐',
         finalMsg: 'Thank you for your endless love, your strength, and your beautiful heart. You are my inspiration.',
         colors: ['#f472b6', '#f7d875', '#a78bfa'],
-        particles: ['🌸', '🌺', '🌹', '💐', '🌷', '🌻'],
-        waveColors: [{ r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }, { r: 167, g: 139, b: 250 }]
+        particles: ['🌸', '🌺', '🌹', '💐', '🌷', '🌻']
       },
       fathersday: {
         label: "Father's Day",
@@ -883,8 +899,7 @@
         finalHead: 'To My Hero 🦸',
         finalMsg: 'Thank you for being my strength, my guide, and my protector. I love you more than words can say.',
         colors: ['#3b82f6', '#60a5fa', '#f7d875'],
-        particles: ['🦸', '💪', '⭐', '🎯', '🏆', '🔵'],
-        waveColors: [{ r: 59, g: 130, b: 246 }, { r: 96, g: 165, b: 250 }, { r: 247, g: 216, b: 117 }]
+        particles: ['🦸', '💪', '⭐', '🎯', '🏆', '🔵']
       },
       anniversary: {
         label: 'Anniversary',
@@ -894,8 +909,7 @@
         finalHead: 'Forever and Always 💞',
         finalMsg: 'Every day with you is a gift. Thank you for being my partner, my best friend, and my greatest love.',
         colors: ['#ef4444', '#f472b6', '#f7d875'],
-        particles: ['💕', '💞', '❤️', '💗', '💖', '💘'],
-        waveColors: [{ r: 239, g: 68, b: 68 }, { r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }]
+        particles: ['💕', '💞', '❤️', '💗', '💖', '💘']
       },
       valentine: {
         label: "Valentine's Day",
@@ -905,8 +919,7 @@
         finalHead: 'You Have My Heart 💘',
         finalMsg: 'You are the love of my life, the beat of my heart, and the reason I believe in magic. I love you.',
         colors: ['#ff6b6b', '#f472b6', '#f7d875'],
-        particles: ['❤️', '💗', '💖', '💕', '💘', '💝'],
-        waveColors: [{ r: 255, g: 107, b: 107 }, { r: 244, g: 114, b: 182 }, { r: 247, g: 216, b: 117 }]
+        particles: ['❤️', '💗', '💖', '💕', '💘', '💝']
       },
       congratulations: {
         label: 'Congratulations',
@@ -916,8 +929,7 @@
         finalHead: 'You Did It! 🎊',
         finalMsg: 'So proud of you and everything you\'ve achieved. This is just the beginning of something extraordinary.',
         colors: ['#f7d875', '#f59e0b', '#34d399'],
-        particles: ['🎊', '🎉', '✨', '⭐', '🏆', '🎈'],
-        waveColors: [{ r: 247, g: 216, b: 117 }, { r: 245, g: 158, b: 11 }, { r: 52, g: 211, b: 153 }]
+        particles: ['🎊', '🎉', '✨', '⭐', '🏆', '🎈']
       },
       justbecause: {
         label: 'Just Because',
@@ -927,8 +939,7 @@
         finalHead: 'A Little Surprise 🎁',
         finalMsg: 'Just because you deserve the world, and I wanted to remind you how truly special you are.',
         colors: ['#a78bfa', '#f472b6', '#34d399'],
-        particles: ['🎁', '✨', '💫', '🌟', '🌈', '🎀'],
-        waveColors: [{ r: 167, g: 139, b: 250 }, { r: 244, g: 114, b: 182 }, { r: 52, g: 211, b: 153 }]
+        particles: ['🎁', '✨', '💫', '🌟', '🌈', '🎀']
       }
     };
 
@@ -1101,19 +1112,24 @@
       photo: '',
       music: '',
       expiresIn: 24,
-      createdAt: 0
+      createdAt: 0,
+      id: ''
     };
     let state = Object.assign({}, DEFAULTS);
-    let currentGiftId = null;
     let musicDataURL = '';
     let photoDataURL = '';
     let passEntry = '';
+    let currentId = '';
+    let currentShortUrl = '';
+    let currentFullUrl = '';
+    let currentTab = 'short';
 
     const $ = id => document.getElementById(id);
     const screens = {
       'scr-setup': $('scr-setup'),
       'scr-share': $('scr-share'),
       'scr-expired': $('scr-expired'),
+      'scr-notfound': $('scr-notfound'),
       'scr-pass': $('scr-pass'),
       'scr-ocean': $('scr-ocean'),
       'scr-video': $('scr-video'),
@@ -1315,11 +1331,22 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  ENCODE / DECODE — SHORTER URL using compressToEncodedURIComponent
+    //  ID GENERATION
+    // ═══════════════════════════════════════════════════════════════
+    function generateShortId() {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let id = '';
+      for (let i = 0; i < 8; i++) {
+        id += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return id;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  ENCODE / DECODE for full URL fallback
     // ═══════════════════════════════════════════════════════════════
     function encodeData(data) {
       try {
-        // Use shorter keys to reduce size
         const compact = {
           oc: data.occasion || 'birthday',
           nm: data.name || '',
@@ -1332,9 +1359,6 @@
           id: data.id || ''
         };
         const json = JSON.stringify(compact);
-        if (typeof LZString !== 'undefined' && LZString.compressToEncodedURIComponent) {
-          return LZString.compressToEncodedURIComponent(json);
-        }
         return encodeURIComponent(json);
       } catch (e) {
         console.warn('encodeData error:', e);
@@ -1345,19 +1369,8 @@
     function decodeData(str) {
       if (!str) return null;
       try {
-        let json;
-        if (typeof LZString !== 'undefined' && LZString.decompressFromEncodedURIComponent) {
-          const decompressed = LZString.decompressFromEncodedURIComponent(str);
-          if (decompressed) {
-            json = decompressed;
-          } else {
-            json = decodeURIComponent(str);
-          }
-        } else {
-          json = decodeURIComponent(str);
-        }
+        const json = decodeURIComponent(str);
         const parsed = JSON.parse(json);
-        // Map back to full keys
         return {
           occasion: parsed.oc || 'birthday',
           name: parsed.nm || '',
@@ -1375,10 +1388,6 @@
       }
     }
 
-    function genId() {
-      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-    }
-
     // ═══════════════════════════════════════════════════════════════
     //  CREATE LINK
     // ═══════════════════════════════════════════════════════════════
@@ -1390,12 +1399,28 @@
           alert('🌊 Please enter a name before creating a link!');
           return;
         }
+
+        const id = generateShortId();
+        state.id = id;
         state.createdAt = Date.now();
 
-        const id = genId();
-        currentGiftId = id;
-        try { localStorage.setItem('ocean_' + id, JSON.stringify(state)); } catch (e) {}
+        // Save to localStorage
+        try {
+          localStorage.setItem('ocean_data_' + id, JSON.stringify(state));
+          localStorage.setItem('ocean_photo_' + id, photoDataURL || '');
+          localStorage.setItem('ocean_music_' + id, musicDataURL || '');
+        } catch (e) {
+          console.warn('localStorage save error:', e);
+        }
 
+        currentId = id;
+
+        // Build short URL
+        const base = window.location.origin + window.location.pathname;
+        const shortUrl = base + '?id=' + id;
+        currentShortUrl = shortUrl;
+
+        // Build full URL (compressed data)
         const fullData = {
           occasion: state.occasion,
           name: state.name,
@@ -1407,43 +1432,67 @@
           createdAt: state.createdAt,
           id: id
         };
-
         const encoded = encodeData(fullData);
-        let shareUrl = window.location.origin + window.location.pathname + '?d=' + encoded;
+        const fullUrl = base + '?d=' + encoded;
+        currentFullUrl = fullUrl;
 
-        const warnEl = $('urlWarn');
-        const okEl = $('urlOk');
-        if (shareUrl.length > 2048) {
-          if (warnEl) {
-            warnEl.style.display = 'block';
-            warnEl.textContent = '⚠️ Link is ' + shareUrl.length + ' chars (large media). Use smaller files or share via WhatsApp/Email.';
-          }
-          if (okEl) okEl.style.display = 'none';
-        } else if (shareUrl.length > 800) {
-          if (warnEl) {
-            warnEl.style.display = 'block';
-            warnEl.textContent = '📏 Link is ' + shareUrl.length + ' chars — still shareable but consider smaller media for shorter links.';
-          }
-          if (okEl) okEl.style.display = 'none';
-        } else {
-          if (warnEl) { warnEl.style.display = 'none'; }
-          if (okEl) {
-            okEl.style.display = 'block';
-            okEl.textContent = '✅ Link is ' + shareUrl.length + ' chars — nice and short!';
-          }
-        }
+        // Update share UI
+        updateShareUI('short');
 
-        const input = $('shareLinkInput');
-        if (input) input.value = shareUrl;
         const hint = $('expiryHint');
         if (hint) hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
           's' : '');
 
         nav('scr-share');
-        console.log('🌊 Ocean link created! ID:', id, 'Length:', shareUrl.length);
-        return id;
+        console.log('🌊 Ocean link created! ID:', id);
+        console.log('🔗 Short:', shortUrl);
+        console.log('📦 Full:', fullUrl);
       });
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SHARE UI
+    // ═══════════════════════════════════════════════════════════════
+    function updateShareUI(tab) {
+      currentTab = tab;
+      const input = $('shareLinkInput');
+      const label = $('linkTypeLabel');
+      const tabs = document.querySelectorAll('.share-tabs button');
+
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+
+      if (tab === 'short') {
+        input.value = currentShortUrl || '';
+        label.textContent = '📌 Short ID link — works on this device (localStorage)';
+        // Enable/disable full tab
+        document.querySelector('.share-tabs button[data-tab="full"]').style.opacity = '1';
+      } else {
+        input.value = currentFullUrl || '';
+        label.textContent = '📦 Full URL — contains all data, works across devices';
+      }
+
+      // Update expiry hint
+      const hint = $('expiryHint');
+      if (hint && state.expiresIn) {
+        hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+      }
+    }
+
+    // ─── Tab switching ──────────────────────────────────────────────
+    document.querySelectorAll('.share-tabs button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tab = this.dataset.tab;
+        if (tab === 'short' && !currentShortUrl) {
+          alert('Please create a link first!');
+          return;
+        }
+        if (tab === 'full' && !currentFullUrl) {
+          alert('Please create a link first!');
+          return;
+        }
+        updateShareUI(tab);
+      });
+    });
 
     // ═══════════════════════════════════════════════════════════════
     //  SHARE BUTTONS
@@ -1487,7 +1536,9 @@
     const openGiftBtn = $('openGiftBtn');
     if (openGiftBtn) {
       openGiftBtn.addEventListener('click', function() {
-        window.location.reload();
+        const link = $('shareLinkInput')?.value || '';
+        if (link) window.open(link, '_blank');
+        else window.location.reload();
       });
     }
 
@@ -1499,81 +1550,111 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  LOAD FROM URL
+    //  LOAD FROM URL (ID or compressed data)
     // ═══════════════════════════════════════════════════════════════
     function loadFromUrl() {
       const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
       const encoded = params.get('d');
-      if (!encoded) return false;
 
-      const data = decodeData(encoded);
-      if (!data) {
-        const detail = $('expiryDetail');
-        if (detail) detail.textContent = 'The link is corrupted. Please create a new one.';
+      // ─── Try ID from localStorage ──────────────────────────────
+      if (id) {
+        try {
+          const stored = localStorage.getItem('ocean_data_' + id);
+          if (stored) {
+            const data = JSON.parse(stored);
+            state = Object.assign({}, DEFAULTS, data);
+            // Load photo/music from separate keys (for large data)
+            const photo = localStorage.getItem('ocean_photo_' + id) || '';
+            const music = localStorage.getItem('ocean_music_' + id) || '';
+            state.photo = photo;
+            state.music = music;
+            musicDataURL = music;
+            photoDataURL = photo;
+            currentId = id;
+            applyState();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            if (state.passkey) {
+              passEntry = '';
+              updatePassDots();
+              const errEl = $('passError');
+              if (errEl) errEl.textContent = '';
+              nav('scr-pass');
+            } else {
+              nav('scr-ocean');
+            }
+            console.log('✅ Ocean loaded from localStorage ID:', id);
+            return true;
+          } else {
+            // ID not found in localStorage
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            nav('scr-notfound');
+            return false;
+          }
+        } catch (e) {
+          console.warn('Error loading from localStorage:', e);
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          nav('scr-notfound');
+          return false;
+        }
+      }
+
+      // ─── Try compressed data URL ──────────────────────────────
+      if (encoded) {
+        const data = decodeData(encoded);
+        if (!data) {
+          const detail = $('expiryDetail');
+          if (detail) detail.textContent = 'The link is corrupted. Please create a new one.';
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          nav('scr-expired');
+          return false;
+        }
+
+        const now = Date.now();
+        const createdAt = typeof data.createdAt === 'number' ? data.createdAt : parseInt(data.createdAt) || 0;
+        const expiresIn = typeof data.expiresIn === 'number' ? data.expiresIn : parseInt(data.expiresIn) || 0;
+        const expTime = createdAt + expiresIn * 3600000;
+
+        if (expiresIn > 0 && expTime > 0 && now > expTime) {
+          const d = new Date(expTime);
+          const detail = $('expiryDetail');
+          if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          nav('scr-expired');
+          return false;
+        }
+
+        state = Object.assign({}, DEFAULTS, data);
+        musicDataURL = state.music || '';
+        photoDataURL = state.photo || '';
+        currentId = data.id || '';
+
+        // Also save to localStorage for future use
+        if (currentId) {
+          try {
+            localStorage.setItem('ocean_data_' + currentId, JSON.stringify(state));
+            if (state.photo) localStorage.setItem('ocean_photo_' + currentId, state.photo);
+            if (state.music) localStorage.setItem('ocean_music_' + currentId, state.music);
+          } catch (e) {}
+        }
+
+        applyState();
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const expired = $('scr-expired');
-        if (expired) expired.classList.add('active');
-        return false;
+        if (state.passkey) {
+          passEntry = '';
+          updatePassDots();
+          const errEl = $('passError');
+          if (errEl) errEl.textContent = '';
+          nav('scr-pass');
+        } else {
+          nav('scr-ocean');
+        }
+        console.log('✅ Ocean loaded from compressed URL. Expires in ' + expiresIn + 'h');
+        return true;
       }
 
-      const now = Date.now();
-      const createdAt = typeof data.createdAt === 'number' ? data.createdAt : parseInt(data.createdAt) || 0;
-      const expiresIn = typeof data.expiresIn === 'number' ? data.expiresIn : parseInt(data.expiresIn) || 0;
-      const expTime = createdAt + expiresIn * 3600000;
-
-      if (expiresIn > 0 && expTime > 0 && now > expTime) {
-        const d = new Date(expTime);
-        const detail = $('expiryDetail');
-        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const expired = $('scr-expired');
-        if (expired) expired.classList.add('active');
-        return false;
-      }
-
-      state.occasion = data.occasion || 'birthday';
-      state.name = data.name || DEFAULTS.name;
-      state.message = data.message || DEFAULTS.message;
-      state.passkey = data.passkey || '';
-      state.photo = data.photo || '';
-      state.music = data.music || '';
-      state.expiresIn = expiresIn || DEFAULTS.expiresIn;
-      state.createdAt = createdAt || 0;
-      musicDataURL = state.music || '';
-      photoDataURL = state.photo || '';
-      currentGiftId = data.id || null;
-
-      if (data.id) {
-        try { localStorage.setItem('ocean_' + data.id, JSON.stringify(state)); } catch (e) {}
-      }
-
-      applyState();
-
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-
-      if (state.passkey) {
-        passEntry = '';
-        updatePassDots();
-        const errEl = $('passError');
-        if (errEl) errEl.textContent = '';
-        nav('scr-pass');
-      } else {
-        nav('scr-ocean');
-      }
-
-      console.log('✅ Ocean loaded from URL. Expires in ' + expiresIn + 'h');
-      return true;
+      return false;
     }
-
-    // ─── Auto-load ──────────────────────────────────────────────────
-    (function init() {
-      const loaded = loadFromUrl();
-      if (!loaded) {
-        const setup = $('scr-setup');
-        if (setup) setup.classList.add('active');
-      }
-      setupPasskeyHandler();
-    })();
 
     // ═══════════════════════════════════════════════════════════════
     //  VIDEO RECORDING
@@ -1764,15 +1845,13 @@
       if (window.history && window.history.pushState) {
         window.history.pushState({}, '', window.location.pathname);
       }
-      currentGiftId = null;
       if (mediaRecorder && recording) {
         mediaRecorder.stop();
         recording = false;
       }
-      const warnEl = $('urlWarn');
-      if (warnEl) warnEl.style.display = 'none';
-      const okEl = $('urlOk');
-      if (okEl) okEl.style.display = 'none';
+      currentShortUrl = '';
+      currentFullUrl = '';
+      currentId = '';
     }
 
     const restartBtn = $('restartBtn');
@@ -1780,6 +1859,9 @@
 
     const expiredRestartBtn = $('expiredRestartBtn');
     if (expiredRestartBtn) expiredRestartBtn.addEventListener('click', goToSetup);
+
+    const notfoundRestartBtn = $('notfoundRestartBtn');
+    if (notfoundRestartBtn) notfoundRestartBtn.addEventListener('click', goToSetup);
 
     // ─── Occasion change preview in setup ──────────────────────────
     const occSelect = $('inpOccasion');
@@ -1791,9 +1873,19 @@
       });
     }
 
-    console.log('🌊 Ocean of Love — EXTRA SHORT URL (compressed + short keys)');
-    console.log('📦 Uses LZString.compressToEncodedURIComponent + compact JSON keys');
-    console.log('⏳ Expiration check with robust type handling');
+    // ─── Init ──────────────────────────────────────────────────────
+    (function init() {
+      const loaded = loadFromUrl();
+      if (!loaded) {
+        const setup = $('scr-setup');
+        if (setup) setup.classList.add('active');
+      }
+      setupPasskeyHandler();
+    })();
+
+    console.log('🌊 Ocean of Love — SHORT ID LINKS!');
+    console.log('📌 Link format: ?id=xxxxx (stored in localStorage)');
+    console.log('📦 Also supports full compressed URLs via ?d=');
   </script>
 </body>
 </html>
