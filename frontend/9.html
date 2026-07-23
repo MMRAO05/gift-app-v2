@@ -6,7 +6,7 @@
 <title>Custom Surprise Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
 
 <style>
   :root {
@@ -57,13 +57,7 @@
     overflow-y: auto;
   }
 
-  .script-font {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    color: var(--accent-pink);
-    font-weight: 600;
-  }
-
+  .script-font { font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-pink); font-weight: 600; }
   h1.main-title { font-size: 34px; margin: 10px 0 5px 0; font-weight: 600; }
   p.sub-quote { font-size: 13px; color: var(--soft-text); font-style: italic; margin-bottom: 20px; line-height: 1.5; white-space: pre-wrap; }
   .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-pink); font-weight: 600; }
@@ -73,10 +67,8 @@
     width: 50px; height: 55px; border: 2px solid #f3cfd6; border-radius: 14px;
     font-size: 22px; font-weight: 600; text-align: center; color: var(--accent-pink);
     outline: none; background: #fff; transition: all 0.2s;
-    font-family: 'Poppins', sans-serif;
   }
   .pin-box:focus { border-color: var(--accent-pink); box-shadow: 0 0 10px rgba(230, 57, 86, 0.2); }
-  .pin-box::placeholder { color: #ddd; font-size: 14px; }
 
   .btn-pink {
     background: var(--accent-pink); color: white; border: none; padding: 14px 28px;
@@ -84,22 +76,13 @@
     box-shadow: 0 6px 20px rgba(230, 57, 86, 0.3); transition: transform 0.2s; width: 100%;
   }
   .btn-pink:active { transform: scale(0.96); }
+  .btn-pink:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-outline {
     background: transparent; color: var(--soft-text); border: 1px solid #e2c0c7;
     padding: 12px 24px; border-radius: 50px; font-size: 13px; cursor: pointer;
     margin-top: 10px; transition: all 0.2s; width: 100%;
   }
-  .btn-gold {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-    color: #1e1e1e; border: none; padding: 14px 28px;
-    border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer;
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3); transition: transform 0.2s; width: 100%;
-  }
-  .btn-gold:active { transform: scale(0.96); }
-
-  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-  .btn-group .btn-pink, .btn-group .btn-gold { flex: 1; min-width: 100px; }
 
   .toast-popup {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -111,48 +94,63 @@
 
   .field { text-align: left; margin-bottom: 14px; width: 100%; }
   .field label { font-size: 11px; font-weight: 600; color: var(--soft-text); display: block; margin-bottom: 4px; }
-  .field input, .field textarea { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #f0cad2; background: white; font-family: inherit; font-size: 13px; }
-  .field input:focus, .field textarea:focus { outline: 2px solid var(--accent-pink); outline-offset: 2px; }
+  .field input[type=text], .field input[type=date], .field input[type=time], .field input[type=url], .field textarea {
+    width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #f0cad2; background: white; font-family: inherit; font-size: 13px;
+  }
   .field small { display: block; margin-top: 4px; color: #b98c95; font-size: 10.5px; }
-  .section-label { text-align: left; width: 100%; font-size: 11px; font-weight: 700; color: var(--accent-pink); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; border-top: 1px dashed #f0cad2; padding-top: 14px; }
+  .section-label { text-align: left; width: 100%; font-size: 11px; font-weight: 700; color: var(--accent-pink); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; border-top: 1px dashed #f0cad2; padding-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .section-label:first-of-type { border-top: none; margin-top: 4px; padding-top: 0; }
+
+  .toggle-switch { position: relative; width: 38px; height: 20px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #e8c3ca; border-radius: 20px; transition: .2s; }
+  .toggle-slider::before { content: ""; position: absolute; height: 14px; width: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .2s; }
+  .toggle-switch input:checked + .toggle-slider { background: var(--accent-pink); }
+  .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+  .section-body { width: 100%; }
+  .section-body.section-off { opacity: 0.4; pointer-events: none; filter: grayscale(0.6); }
 
   .note-list { text-align: left; font-size: 13px; line-height: 1.8; color: #4a3a3e; margin: 15px 0; }
   .note-list p { margin-bottom: 12px; position: relative; padding-left: 18px; }
   .note-list p::before { content: '🌸'; position: absolute; left: 0; font-size: 10px; top: 2px; }
 
-  .frame-box {
-    width: 100%; border-radius: 20px; overflow: hidden; margin: 15px 0;
-    border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-  }
-  .frame-box img { width: 100%; height: auto; display: block; }
+  .frame-box { width: 100%; border-radius: 20px; overflow: hidden; margin: 15px 0; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); position: relative; }
+  .frame-box img { width: 100%; height: 260px; object-fit: cover; display: block; }
+  .frame-box video { width: 100%; height: auto; display: block; border-radius: 16px; }
   .pin-error { min-height: 16px; font-size: 12px; color: var(--accent-pink); margin-bottom: 8px; }
   @keyframes shakePin { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
 
-  /* Share screen */
-  .share-card .success-icon{font-size:50px;margin-bottom:6px;animation:bounceIn 0.8s ease;}
-  @keyframes bounceIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
-  .share-link-box{background:rgba(0,0,0,.04);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center;border:1px solid rgba(230,57,86,.15);margin-bottom:18px;}
-  .share-link-box input{flex:1;border:none;background:transparent;font-size:12px;color:var(--heading-color);outline:none;font-family:'Poppins',sans-serif;min-width:0;}
-  .copy-btn{background:var(--accent-pink);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;}
-  .copy-btn:hover{background:#c92a47;}
-  .copy-btn.copied{background:#27ae60;}
+  /* Countdown */
+  .countdown-grid { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+  .cd-box { background: #fff5f7; border: 1px solid #f3cfd6; border-radius: 14px; padding: 10px 6px; min-width: 58px; }
+  .cd-num { font-size: 24px; font-weight: 600; color: var(--accent-pink); font-family: 'Playfair Display', serif; }
+  .cd-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--soft-text); margin-top: 2px; }
 
-  .share-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-  .share-actions button{padding:10px 18px;border:none;border-radius:12px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s;flex:1;min-width:80px;font-family:'Poppins',sans-serif;}
-  .share-actions button:hover{transform:translateY(-2px);}
-  .share-actions .whatsapp{background:#25D366;color:#fff;}
-  .share-actions .whatsapp:hover{background:#1da851;}
-  .share-actions .email{background:#EA4335;color:#fff;}
-  .share-actions .email:hover{background:#c62828;}
-  .share-actions .open-gift{background:linear-gradient(135deg,var(--accent-pink),#c92a47);color:#fff;flex:1.5;}
-  .expiry-hint{margin-top:14px;font-size:11px;color:#b98c95;}
-  .share-back-link{margin-top:14px;background:none;border:none;color:#b98c95;font-size:11px;text-decoration:underline;cursor:pointer;font-family:'Poppins',sans-serif;}
+  /* Gift box */
+  .giftbox-wrap { margin: 20px 0; cursor: pointer; user-select: none; }
+  .gift-emoji { font-size: 90px; display: inline-block; transition: transform .25s; }
+  .gift-emoji.shaking { animation: giftShake .5s ease-in-out infinite; }
+  .gift-emoji.opened { transform: scale(1.25) rotate(-6deg); }
+  @keyframes giftShake { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-8deg);} 75%{transform:rotate(8deg);} }
 
-  /* Expired screen */
-  .expired-card .icon{font-size:60px;margin-bottom:8px;}
-  .expired-card h2{font-family:'Playfair Display',serif;color:#e74c3c;margin:0;font-size:28px;font-style:italic;}
-  .expired-card p{color:var(--soft-text);font-size:14px;margin:12px 0 24px;line-height:1.6;}
+  /* Gallery */
+  .gallery-wrap { position: relative; width: 100%; }
+  .gallery-track { display: flex; overflow: hidden; border-radius: 20px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+  .gallery-track img { width: 100%; height: 260px; object-fit: cover; flex-shrink: 0; display: block; }
+  .gallery-arrows { display: flex; justify-content: space-between; margin-top: 10px; }
+  .gallery-arrow { background: #fff5f7; border: 1px solid #f3cfd6; color: var(--accent-pink); width: 36px; height: 36px; border-radius: 50%; font-size: 16px; cursor: pointer; }
+  .gallery-dots { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+  .gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: #f0cad2; }
+  .gallery-dot.active { background: var(--accent-pink); }
+
+  /* Music floating button */
+  .music-fab { position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%; background: var(--accent-pink); color: #fff; border: none; box-shadow: 0 6px 20px rgba(230,57,86,0.35); font-size: 18px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 200; }
+  .music-fab.show { display: flex; }
+  .music-fab.spin { animation: spinSlow 3s linear infinite; }
+  @keyframes spinSlow { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  .toggles-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .mini-check { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--soft-text); background: #fff5f7; border: 1px solid #f3cfd6; padding: 6px 10px; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -163,762 +161,660 @@
   <div class="screen active" id="scr-setup">
     <div class="v-card">
       <h2 class="script-font" style="font-size: 26px;">Build Your Surprise</h2>
-      <p class="sub-quote" style="margin-bottom:10px;">Customize everything, then create a shareable link with time expiration.</p>
+      <p class="sub-quote" style="margin-bottom:10px;">Sample text is filled in everywhere so you can preview right away — edit anything, and flip a page off if you don't need it.</p>
 
-      <div class="section-label">Screen 1 — Lock Screen</div>
-      <div class="field">
-        <label>Main Name / Title</label>
-        <input type="text" id="inpTitle" value="Your Name Here">
-      </div>
-      <div class="field">
-        <label>Small Tag Line (above the title)</label>
-        <input type="text" id="inpEyebrow1" value="A Little Surprise ✨">
-      </div>
-      <div class="field">
-        <label>Quote / Subtitle</label>
-        <textarea id="inpQuote1" rows="2">Something made just for you.</textarea>
-      </div>
-      <div class="field">
-        <label>4-Digit Pin Code</label>
-        <input type="text" id="inpPin" maxlength="4" value="">
-        <small>Leave blank to skip the passcode step entirely</small>
-      </div>
-      <div class="field">
-        <label>Pin Hint Text</label>
-        <input type="text" id="inpPinHint" value="Enter the code to continue 🗝️">
-      </div>
-      <div class="field">
-        <label>Unlock Button Text</label>
-        <input type="text" id="inpBtn1" value="Unlock ✨">
+      <div class="section-label">Screens — turn on/off <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--soft-text);">tick to include</span></div>
+      <div class="toggles-row">
+        <label class="mini-check"><input type="checkbox" id="togLock" checked> Lock (PIN)</label>
+        <label class="mini-check"><input type="checkbox" id="togCountdown" checked> Countdown</label>
+        <label class="mini-check"><input type="checkbox" id="togQuestion" checked> Question</label>
+        <label class="mini-check"><input type="checkbox" id="togGiftbox" checked> Gift Box</label>
+        <label class="mini-check"><input type="checkbox" id="togMessage" checked> Message</label>
+        <label class="mini-check"><input type="checkbox" id="togGallery" checked> Gallery</label>
+        <label class="mini-check"><input type="checkbox" id="togVideo"> Video</label>
+        <label class="mini-check"><input type="checkbox" id="togFinal" checked> Final</label>
+        <label class="mini-check"><input type="checkbox" id="togMusic"> Background Music</label>
       </div>
 
-      <div class="section-label">Screen 2 — A Little Question</div>
-      <div class="field">
-        <label>Question / Heading</label>
-        <input type="text" id="inpQ2" value="Ready for this?">
+      <div class="section-label">
+        <span>Screen — Lock (PIN)</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-lock" checked><span class="toggle-slider"></span></label>
       </div>
-      <div class="field">
-        <label>Yes Button Text</label>
-        <input type="text" id="inpBtn2Yes" value="Yes, Let's Go 💫">
-      </div>
-      <div class="field">
-        <label>"No / Think About It" Button Text</label>
-        <input type="text" id="inpBtn2No" value="Wait, Let Me Think">
-      </div>
-      <div class="field">
-        <label>Popup Text (shown if they hesitate)</label>
-        <input type="text" id="inpToast" value="You know you want to 😉">
+      <div class="section-body" id="body-lock">
+        <div class="field"><label>Main Name / Title</label><input type="text" id="inpTitle"></div>
+        <div class="field"><label>Small Tag Line (above the title)</label><input type="text" id="inpEyebrow1"></div>
+        <div class="field"><label>Quote / Subtitle</label><textarea id="inpQuote1" rows="2"></textarea></div>
+        <div class="field"><label>4-Digit Pin Code</label><input type="text" id="inpPin" maxlength="4"><small>Leave blank to skip the passcode check (screen still shows)</small></div>
+        <div class="field"><label>Pin Hint Text</label><input type="text" id="inpPinHint"></div>
+        <div class="field"><label>Unlock Button Text</label><input type="text" id="inpBtn1"></div>
       </div>
 
-      <div class="section-label">Screen 3 — Your Message</div>
-      <div class="field">
-        <label>Small Badge Text</label>
-        <input type="text" id="inpBadge" value="A Little Something">
+      <div class="section-label">
+        <span>Screen — Countdown</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-countdown" checked><span class="toggle-slider"></span></label>
       </div>
-      <div class="field">
-        <label>Heading</label>
-        <input type="text" id="inpHeading3" value="Here's What I Want To Say">
-      </div>
-      <div class="field">
-        <label>Points (one per line)</label>
-        <textarea id="inpNotes" rows="4">This is the first thing I want you to know.
-And here's the second.
-Add as many lines as you like — each one becomes its own point.</textarea>
-      </div>
-      <div class="field">
-        <label>Continue Button Text</label>
-        <input type="text" id="inpBtn3" value="Continue ➔">
+      <div class="section-body" id="body-countdown">
+        <div class="field"><label>Tag Line</label><input type="text" id="inpCdEyebrow"></div>
+        <div class="field"><label>Heading</label><input type="text" id="inpCdHeading"></div>
+        <div class="field"><label>Count down to (date)</label><input type="date" id="inpCdDate"></div>
+        <div class="field"><label>Count down to (time)</label><input type="time" id="inpCdTime"></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpCdBtn"><small>Always tappable — the numbers keep ticking for atmosphere</small></div>
       </div>
 
-      <div class="section-label">Screen 4 — Photo</div>
-      <div class="field">
-        <label>Small Tag Line</label>
-        <input type="text" id="inpEyebrow4" value="A Moment To Remember">
+      <div class="section-label">
+        <span>Screen — A Little Question</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-question" checked><span class="toggle-slider"></span></label>
       </div>
-      <div class="field">
-        <label>Photo</label>
-        <input type="file" id="inpPhoto" accept="image/*">
-        <small id="photoHint">Optional — a default photo will show if you skip this</small>
-      </div>
-      <div class="field">
-        <label>Caption Below Photo</label>
-        <textarea id="inpCaption4" rows="2">Every memory with you matters.</textarea>
-      </div>
-      <div class="field">
-        <label>Continue Button Text</label>
-        <input type="text" id="inpBtn4" value="Continue ➔">
+      <div class="section-body" id="body-question">
+        <div class="field"><label>Question / Heading</label><input type="text" id="inpQ2"></div>
+        <div class="field"><label>Yes Button Text</label><input type="text" id="inpBtn2Yes"></div>
+        <div class="field"><label>"No / Think About It" Button Text</label><input type="text" id="inpBtn2No"></div>
+        <div class="field"><label>Popup Text (shown if they hesitate)</label><input type="text" id="inpToast"></div>
       </div>
 
-      <div class="section-label">Screen 5 — Final Message</div>
-      <div class="field">
-        <label>Final Heading</label>
-        <input type="text" id="inpHeading5" value="With Love">
+      <div class="section-label">
+        <span>Screen — Gift Box</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-giftbox" checked><span class="toggle-slider"></span></label>
       </div>
-      <div class="field">
-        <label>Final Message</label>
-        <textarea id="inpQuote5" rows="2">Wishing you all the happiness in the world.</textarea>
-      </div>
-      <div class="field">
-        <label>Replay Button Text</label>
-        <input type="text" id="inpBtn5" value="🔄 Replay Again">
+      <div class="section-body" id="body-giftbox">
+        <div class="field"><label>Tag Line</label><input type="text" id="inpGiftEyebrow"></div>
+        <div class="field"><label>Instruction (before opening)</label><input type="text" id="inpGiftHeading"></div>
+        <div class="field"><label>Message (after opening)</label><input type="text" id="inpGiftOpened"></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpGiftBtn"></div>
       </div>
 
-      <div class="field">
-        <label>⏳ Link Expires In (hours)</label>
-        <input type="number" id="inpExpires" min="1" max="720" value="24">
-        <small>After this many hours, the link will expire. (1–720 hours)</small>
+      <div class="section-label">
+        <span>Screen — Your Message</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-message" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="section-body" id="body-message">
+        <div class="field"><label>Small Badge Text</label><input type="text" id="inpBadge"></div>
+        <div class="field"><label>Heading</label><input type="text" id="inpHeading3"></div>
+        <div class="field"><label>Points (one per line)</label><textarea id="inpNotes" rows="4"></textarea></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn3"></div>
       </div>
 
-      <div class="btn-group">
-        <button class="btn-pink" id="btnPreview">👀 Preview</button>
-        <button class="btn-gold" id="btnCreateLink">🔗 Create Link</button>
+      <div class="section-label">
+        <span>Screen — Gallery</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-gallery" checked><span class="toggle-slider"></span></label>
       </div>
-      <small style="display:block;margin-top:10px;color:#b98c95;">"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</small>
+      <div class="section-body" id="body-gallery">
+        <div class="field"><label>Small Tag Line</label><input type="text" id="inpEyebrow4"></div>
+        <div class="field"><label>Photos (choose one or several)</label><input type="file" id="inpPhoto" accept="image/*" multiple><small id="photoHint">Optional — default photos show if you skip this</small></div>
+        <div class="field"><label>Caption Below Photos</label><textarea id="inpCaption4" rows="2"></textarea></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn4"></div>
+      </div>
+
+      <div class="section-label">
+        <span>Screen — Video</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-video"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="section-body section-off" id="body-video">
+        <div class="field"><label>Tag Line</label><input type="text" id="inpVidEyebrow"></div>
+        <div class="field"><label>Upload a video</label><input type="file" id="inpVideoFile" accept="video/*"><small>Uploaded video plays directly. Leave empty to use a YouTube link instead.</small></div>
+        <div class="field"><label>YouTube Link (used if no file uploaded)</label><input type="url" id="inpVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+        <div class="field"><label>Caption</label><input type="text" id="inpVidCaption"></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpVidBtn"></div>
+      </div>
+
+      <div class="section-label">
+        <span>Screen — Final Message</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-final" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="section-body" id="body-final">
+        <div class="field"><label>Final Heading</label><input type="text" id="inpHeading5"></div>
+        <div class="field"><label>Final Message</label><textarea id="inpQuote5" rows="2"></textarea></div>
+        <div class="field"><label>Replay Button Text</label><input type="text" id="inpBtn5"></div>
+      </div>
+
+      <div class="section-label">
+        <span>Background Music</span>
+        <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-music"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="section-body section-off" id="body-music">
+        <div class="field"><label>Upload music (mp3)</label><input type="file" id="inpMusicFile" accept="audio/*"><small>Adds a floating music button. Browsers block autoplay, so it starts on the first tap.</small></div>
+      </div>
+
+      <button class="btn-pink" id="btnPreview" style="margin-top: 10px;">Live Preview ✨</button>
+      <button class="btn-outline" id="btnExport">Export Standalone HTML 📤</button>
+      <small style="display:block;margin-top:8px;">Export downloads a ready file — send that one, it opens straight to the first active screen.</small>
     </div>
   </div>
 
-  <!-- SHARE SCREEN -->
-  <div class="screen" id="scr-share">
-    <div class="v-card share-card">
-      <div class="success-icon">🎁</div>
-      <h2 class="script-font" style="font-size:24px;margin:0;">Surprise Ready!</h2>
-      <p style="font-size:13px;color:var(--soft-text);margin:4px 0 20px;">Share this link with your special person.</p>
-      <div class="share-link-box">
-        <input type="text" id="shareLinkInput" readonly>
-        <button class="copy-btn" id="copyLinkBtn">Copy</button>
-      </div>
-      <div class="share-actions">
-        <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
-        <button class="email" id="emailBtn">✉️ Email</button>
-        <button class="open-gift" id="openGiftBtn">Open 🎁</button>
-      </div>
-      <div class="expiry-hint" id="expiryHint"></div>
-      <button class="share-back-link" id="shareBackBtn">← Back to setup</button>
-    </div>
-  </div>
-
-  <!-- EXPIRED SCREEN -->
-  <div class="screen" id="scr-expired">
-    <div class="v-card expired-card">
-      <div class="icon">⏳</div>
-      <h2>Link Expired</h2>
-      <p>This surprise link has expired. The magic was meant to be cherished in the moment.</p>
-      <button class="btn-pink" id="expiredRestartBtn">Create a New One</button>
-      <div style="margin-top:12px;font-size:11px;color:#b98c95;" id="expiryDetail"></div>
-    </div>
-  </div>
-
-  <!-- SCREEN 1: PASSCODE LOGIN -->
-  <div class="screen" id="scr-1">
+  <!-- SCREEN: LOCK -->
+  <div class="screen" id="scr-lock">
     <div class="v-card">
       <div class="eyebrow" id="dispEyebrow1"></div>
       <h1 class="main-title script-font" id="dispTitle"></h1>
       <p class="sub-quote" id="dispQuote1"></p>
-
       <div class="pin-container" id="pinWrap">
-        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin0" autofocus>
-        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin1">
-        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin2">
-        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" placeholder="•" id="pin3">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 0)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 1)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 2)">
+        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 3)">
       </div>
       <div class="pin-error" id="pinError"></div>
-
       <div style="font-size: 11px; color: var(--soft-text); margin-bottom: 15px;" id="dispPinHint"></div>
-      <button class="btn-pink" id="unlockBtn">Unlock ✨</button>
+      <button class="btn-pink" onclick="checkPin()" id="dispBtn1"></button>
     </div>
   </div>
 
-  <!-- SCREEN 2: INTERACTIVE DECISION -->
-  <div class="screen" id="scr-2">
+  <!-- SCREEN: COUNTDOWN -->
+  <div class="screen" id="scr-countdown">
+    <div class="v-card">
+      <div class="eyebrow" id="dispCdEyebrow"></div>
+      <h2 class="script-font" style="font-size: 26px; margin: 10px 0 5px;" id="dispCdHeading"></h2>
+      <div class="countdown-grid">
+        <div class="cd-box"><div class="cd-num" id="cdDays">00</div><div class="cd-label">Days</div></div>
+        <div class="cd-box"><div class="cd-num" id="cdHours">00</div><div class="cd-label">Hrs</div></div>
+        <div class="cd-box"><div class="cd-num" id="cdMins">00</div><div class="cd-label">Min</div></div>
+        <div class="cd-box"><div class="cd-num" id="cdSecs">00</div><div class="cd-label">Sec</div></div>
+      </div>
+      <button class="btn-pink" onclick="goNext('countdown')" id="dispCdBtn" style="margin-top:10px;"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN: QUESTION -->
+  <div class="screen" id="scr-question">
     <div class="v-card">
       <h2 class="script-font" style="font-size: 28px; margin-bottom: 25px;" id="dispQ2"></h2>
-      <button class="btn-pink" id="yesBtn2">Yes, Let's Go 💫</button>
-      <button class="btn-outline" id="noBtn2">Wait, Let Me Think</button>
+      <button class="btn-pink" onclick="goNext('question')" id="dispBtn2Yes"></button>
+      <button class="btn-outline" onclick="showThinkToast()" id="dispBtn2No"></button>
     </div>
   </div>
 
-  <!-- SCREEN 3: MESSAGE & NOTES -->
-  <div class="screen" id="scr-3">
+  <!-- SCREEN: GIFT BOX -->
+  <div class="screen" id="scr-giftbox">
+    <div class="v-card">
+      <div class="eyebrow" id="dispGiftEyebrow"></div>
+      <h2 class="script-font" style="font-size: 24px; margin: 10px 0 5px;" id="dispGiftHeading"></h2>
+      <div class="giftbox-wrap" id="giftboxWrap" onclick="openGift()">
+        <span class="gift-emoji shaking" id="giftEmoji">🎁</span>
+      </div>
+      <p class="sub-quote" id="dispGiftOpened" style="display:none;"></p>
+      <button class="btn-pink" onclick="goNext('giftbox')" id="dispGiftBtn" style="display:none;"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN: MESSAGE -->
+  <div class="screen" id="scr-message">
     <div class="v-card">
       <div class="eyebrow" id="dispBadge"></div>
       <h2 class="script-font" style="font-size: 28px; margin: 10px 0 15px;" id="dispHeading3"></h2>
       <div class="note-list" id="dispNotes"></div>
-      <button class="btn-pink" id="btn3Continue">Continue ➔</button>
+      <button class="btn-pink" onclick="goNext('message')" style="margin-top: 15px;" id="dispBtn3"></button>
     </div>
   </div>
 
-  <!-- SCREEN 4: PHOTO -->
-  <div class="screen" id="scr-4">
+  <!-- SCREEN: GALLERY -->
+  <div class="screen" id="scr-gallery">
     <div class="v-card">
       <div class="eyebrow" id="dispEyebrow4"></div>
-      <div class="frame-box">
-        <img id="dispPhoto" src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" alt="Memory">
+      <div class="gallery-wrap">
+        <div class="gallery-track" id="galleryTrack"></div>
       </div>
-      <p class="sub-quote" style="margin-bottom: 15px;" id="dispCaption4"></p>
-      <button class="btn-pink" id="btn4Continue">Continue ➔</button>
+      <div class="gallery-arrows">
+        <button class="gallery-arrow" onclick="galleryMove(-1)">‹</button>
+        <div class="gallery-dots" id="galleryDots"></div>
+        <button class="gallery-arrow" onclick="galleryMove(1)">›</button>
+      </div>
+      <p class="sub-quote" style="margin: 12px 0;" id="dispCaption4"></p>
+      <button class="btn-pink" onclick="goNext('gallery')" id="dispBtn4"></button>
     </div>
   </div>
 
-  <!-- SCREEN 5: FINAL -->
-  <div class="screen" id="scr-5">
+  <!-- SCREEN: VIDEO -->
+  <div class="screen" id="scr-video">
+    <div class="v-card">
+      <div class="eyebrow" id="dispVidEyebrow"></div>
+      <div class="frame-box" id="videoFrame" style="margin-top:10px;"></div>
+      <p class="sub-quote" style="margin: 12px 0;" id="dispVidCaption"></p>
+      <button class="btn-pink" onclick="goNext('video')" id="dispVidBtn"></button>
+    </div>
+  </div>
+
+  <!-- SCREEN: FINAL -->
+  <div class="screen" id="scr-final">
     <div class="v-card">
       <h1 class="script-font" style="font-size: 32px; color: var(--accent-pink); margin-bottom: 10px;" id="dispHeading5"></h1>
       <p class="sub-quote" id="dispQuote5"></p>
-      <button class="btn-outline" id="replayBtn">🔄 Replay Again</button>
+      <button class="btn-outline" id="replayBtn"></button>
     </div>
   </div>
 
 </div>
 
+<button class="music-fab" id="musicFab" onclick="toggleMusic()">🎵</button>
+<audio id="bgMusic" loop></audio>
+
 <!-- Toast element -->
 <div class="toast-popup" id="thinkToast"></div>
 
 <script>
-  // ============================================================
-  //  CONFIG & DEFAULTS
-  // ============================================================
-  const DEFAULT_PHOTO = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500";
+  const PRISTINE_HTML = document.documentElement.outerHTML;
+  const DEFAULT_PHOTOS = [
+    "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500",
+    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500",
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500"
+  ];
+
+  const ORDER = ['lock','countdown','question','giftbox','message','gallery','video','final'];
+
+  // Confetti loads from a CDN with `defer`, so it may not be ready yet (or may
+  // fail entirely if there's no internet). This wrapper makes every confetti
+  // call a safe no-op instead of throwing and breaking the rest of the app.
+  function safeConfetti(opts) {
+    if (typeof confetti === 'function') {
+      try { confetti(opts); } catch (e) { /* ignore */ }
+    }
+  }
 
   const DEFAULTS = {
-    title: 'Your Name Here',
+    title: 'Ayesha',
     eyebrow1: 'A Little Surprise ✨',
-    quote1: 'Something made just for you.',
-    pin: '',
-    pinHint: 'Enter the code to continue 🗝️',
+    quote1: 'Kuch khaas cheez tumhare liye banayi hai...\nEnter karo aur dekho 💌',
+    pin: '0207',
+    pinHint: 'Hint: hamari pehli mulaqaat ki date 😉',
     btn1: 'Unlock ✨',
+
+    cdEyebrow: 'The Wait Is Almost Over',
+    cdHeading: "Something's Coming...",
+    cdDate: '2026-08-14',
+    cdTime: '00:00',
+    cdBtn: "I Can't Wait — Continue ➔",
+
     q2: 'Ready for this?',
     btn2Yes: "Yes, Let's Go 💫",
     btn2No: 'Wait, Let Me Think',
     toast: 'You know you want to 😉',
+
+    giftEyebrow: 'For You',
+    giftHeading: 'Tap the box to open it 🎁',
+    giftOpened: "Surprise! There's more waiting just ahead 💝",
+    giftBtn: 'Continue ➔',
+
     badge: 'A Little Something',
     heading3: "Here's What I Want To Say",
-    notes: "This is the first thing I want you to know.\nAnd here's the second.\nAdd as many lines as you like — each one becomes its own point.",
+    notes: "Tumhare saath guzara har lamha khaas hai.\nTumhari smile mera favorite part of the day hai.\nYeh chhota sa surprise sirf itna batane ke liye hai — I appreciate you.",
     btn3: 'Continue ➔',
+
     eyebrow4: 'A Moment To Remember',
-    caption4: 'Every memory with you matters.',
+    caption4: 'Har memory tumhare saath matter karti hai.',
     btn4: 'Continue ➔',
+
+    vidEyebrow: 'One More Thing',
+    vidUrl: '',
+    vidCaption: 'Yeh dekho, tumhare liye banaya hai.',
+    vidBtn: 'Continue ➔',
+
     heading5: 'With Love',
-    quote5: 'Wishing you all the happiness in the world.',
+    quote5: 'Wishing you all the happiness in the world. 💕',
     btn5: '🔄 Replay Again',
-    photo: DEFAULT_PHOTO,
-    expiresIn: 24,
-    createdAt: 0
+
+    photos: DEFAULT_PHOTOS.slice(),
+    videoFile: '',
+    musicFile: ''
   };
 
+  const enabled = { lock:true, countdown:true, question:true, giftbox:true, message:true, gallery:true, video:false, final:true, music:false };
   let state = Object.assign({}, DEFAULTS);
-  let currentGiftId = null;
+  let galleryIndex = 0;
+  let cdTimer = null;
 
-  // ============================================================
-  //  DOM REFS
-  // ============================================================
-  const $ = id => document.getElementById(id);
+  const FORM_MAP = {
+    inpTitle:'title', inpEyebrow1:'eyebrow1', inpQuote1:'quote1', inpPin:'pin', inpPinHint:'pinHint', inpBtn1:'btn1',
+    inpCdEyebrow:'cdEyebrow', inpCdHeading:'cdHeading', inpCdDate:'cdDate', inpCdTime:'cdTime', inpCdBtn:'cdBtn',
+    inpQ2:'q2', inpBtn2Yes:'btn2Yes', inpBtn2No:'btn2No', inpToast:'toast',
+    inpGiftEyebrow:'giftEyebrow', inpGiftHeading:'giftHeading', inpGiftOpened:'giftOpened', inpGiftBtn:'giftBtn',
+    inpBadge:'badge', inpHeading3:'heading3', inpNotes:'notes', inpBtn3:'btn3',
+    inpEyebrow4:'eyebrow4', inpCaption4:'caption4', inpBtn4:'btn4',
+    inpVidEyebrow:'vidEyebrow', inpVideoUrl:'vidUrl', inpVidCaption:'vidCaption', inpVidBtn:'vidBtn',
+    inpHeading5:'heading5', inpQuote5:'quote5', inpBtn5:'btn5'
+  };
 
-  // ============================================================
-  //  NAVIGATION
-  // ============================================================
-  function nav(screenId) {
+  // Pre-fill the setup form with sample data on load
+  function prefillForm() {
+    Object.keys(FORM_MAP).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = DEFAULTS[FORM_MAP[id]];
+    });
+  }
+  prefillForm();
+
+  // Section on/off toggles show/hide + gray out that section's fields in the setup form
+  document.querySelectorAll('.section-toggle').forEach(cb => {
+    cb.addEventListener('change', () => {
+      document.getElementById(cb.dataset.target).classList.toggle('section-off', !cb.checked);
+    });
+  });
+
+  // Keep the top quick-toggle row and each section's own switch in sync
+  const TOGGLE_PAIRS = [
+    ['togLock','body-lock'], ['togCountdown','body-countdown'], ['togQuestion','body-question'],
+    ['togGiftbox','body-giftbox'], ['togMessage','body-message'], ['togGallery','body-gallery'],
+    ['togVideo','body-video'], ['togFinal','body-final'], ['togMusic','body-music']
+  ];
+  TOGGLE_PAIRS.forEach(([quickId, bodyId]) => {
+    const quick = document.getElementById(quickId);
+    const sectionToggle = document.querySelector(`.section-toggle[data-target="${bodyId}"]`);
+    if (!quick || !sectionToggle) return;
+    quick.checked = sectionToggle.checked;
+    quick.addEventListener('change', () => { sectionToggle.checked = quick.checked; sectionToggle.dispatchEvent(new Event('change')); });
+    sectionToggle.addEventListener('change', () => { quick.checked = sectionToggle.checked; });
+  });
+
+  // Photo uploads (multiple)
+  document.getElementById('inpPhoto').addEventListener('change', function(e) {
+    let files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    Promise.all(files.map(f => new Promise((res) => {
+      const r = new FileReader();
+      r.onload = ev => res(ev.target.result);
+      r.readAsDataURL(f);
+    }))).then(results => {
+      state.photos = results;
+      document.getElementById('photoHint').innerText = results.length + ' photo(s) selected ✓';
+    });
+  });
+
+  document.getElementById('inpVideoFile').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => { state.videoFile = ev.target.result; };
+    r.readAsDataURL(file);
+  });
+
+  document.getElementById('inpMusicFile').addEventListener('change', function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => { state.musicFile = ev.target.result; };
+    r.readAsDataURL(file);
+  });
+
+  function activeOrder() {
+    return ORDER.filter(id => state.enabled[id]);
+  }
+
+  function nav(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const target = $(screenId);
-    if(target) target.classList.add('active');
-    if(screenId === 'scr-1'){
-      const boxes = document.querySelectorAll('.pin-box');
-      boxes.forEach(i => i.value = '');
-      $('pinError').innerText = '';
-      setTimeout(() => { boxes[0].focus(); }, 100);
+    document.getElementById('scr-' + id).classList.add('active');
+
+    if (id === 'lock') {
+      document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+      document.getElementById('pinError').innerText = '';
     }
-    if(screenId === 'scr-5') {
-      if(typeof confetti !== 'undefined') {
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-      }
+    if (id === 'countdown') startCountdown();
+    else stopCountdown();
+
+    if (id === 'giftbox') resetGift();
+    if (id === 'gallery') renderGallery();
+
+    if (id === 'final') {
+      safeConfetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     }
   }
 
-  // ============================================================
-  //  PIN FUNCTIONS
-  // ============================================================
-  function setupPinHandlers() {
-    const boxes = document.querySelectorAll('.pin-box');
-    boxes.forEach((box, index) => {
-      box.addEventListener('input', function(e) {
-        if (this.value.length > 1) {
-          this.value = this.value.slice(0, 1);
-        }
-        if (this.value.length === 1 && index < 3) {
-          boxes[index + 1].focus();
-        }
-        $('pinError').innerText = '';
-      });
+  function goNext(currentId) {
+    const order = activeOrder();
+    const idx = order.indexOf(currentId);
+    const next = order[idx + 1];
+    nav(next || order[order.length - 1] || 'final');
+  }
 
-      box.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && this.value === '' && index > 0) {
-          boxes[index - 1].focus();
-        }
-        if (e.key === 'Enter') {
-          checkPin();
-        }
-      });
+  function startFlow() {
+    const order = activeOrder();
+    nav(order[0] || 'final');
+  }
 
-      box.addEventListener('paste', function(e) {
-        e.preventDefault();
-        const paste = (e.clipboardData || window.clipboardData).getData('text');
-        const digits = paste.replace(/\D/g, '').slice(0, 4);
-        if (digits) {
-          boxes.forEach((b, i) => {
-            if (i < digits.length) b.value = digits[i];
-          });
-          const lastIndex = Math.min(digits.length, 4) - 1;
-          if (lastIndex < 3) {
-            boxes[lastIndex + 1].focus();
-          } else {
-            boxes[3].focus();
-          }
-          $('pinError').innerText = '';
-        }
-      });
-
-      box.addEventListener('focus', function() {
-        let firstEmpty = null;
-        for (let i = 0; i < boxes.length; i++) {
-          if (boxes[i].value === '') {
-            firstEmpty = boxes[i];
-            break;
-          }
-        }
-        if (firstEmpty && firstEmpty !== this && this.value === '') {
-          firstEmpty.focus();
-        }
-      });
-    });
-
-    const wrap = $('pinWrap');
-    if (wrap) {
-      wrap.addEventListener('click', function(e) {
-        if (e.target.classList.contains('pin-box')) return;
-        const boxes = document.querySelectorAll('.pin-box');
-        let firstEmpty = null;
-        for (let i = 0; i < boxes.length; i++) {
-          if (boxes[i].value === '') {
-            firstEmpty = boxes[i];
-            break;
-          }
-        }
-        if (firstEmpty) firstEmpty.focus();
-        else boxes[3].focus();
-      });
+  function movePin(current, index) {
+    if (current.value.length >= 1 && index < 3) {
+      document.querySelectorAll('.pin-box')[index + 1].focus();
     }
   }
 
   function checkPin() {
-    const boxes = document.querySelectorAll('.pin-box');
-    const entered = Array.from(boxes).map(i => i.value).join('');
-    const pin = state.pin || '';
-
-    if (pin === '') {
-      nav('scr-2');
-      return;
-    }
-
-    if (entered === pin) {
-      nav('scr-2');
+    let inputs = document.querySelectorAll('.pin-box');
+    let entered = Array.from(inputs).map(i => i.value).join('');
+    if (entered === state.pin || state.pin === "") {
+      goNext('lock');
     } else {
-      $('pinError').innerText = 'Wrong passcode, try again';
-      const wrap = $('pinWrap');
+      document.getElementById('pinError').innerText = 'Wrong passcode, try again';
+      const wrap = document.getElementById('pinWrap');
       wrap.style.animation = 'shakePin .4s';
       setTimeout(() => wrap.style.animation = '', 400);
-      boxes.forEach(i => i.value = '');
-      setTimeout(() => { boxes[0].focus(); }, 200);
+      inputs.forEach(i => i.value = '');
+      inputs[0].focus();
     }
   }
 
-  // ============================================================
-  //  SCREEN 2 HANDLERS
-  // ============================================================
-  function setupScreen2Handlers() {
-    const yesBtn = $('yesBtn2');
-    const noBtn = $('noBtn2');
-
-    if (yesBtn) {
-      yesBtn.addEventListener('click', function() {
-        nav('scr-3');
-      });
-    }
-    if (noBtn) {
-      noBtn.addEventListener('click', function() {
-        showThinkToast();
-      });
-    }
-  }
-
-  // ============================================================
-  //  SCREEN 3 & 4 HANDLERS
-  // ============================================================
-  function setupScreen3Handlers() {
-    const btn = $('btn3Continue');
-    if (btn) {
-      btn.addEventListener('click', function() {
-        nav('scr-4');
-      });
-    }
-  }
-
-  function setupScreen4Handlers() {
-    const btn = $('btn4Continue');
-    if (btn) {
-      btn.addEventListener('click', function() {
-        nav('scr-5');
-      });
-    }
-  }
-
-  // ============================================================
-  //  SHOW THINK TOAST
-  // ============================================================
   function showThinkToast() {
-    let t = $('thinkToast');
+    let t = document.getElementById('thinkToast');
     t.innerText = state.toast;
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 2000);
   }
 
-  // ============================================================
-  //  STATE READ / APPLY
-  // ============================================================
-  function readFormIntoState(){
-    state.title = $('inpTitle').value.trim() || DEFAULTS.title;
-    state.eyebrow1 = $('inpEyebrow1').value.trim() || DEFAULTS.eyebrow1;
-    state.quote1 = $('inpQuote1').value.trim() || DEFAULTS.quote1;
-    state.pin = $('inpPin').value.trim();
-    state.pinHint = $('inpPinHint').value.trim() || DEFAULTS.pinHint;
-    state.btn1 = $('inpBtn1').value.trim() || DEFAULTS.btn1;
-    state.q2 = $('inpQ2').value.trim() || DEFAULTS.q2;
-    state.btn2Yes = $('inpBtn2Yes').value.trim() || DEFAULTS.btn2Yes;
-    state.btn2No = $('inpBtn2No').value.trim() || DEFAULTS.btn2No;
-    state.toast = $('inpToast').value.trim() || DEFAULTS.toast;
-    state.badge = $('inpBadge').value.trim() || DEFAULTS.badge;
-    state.heading3 = $('inpHeading3').value.trim() || DEFAULTS.heading3;
-    state.notes = $('inpNotes').value.trim() || DEFAULTS.notes;
-    state.btn3 = $('inpBtn3').value.trim() || DEFAULTS.btn3;
-    state.eyebrow4 = $('inpEyebrow4').value.trim() || DEFAULTS.eyebrow4;
-    state.caption4 = $('inpCaption4').value.trim() || DEFAULTS.caption4;
-    state.btn4 = $('inpBtn4').value.trim() || DEFAULTS.btn4;
-    state.heading5 = $('inpHeading5').value.trim() || DEFAULTS.heading5;
-    state.quote5 = $('inpQuote5').value.trim() || DEFAULTS.quote5;
-    state.btn5 = $('inpBtn5').value.trim() || DEFAULTS.btn5;
-    const exp = parseInt($('inpExpires').value) || 24;
-    state.expiresIn = Math.min(Math.max(exp, 1), 720);
-    state.createdAt = Date.now();
+  // ---- Countdown ----
+  function startCountdown() {
+    stopCountdown();
+    const target = new Date(`${state.cdDate}T${state.cdTime || '00:00'}:00`);
+    function tick() {
+      const diff = Math.max(0, target.getTime() - Date.now());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cdDays').innerText = String(d).padStart(2, '0');
+      document.getElementById('cdHours').innerText = String(h).padStart(2, '0');
+      document.getElementById('cdMins').innerText = String(m).padStart(2, '0');
+      document.getElementById('cdSecs').innerText = String(s).padStart(2, '0');
+    }
+    tick();
+    cdTimer = setInterval(tick, 1000);
+  }
+  function stopCountdown() {
+    if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
   }
 
-  function applyState(){
-    $('dispTitle').innerText = state.title;
-    $('dispEyebrow1').innerText = state.eyebrow1;
-    $('dispQuote1').innerText = state.quote1;
-    $('dispPinHint').innerText = state.pinHint;
-    $('unlockBtn').innerText = state.btn1;
+  // ---- Gift box ----
+  function resetGift() {
+    const emoji = document.getElementById('giftEmoji');
+    emoji.classList.remove('opened');
+    emoji.classList.add('shaking');
+    emoji.innerText = '🎁';
+    document.getElementById('dispGiftOpened').style.display = 'none';
+    document.getElementById('dispGiftBtn').style.display = 'none';
+  }
+  function openGift() {
+    const emoji = document.getElementById('giftEmoji');
+    emoji.classList.remove('shaking');
+    emoji.classList.add('opened');
+    emoji.innerText = '🎉';
+    safeConfetti({ particleCount: 90, spread: 60, origin: { y: 0.5 } });
+    document.getElementById('dispGiftOpened').style.display = 'block';
+    document.getElementById('dispGiftBtn').style.display = 'block';
+  }
 
-    $('dispQ2').innerText = state.q2;
-    $('yesBtn2').innerText = state.btn2Yes;
-    $('noBtn2').innerText = state.btn2No;
+  // ---- Gallery ----
+  function renderGallery() {
+    const photos = (state.photos && state.photos.length) ? state.photos : DEFAULT_PHOTOS;
+    galleryIndex = 0;
+    const track = document.getElementById('galleryTrack');
+    track.innerHTML = photos.map(p => `<img src="${p}">`).join('');
+    updateGallery();
+  }
+  function updateGallery() {
+    const track = document.getElementById('galleryTrack');
+    const count = track.children.length;
+    track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+    track.style.transition = 'transform .3s ease';
+    track.style.width = '100%';
+    const dots = document.getElementById('galleryDots');
+    dots.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement('div');
+      d.className = 'gallery-dot' + (i === galleryIndex ? ' active' : '');
+      dots.appendChild(d);
+    }
+  }
+  function galleryMove(dir) {
+    const track = document.getElementById('galleryTrack');
+    const count = track.children.length;
+    if (!count) return;
+    galleryIndex = (galleryIndex + dir + count) % count;
+    updateGallery();
+  }
 
-    $('dispBadge').innerText = state.badge;
-    $('dispHeading3').innerText = state.heading3;
-    $('btn3Continue').innerText = state.btn3;
+  // ---- Video ----
+  function youtubeEmbed(url) {
+    const m = url.match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{6,})/);
+    return m ? `https://www.youtube.com/embed/${m[1]}` : '';
+  }
+  function renderVideo() {
+    const frame = document.getElementById('videoFrame');
+    if (state.videoFile) {
+      frame.innerHTML = `<video src="${state.videoFile}" controls style="width:100%;border-radius:16px;"></video>`;
+    } else if (state.vidUrl) {
+      const embed = youtubeEmbed(state.vidUrl);
+      frame.innerHTML = embed
+        ? `<iframe width="100%" height="220" src="${embed}" style="border:0;border-radius:16px;" allowfullscreen></iframe>`
+        : `<p class="sub-quote">Video link couldn't be embedded — check the URL.</p>`;
+    } else {
+      frame.innerHTML = `<p class="sub-quote">No video added yet.</p>`;
+    }
+  }
 
-    $('dispEyebrow4').innerText = state.eyebrow4;
-    $('dispPhoto').src = state.photo;
-    $('dispCaption4').innerText = state.caption4;
-    $('btn4Continue').innerText = state.btn4;
+  // ---- Music ----
+  function toggleMusic() {
+    const audio = document.getElementById('bgMusic');
+    const fab = document.getElementById('musicFab');
+    if (audio.paused) { audio.play().catch(()=>{}); fab.classList.add('spin'); }
+    else { audio.pause(); fab.classList.remove('spin'); }
+  }
 
-    $('dispHeading5').innerText = state.heading5;
-    $('dispQuote5').innerText = state.quote5;
-    $('replayBtn').innerText = state.btn5;
+  function readFormIntoState() {
+    Object.keys(FORM_MAP).forEach(id => {
+      const el = document.getElementById(id);
+      const key = FORM_MAP[id];
+      if (key === 'pin') { state.pin = el.value.trim(); return; }
+      state[key] = el.value.trim() || DEFAULTS[key];
+    });
+
+    enabled.lock = document.getElementById('togLock').checked;
+    enabled.countdown = document.getElementById('togCountdown').checked;
+    enabled.question = document.getElementById('togQuestion').checked;
+    enabled.giftbox = document.getElementById('togGiftbox').checked;
+    enabled.message = document.getElementById('togMessage').checked;
+    enabled.gallery = document.getElementById('togGallery').checked;
+    enabled.video = document.getElementById('togVideo').checked;
+    enabled.final = document.getElementById('togFinal').checked;
+    enabled.music = document.getElementById('togMusic').checked;
+    state.enabled = Object.assign({}, enabled);
+  }
+
+  function applyState() {
+    document.getElementById('dispTitle').innerText = state.title;
+    document.getElementById('dispEyebrow1').innerText = state.eyebrow1;
+    document.getElementById('dispQuote1').innerText = state.quote1;
+    document.getElementById('dispPinHint').innerText = state.pinHint;
+    document.getElementById('dispBtn1').innerText = state.btn1;
+
+    document.getElementById('dispCdEyebrow').innerText = state.cdEyebrow;
+    document.getElementById('dispCdHeading').innerText = state.cdHeading;
+    document.getElementById('dispCdBtn').innerText = state.cdBtn;
+
+    document.getElementById('dispQ2').innerText = state.q2;
+    document.getElementById('dispBtn2Yes').innerText = state.btn2Yes;
+    document.getElementById('dispBtn2No').innerText = state.btn2No;
+
+    document.getElementById('dispGiftEyebrow').innerText = state.giftEyebrow;
+    document.getElementById('dispGiftHeading').innerText = state.giftHeading;
+    document.getElementById('dispGiftOpened').innerText = state.giftOpened;
+    document.getElementById('dispGiftBtn').innerText = state.giftBtn;
+
+    document.getElementById('dispBadge').innerText = state.badge;
+    document.getElementById('dispHeading3').innerText = state.heading3;
+    document.getElementById('dispBtn3').innerText = state.btn3;
+
+    document.getElementById('dispEyebrow4').innerText = state.eyebrow4;
+    document.getElementById('dispCaption4').innerText = state.caption4;
+    document.getElementById('dispBtn4').innerText = state.btn4;
+
+    document.getElementById('dispVidEyebrow').innerText = state.vidEyebrow;
+    document.getElementById('dispVidCaption').innerText = state.vidCaption;
+    document.getElementById('dispVidBtn').innerText = state.vidBtn;
+    renderVideo();
+
+    document.getElementById('dispHeading5').innerText = state.heading5;
+    document.getElementById('dispQuote5').innerText = state.quote5;
+    document.getElementById('replayBtn').innerText = state.btn5;
 
     let notesArray = state.notes.split('\n');
-    let container = $('dispNotes');
+    let container = document.getElementById('dispNotes');
     container.innerHTML = '';
     notesArray.forEach(n => {
-      if(n.trim()) {
+      if (n.trim()) {
         let p = document.createElement('p');
         p.innerText = n.trim();
         container.appendChild(p);
       }
     });
 
-    // Re-attach handlers after applying state (for safety)
-    setupPinHandlers();
-    setupScreen2Handlers();
-    setupScreen3Handlers();
-    setupScreen4Handlers();
-  }
-
-  // ============================================================
-  //  PHOTO HANDLING
-  // ============================================================
-  $('inpPhoto').addEventListener('change', function(e) {
-    let file = e.target.files[0];
-    if(file){
-      let reader = new FileReader();
-      reader.onload = function(evt) {
-        state.photo = evt.target.result;
-        $('photoHint').innerText = 'Photo selected ✓';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // ============================================================
-  //  ENCODE / DECODE
-  // ============================================================
-  function encodeData(data){
-    return encodeURIComponent(JSON.stringify(data));
-  }
-
-  function decodeData(str){
-    try {
-      const decoded = decodeURIComponent(str);
-      return JSON.parse(decoded);
-    } catch(e) {
-      console.warn('Decode failed:', e);
-      return null;
+    const fab = document.getElementById('musicFab');
+    const audio = document.getElementById('bgMusic');
+    if (state.enabled.music && state.musicFile) {
+      audio.src = state.musicFile;
+      fab.classList.add('show');
+    } else {
+      fab.classList.remove('show');
+      audio.pause();
+      fab.classList.remove('spin');
     }
   }
 
-  // ============================================================
-  //  PREVIEW
-  // ============================================================
-  $('btnPreview').addEventListener('click', () => {
+  document.getElementById('btnPreview').addEventListener('click', () => {
     readFormIntoState();
     applyState();
-    nav('scr-1');
+    startFlow();
   });
 
-  // ============================================================
-  //  REPLAY BUTTON
-  // ============================================================
-  $('replayBtn').addEventListener('click', () => {
-    nav('scr-1');
+  document.getElementById('replayBtn').addEventListener('click', () => {
+    startFlow();
   });
 
-  // ============================================================
-  //  UNLOCK BUTTON
-  // ============================================================
-  $('unlockBtn').addEventListener('click', checkPin);
-
-  // ============================================================
-  //  ID GENERATION
-  // ============================================================
-  function genId() {
-    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-  }
-
-  // ============================================================
-  //  SHAREABLE LINK SYSTEM
-  // ============================================================
-  function createShareableLink() {
+  // Safe export: bakes data in as JSON (no manual string interpolation,
+  // so quotes/backticks/emojis in your text can never break the file).
+  document.getElementById('btnExport').addEventListener('click', () => {
     readFormIntoState();
-    if (!state.title) {
-      alert('🎁 Please enter a title before creating a link!');
-      return;
-    }
-    state.createdAt = Date.now();
 
-    const id = genId();
-    currentGiftId = id;
+    const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+    const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+    const bodyIdx = PRISTINE_HTML.indexOf('<body');
+    const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+    const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
 
-    const dataToStore = JSON.parse(JSON.stringify(state));
-    localStorage.setItem('surprise_' + id, JSON.stringify(dataToStore));
-
-    let allIds = JSON.parse(localStorage.getItem('surprise_ids') || '[]');
-    if (!allIds.includes(id)) allIds.push(id);
-    localStorage.setItem('surprise_ids', JSON.stringify(allIds));
-
-    const encodedData = encodeData(state);
-    const shareUrl = window.location.origin + window.location.pathname + '?d=' + encodedData;
-
-    $('shareLinkInput').value = shareUrl;
-    $('expiryHint').innerText = '🎁 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
-
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    nav('scr-share');
-    console.log('🎁 Surprise link created! Data embedded in URL.');
-    return id;
-  }
-
-  $('btnCreateLink').addEventListener('click', createShareableLink);
-
-  // ============================================================
-  //  SHARE BUTTONS
-  // ============================================================
-  $('copyLinkBtn').addEventListener('click', function() {
-    const input = $('shareLinkInput');
-    if (!input || !input.value) return;
-    navigator.clipboard.writeText(input.value).then(() => {
-      this.textContent = '✓ Copied!';
-      this.classList.add('copied');
-      setTimeout(() => {
-        this.textContent = 'Copy';
-        this.classList.remove('copied');
-      }, 2000);
-    }).catch(() => {
-      input.select();
-      document.execCommand('copy');
-      alert('Link copied!');
-    });
+    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
+    a.download = `${safeName}-surprise.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
   });
 
-  $('whatsappBtn').addEventListener('click', () => {
-    const link = $('shareLinkInput')?.value || '';
-    window.open('https://wa.me/?text=' + encodeURIComponent('🎁 A special surprise for you! ' + link), '_blank');
-  });
-
-  $('emailBtn').addEventListener('click', () => {
-    const link = $('shareLinkInput')?.value || '';
-    window.location.href = 'mailto:?subject=A Special Surprise&body=🎁 A special surprise for you! ' + link;
-  });
-
-  $('openGiftBtn').addEventListener('click', function() {
-    window.location.reload();
-  });
-
-  $('shareBackBtn').addEventListener('click', () => {
-    nav('scr-setup');
-  });
-
-  // ============================================================
-  //  LOAD FROM URL
-  // ============================================================
-  function loadFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const encodedData = params.get('d');
-    if (encodedData) {
-      console.log('🔍 Found encoded data in URL, decoding...');
-      const data = decodeData(encodedData);
-      if (data) {
-        console.log('📦 Data loaded from URL:', data);
-
-        const now = Date.now();
-        const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-        if (expTime > 0 && now > expTime) {
-          const d = new Date(expTime);
-          $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
-          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-          $('scr-expired').classList.add('active');
-          return false;
-        }
-
-        state = data;
-        applyState();
-
-        document.querySelectorAll('.pin-box').forEach(i => i.value = '');
-        $('pinError').innerText = '';
-
-        localStorage.setItem('surprise_cached', JSON.stringify(data));
-
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        nav('scr-1');
-
-        // Handlers are set inside applyState, but call again for safety
-        setTimeout(() => {
-          setupPinHandlers();
-          setupScreen2Handlers();
-          setupScreen3Handlers();
-          setupScreen4Handlers();
-        }, 100);
-
-        console.log('✅ Surprise loaded from URL successfully!');
-        return true;
-      } else {
-        console.warn('⚠️ Failed to decode data from URL.');
-        $('expiryDetail').innerText = 'The link is corrupted. Please try creating a new one.';
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        $('scr-expired').classList.add('active');
-        return false;
-      }
-    }
-
-    const id = params.get('id');
-    if (id) {
-      const raw = localStorage.getItem('surprise_' + id);
-      if (raw) {
-        try {
-          const data = JSON.parse(raw);
-          const now = Date.now();
-          const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-          if (expTime > 0 && now > expTime) {
-            const d = new Date(expTime);
-            $('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            $('scr-expired').classList.add('active');
-            return false;
-          }
-          state = data;
-          applyState();
-          document.querySelectorAll('.pin-box').forEach(i => i.value = '');
-          $('pinError').innerText = '';
-          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-          nav('scr-1');
-          setTimeout(() => {
-            setupPinHandlers();
-            setupScreen2Handlers();
-            setupScreen3Handlers();
-            setupScreen4Handlers();
-          }, 100);
-          console.log('✅ Surprise loaded from localStorage (ID fallback)!');
-          return true;
-        } catch(e) { console.warn('Fallback parse error:', e); }
-      }
-    }
-
-    return false;
-  }
-
-  // ============================================================
-  //  INIT
-  // ============================================================
-  (function init() {
-    const loaded = loadFromUrl();
-    if (!loaded) {
-      $('scr-setup').classList.add('active');
-    }
-    // Ensure handlers are attached even if no data
-    setTimeout(() => {
-      setupPinHandlers();
-      setupScreen2Handlers();
-      setupScreen3Handlers();
-      setupScreen4Handlers();
-    }, 200);
-  })();
-
-  // ============================================================
-  //  RESTART
-  // ============================================================
-  function goToSetup() {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    nav('scr-setup');
-    if (window.history && window.history.pushState) {
-      window.history.pushState({}, '', window.location.pathname);
-    }
-    currentGiftId = null;
-  }
-
-  $('expiredRestartBtn').addEventListener('click', goToSetup);
-
+  // Auto-start if opened from an exported/preset file
   if (window.__PRESET__) {
     state = Object.assign({}, DEFAULTS, window.__PRESET__);
+    Object.assign(enabled, window.__PRESET__.enabled || {});
+    state.enabled = Object.assign({}, enabled);
     applyState();
-    nav('scr-1');
-    setTimeout(() => {
-      setupPinHandlers();
-      setupScreen2Handlers();
-      setupScreen3Handlers();
-      setupScreen4Handlers();
-    }, 100);
-    delete window.__PRESET__;
+    startFlow();
   }
-
-  console.log('🎁 Custom Surprise Builder — ALL FIXED');
-  console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-  console.log('✅ All screens and buttons work after opening a shared link.');
 </script>
 
 </body>
