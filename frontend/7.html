@@ -129,10 +129,9 @@
 
       <div class="btn-group">
         <button class="btn" id="btnPreview">👀 Preview</button>
-        <button class="btn" id="btnExport">📤 Export HTML</button>
-        <!-- <button class="btn btn-secondary" id="btnCreateLink">🔗 Create Link</button> -->
+        <button class="btn btn-gold" id="btnCreateLink">🔗 Create Shareable Link</button>
       </div>
-      <small>⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</small>
+      <small>⚠️ Creates a unique link that works across all devices! (Data stored in your browser)</small>
     </div>
   </div>
 
@@ -181,7 +180,7 @@
       <div class="heart-burst">💖</div>
       <h1 class="script" id="dispFinalHead" style="font-size:30px;margin:0;"></h1>
       <p class="final-msg" id="dispFinalMsg"></p>
-     <!--<button class="restart-link" id="restartBtn">create another one</button>--> 
+      <button class="restart-link" id="restartBtn">create another one</button>
     </div>
   </div>
 
@@ -191,6 +190,7 @@
   // ============================================================
   //  CONFIG & STATE
   // ============================================================
+  const PRISTINE_HTML = document.documentElement.outerHTML;
   const DEFAULTS = {
     question:'Do you love me?',
     yesBtn:'Yes 💕',
@@ -198,7 +198,7 @@
     finalHead:'I knew it! 😏❤️',
     finalMsg:'There was never any escaping that answer. I love you too. 💗',
     expiresIn:24,
-    createdAt:0
+    createdAt:Date.now()
   };
   let state = Object.assign({}, DEFAULTS);
   let currentGiftId = null;
@@ -298,7 +298,7 @@
   }
 
   // ============================================================
-  //  SHAREABLE LINK SYSTEM (FIXED)
+  //  SHAREABLE LINK SYSTEM (FIXED - with null checks)
   // ============================================================
   function createShareableLink() {
     readFormIntoState();
@@ -311,20 +311,23 @@
     const id = genId();
     currentGiftId = id;
     const dataToStore = JSON.parse(JSON.stringify(state));
-    localStorage.setItem('love_question_v2_' + id, JSON.stringify(dataToStore));
+    localStorage.setItem('love_question_v3_' + id, JSON.stringify(dataToStore));
 
-    let allIds = JSON.parse(localStorage.getItem('love_question_v2_ids') || '[]');
+    let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
     if (!allIds.includes(id)) allIds.push(id);
-    localStorage.setItem('love_question_v2_ids', JSON.stringify(allIds));
+    localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
 
     const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
-    document.getElementById('shareLinkInput').value = shareUrl;
+    const input = document.getElementById('shareLinkInput');
+    if (input) input.value = shareUrl;
 
     const hintEl = document.getElementById('expiryHint');
-    if (state.expiresIn === 0) {
-      hintEl.innerText = '♾️ This link will NEVER expire! Share it anytime.';
-    } else {
-      hintEl.innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+    if (hintEl) {
+      if (state.expiresIn === 0) {
+        hintEl.innerText = '♾️ This link will NEVER expire! Share it anytime.';
+      } else {
+        hintEl.innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+      }
     }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -371,26 +374,38 @@
   });
 
   // ============================================================
-  //  LOAD FROM ID (FIXED - with Never Expire support)
+  //  LOAD FROM ID (FIXED - with null checks & Never Expire support)
   // ============================================================
   function loadFromId(id) {
     console.log('🔍 Loading love question with ID:', id);
 
-    // Try v2 first
-    let raw = localStorage.getItem('love_question_v2_' + id);
+    let raw = localStorage.getItem('love_question_v3_' + id);
 
-    // Fallback to v1
+    if (!raw) {
+      console.log('🔄 Trying v2 format...');
+      raw = localStorage.getItem('love_question_v2_' + id);
+      if (raw) {
+        console.log('✅ Found in v2 format, converting to v3');
+        localStorage.setItem('love_question_v3_' + id, raw);
+        localStorage.removeItem('love_question_v2_' + id);
+        let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
+        if (!allIds.includes(id)) allIds.push(id);
+        localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
+        raw = localStorage.getItem('love_question_v3_' + id);
+      }
+    }
+
     if (!raw) {
       console.log('🔄 Trying v1 format...');
       raw = localStorage.getItem('love_question_' + id);
       if (raw) {
-        console.log('✅ Found in v1 format, converting to v2');
-        localStorage.setItem('love_question_v2_' + id, raw);
+        console.log('✅ Found in v1 format, converting to v3');
+        localStorage.setItem('love_question_v3_' + id, raw);
         localStorage.removeItem('love_question_' + id);
-        let allIds = JSON.parse(localStorage.getItem('love_question_v2_ids') || '[]');
+        let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
         if (!allIds.includes(id)) allIds.push(id);
-        localStorage.setItem('love_question_v2_ids', JSON.stringify(allIds));
-        raw = localStorage.getItem('love_question_v2_' + id);
+        localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
+        raw = localStorage.getItem('love_question_v3_' + id);
       }
     }
 
@@ -399,7 +414,8 @@
       const detailEl = document.getElementById('expiryDetail');
       if (detailEl) detailEl.textContent = 'This love link no longer exists.';
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('scr-expired').classList.add('active');
+      const expired = document.getElementById('scr-expired');
+      if (expired) expired.classList.add('active');
       return false;
     }
 
@@ -415,7 +431,8 @@
           const detailEl = document.getElementById('expiryDetail');
           if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
           document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-          document.getElementById('scr-expired').classList.add('active');
+          const expired = document.getElementById('scr-expired');
+          if (expired) expired.classList.add('active');
           console.log('⏰ Link expired! Expired at:', d);
           return false;
         }
@@ -445,17 +462,17 @@
     } catch (e) {
       console.error('❌ Error loading love question:', e);
       const detailEl = document.getElementById('expiryDetail');
-      if (detailEl) detailEl.textContent = 'Error loading love link.';
+      if (detailEl) detailEl.textContent = 'Error loading love link: ' + e.message;
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('scr-expired').classList.add('active');
+      const expired = document.getElementById('scr-expired');
+      if (expired) expired.classList.add('active');
       return false;
     }
   }
 
   // ============================================================
-  //  AUTO-LOAD FROM URL (DISABLED - localStorage doesn't work cross-device)
+  //  AUTO-LOAD FROM URL (FIXED)
   // ============================================================
-  /*
   (function loadFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -465,7 +482,6 @@
       loadFromId(id);
     }
   })();
-  */
 
   // ============================================================
   //  RESTART / GO TO SETUP
@@ -488,9 +504,6 @@
   document.getElementById('restartBtn').addEventListener('click', goToSetup);
   document.getElementById('expiredRestartBtn').addEventListener('click', goToSetup);
 
-  // ─── PRISTINE HTML for export ───
-  const PRISTINE_HTML = document.documentElement.outerHTML;
-
   // ============================================================
   //  LEGACY PRESET SUPPORT
   // ============================================================
@@ -501,15 +514,14 @@
     delete window.__PRESET__;
   }
 
-  // ─── Export functionality ───
+  // ============================================================
+  //  EXPORT (Keep as fallback)
+  // ============================================================
+  /*
   const btnExport = document.getElementById('btnExport');
   if (btnExport) {
     btnExport.addEventListener('click', function() {
       readFormIntoState();
-      if (!state.question) {
-        alert('💕 Please write a question before exporting!');
-        return;
-      }
       const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
       const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
       const bodyIdx = PRISTINE_HTML.indexOf('<body');
@@ -519,7 +531,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'love-question';
+      const safeName = 'love-question';
       a.download = `${safeName}.html`;
       document.body.appendChild(a);
       a.click();
@@ -527,8 +539,12 @@
       setTimeout(() => URL.revokeObjectURL(url), 3000);
     });
   }
+  */
 
-  console.log('💕 Do You Love Me? — Export HTML to share across devices!');
+  console.log('💕 Do You Love Me? — Shareable Link System (FIXED)!');
+  console.log('🔗 Use "Create Shareable Link" to generate a unique URL.');
+  console.log('♾️ Select "Never Expire" for permanent links.');
 </script>
+
 </body>
 </html>
