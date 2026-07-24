@@ -298,7 +298,7 @@
   }
 
   // ============================================================
-  //  SHAREABLE LINK SYSTEM (FIXED - with null checks)
+  //  SHAREABLE LINK SYSTEM (FIXED - with proper expiry)
   // ============================================================
   function createShareableLink() {
     readFormIntoState();
@@ -306,16 +306,22 @@
       alert('💕 Please write a question before creating a link!');
       return;
     }
+
+    // ✅ IMPORTANT: Set createdAt to current time
     state.createdAt = Date.now();
 
     const id = genId();
     currentGiftId = id;
     const dataToStore = JSON.parse(JSON.stringify(state));
-    localStorage.setItem('love_question_v3_' + id, JSON.stringify(dataToStore));
 
-    let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
+    // Save with current timestamp
+    dataToStore.createdAt = Date.now();
+
+    localStorage.setItem('love_question_v4_' + id, JSON.stringify(dataToStore));
+
+    let allIds = JSON.parse(localStorage.getItem('love_question_v4_ids') || '[]');
     if (!allIds.includes(id)) allIds.push(id);
-    localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
+    localStorage.setItem('love_question_v4_ids', JSON.stringify(allIds));
 
     const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
     const input = document.getElementById('shareLinkInput');
@@ -333,6 +339,7 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     nav('scr-share');
     console.log('💕 Love link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state.expiresIn + ' hours');
+    console.log('📅 Created at:', new Date(state.createdAt).toLocaleString());
     return id;
   }
 
@@ -374,38 +381,29 @@
   });
 
   // ============================================================
-  //  LOAD FROM ID (FIXED - with null checks & Never Expire support)
+  //  LOAD FROM ID (FULLY FIXED - with proper expiry check)
   // ============================================================
   function loadFromId(id) {
     console.log('🔍 Loading love question with ID:', id);
 
-    let raw = localStorage.getItem('love_question_v3_' + id);
+    let raw = null;
 
-    if (!raw) {
-      console.log('🔄 Trying v2 format...');
-      raw = localStorage.getItem('love_question_v2_' + id);
-      if (raw) {
-        console.log('✅ Found in v2 format, converting to v3');
-        localStorage.setItem('love_question_v3_' + id, raw);
-        localStorage.removeItem('love_question_v2_' + id);
-        let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
-        if (!allIds.includes(id)) allIds.push(id);
-        localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
-        raw = localStorage.getItem('love_question_v3_' + id);
-      }
-    }
-
-    if (!raw) {
-      console.log('🔄 Trying v1 format...');
-      raw = localStorage.getItem('love_question_' + id);
-      if (raw) {
-        console.log('✅ Found in v1 format, converting to v3');
-        localStorage.setItem('love_question_v3_' + id, raw);
-        localStorage.removeItem('love_question_' + id);
-        let allIds = JSON.parse(localStorage.getItem('love_question_v3_ids') || '[]');
-        if (!allIds.includes(id)) allIds.push(id);
-        localStorage.setItem('love_question_v3_ids', JSON.stringify(allIds));
-        raw = localStorage.getItem('love_question_v3_' + id);
+    // Try all versions
+    const versions = ['v4_', 'v3_', 'v2_', ''];
+    for (const ver of versions) {
+      const key = 'love_question_' + ver + id;
+      const test = localStorage.getItem(key);
+      if (test) {
+        raw = test;
+        console.log('🔄 Found in version:', ver || 'v1');
+        // Migrate to latest
+        if (ver !== 'v4_') {
+          localStorage.setItem('love_question_v4_' + id, test);
+          let allIds = JSON.parse(localStorage.getItem('love_question_v4_ids') || '[]');
+          if (!allIds.includes(id)) allIds.push(id);
+          localStorage.setItem('love_question_v4_ids', JSON.stringify(allIds));
+        }
+        break;
       }
     }
 
@@ -425,8 +423,9 @@
 
       // ✅ FIX: Only check expiry if expiresIn > 0 (Never Expire = 0)
       if (data.expiresIn > 0) {
-        const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-        if (expTime > 0 && now > expTime) {
+        const createdAt = data.createdAt || Date.now();
+        const expTime = createdAt + (data.expiresIn || 0) * 3600000;
+        if (now > expTime) {
           const d = new Date(expTime);
           const detailEl = document.getElementById('expiryDetail');
           if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
@@ -434,7 +433,14 @@
           const expired = document.getElementById('scr-expired');
           if (expired) expired.classList.add('active');
           console.log('⏰ Link expired! Expired at:', d);
+          console.log('📅 Created at:', new Date(createdAt).toLocaleString());
+          console.log('⏳ Expires in:', data.expiresIn, 'hours');
           return false;
+        } else {
+          console.log('✅ Link is still valid!');
+          console.log('📅 Created at:', new Date(createdAt).toLocaleString());
+          console.log('⏳ Expires in:', data.expiresIn, 'hours');
+          console.log('⏰ Will expire at:', new Date(expTime).toLocaleString());
         }
       } else {
         console.log('♾️ This love link NEVER expires!');
@@ -514,36 +520,10 @@
     delete window.__PRESET__;
   }
 
-  // ============================================================
-  //  EXPORT (Keep as fallback)
-  // ============================================================
-  /*
-  const btnExport = document.getElementById('btnExport');
-  if (btnExport) {
-    btnExport.addEventListener('click', function() {
-      readFormIntoState();
-      const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-      const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-      const bodyIdx = PRISTINE_HTML.indexOf('<body');
-      const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-      const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
-      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const safeName = 'love-question';
-      a.download = `${safeName}.html`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 3000);
-    });
-  }
-  */
-
-  console.log('💕 Do You Love Me? — Shareable Link System (FIXED)!');
+  console.log('💕 Do You Love Me? — Shareable Link System (FULLY FIXED)!');
   console.log('🔗 Use "Create Shareable Link" to generate a unique URL.');
   console.log('♾️ Select "Never Expire" for permanent links.');
+  console.log('✅ Link will NOT expire immediately anymore!');
 </script>
 
 </body>
