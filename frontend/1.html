@@ -375,9 +375,10 @@
 
             <div class="btn-group">
                 <button class="primary-btn" id="previewBtn">👀 Preview</button>
-                <button class="primary-btn gold" id="createLinkBtn">🔗 Create Link</button>
+                <button class="primary-btn" id="btnExport">📤 Export HTML</button>
+                <!-- <button class="primary-btn gold" id="createLinkBtn">🔗 Create Link</button> -->
             </div>
-            <div class="ghost-hint">"Preview" plays it here. "Create Link" generates a shareable URL with expiration.</div>
+            <div class="ghost-hint">⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</div>
         </div>
     </div>
 
@@ -1252,9 +1253,35 @@
         showScreen('envelope');
     }
 
-    console.log('✨ A Little Celebration – with shareable link system (FIXED)!');
-    console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-    console.log('📌 Data stored in localStorage with key: celebration_v4_*');
+    // ─── Export functionality ───
+    const btnExport = $('btnExport');
+    if (btnExport) {
+        btnExport.addEventListener('click', function() {
+            readFormIntoState();
+            if (!state.letterText) {
+                alert('💌 Please write a message before exporting!');
+                return;
+            }
+            const PRISTINE_HTML = document.documentElement.outerHTML;
+            const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+            const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+            const bodyIdx = PRISTINE_HTML.indexOf('<body');
+            const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+            const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+            const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'celebration';
+            a.download = `${safeName}.html`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
+        });
+    }
+
+    console.log('✨ A Little Celebration – Export HTML to share across devices!');
 </script>
 </body>
 </html>

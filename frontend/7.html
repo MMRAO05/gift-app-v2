@@ -129,9 +129,10 @@
 
       <div class="btn-group">
         <button class="btn" id="btnPreview">👀 Preview</button>
-        <button class="btn btn-secondary" id="btnCreateLink">🔗 Create Link</button>
+        <button class="btn" id="btnExport">📤 Export HTML</button>
+        <!-- <button class="btn btn-secondary" id="btnCreateLink">🔗 Create Link</button> -->
       </div>
-      <small>"Preview" tests it here. "Create Link" generates a shareable URL with expiration.</small>
+      <small>⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</small>
     </div>
   </div>
 
@@ -485,6 +486,9 @@
   document.getElementById('restartBtn').addEventListener('click', goToSetup);
   document.getElementById('expiredRestartBtn').addEventListener('click', goToSetup);
 
+  // ─── PRISTINE HTML for export ───
+  const PRISTINE_HTML = document.documentElement.outerHTML;
+
   // ============================================================
   //  LEGACY PRESET SUPPORT
   // ============================================================
@@ -495,9 +499,34 @@
     delete window.__PRESET__;
   }
 
-  console.log('💕 Do You Love Me? with Shareable Link System (FIXED)!');
-  console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
-  console.log('♾️ Select "Never Expire" for permanent links.');
+  // ─── Export functionality ───
+  const btnExport = document.getElementById('btnExport');
+  if (btnExport) {
+    btnExport.addEventListener('click', function() {
+      readFormIntoState();
+      if (!state.question) {
+        alert('💕 Please write a question before exporting!');
+        return;
+      }
+      const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+      const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+      const bodyIdx = PRISTINE_HTML.indexOf('<body');
+      const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+      const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'love-question';
+      a.download = `${safeName}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    });
+  }
+
+  console.log('💕 Do You Love Me? — Export HTML to share across devices!');
 </script>
 </body>
 </html>

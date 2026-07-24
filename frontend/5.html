@@ -1017,9 +1017,10 @@
 
                 <div class="btn-group">
                     <button class="btn btn-primary" id="previewBtn">👀 Preview</button>
-                    <button class="btn btn-gold" id="createLinkBtn">✦ Create Link</button>
+                    <button class="btn btn-primary" id="btnExport">📤 Export HTML</button>
+                    <!-- <button class="btn btn-gold" id="createLinkBtn">✦ Create Link</button> -->
                 </div>
-                <div class="ghost-hint">"Preview" plays it here. "Create Link" generates a shareable URL with expiration.</div>
+                <div class="ghost-hint">⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</div>
             </div>
         </div>
 
@@ -1928,6 +1929,9 @@
         }
         setTimeout(autoWish, 100);
 
+        // ─── PRISTINE HTML for export ───
+        const PRISTINE_HTML = document.documentElement.outerHTML;
+
         // ═══════════════════════════════════════════════════════════════
         //  LEGACY PRESET SUPPORT
         // ═══════════════════════════════════════════════════════════════
@@ -1946,9 +1950,34 @@
             showScreen('crystal');
         }
 
-        console.log('🌊 Aurora v5 — Premium Celestial Experience with Shareable Links (FIXED)!');
-        console.log('✦ Use "Create Link" to generate a unique, time-limited URL.');
-        console.log('♾️ Select "Never Expire" for permanent links.');
+        // ─── Export functionality ───
+        const btnExport = $('btnExport');
+        if (btnExport) {
+            btnExport.addEventListener('click', function() {
+                readFormIntoState();
+                if (!state.letter) {
+                    alert('💫 Please write a message before exporting!');
+                    return;
+                }
+                const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+                const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+                const bodyIdx = PRISTINE_HTML.indexOf('<body');
+                const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+                const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+                const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'aurora';
+                a.download = `${safeName}.html`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 3000);
+            });
+        }
+
+        console.log('🌊 Aurora — Export HTML to share across devices!');
     </script>
 </body>
 </html>

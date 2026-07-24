@@ -692,9 +692,10 @@
 
                 <div class="flex-row">
                     <button class="btn-pink" id="btnPreview">👀 Preview</button>
-                    <button class="btn-pink" id="btnCreateLink" style="background:#4a4e69;">🔗 Create Link</button>
+                    <button class="btn-pink" id="btnExport" style="background:#4a4e69;">📤 Export HTML</button>
+                    <!-- <button class="btn-pink" id="btnCreateLink" style="background:#4a4e69;">🔗 Create Link</button> -->
                 </div>
-                <small style="display:block;margin-top:12px;color:#a97788;">"Preview" lets you test instantly — "Create Link" generates a unique URL you can send.</small>
+                <small style="display:block;margin-top:12px;color:#a97788;">⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</small>
             </div>
         </div>
 
@@ -1011,6 +1012,33 @@
         document.getElementById('btnCreateLink').addEventListener('click', function() {
             createShareableLink();
         });
+
+        /* ─── export functionality ─── */
+        const btnExport = document.getElementById('btnExport');
+        if (btnExport) {
+            btnExport.addEventListener('click', function() {
+                readFormIntoState();
+                if (!state.letter) {
+                    alert('💖 Please write a message before exporting!');
+                    return;
+                }
+                const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+                const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+                const bodyIdx = PRISTINE_HTML.indexOf('<body');
+                const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+                const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+                const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
+                a.download = `${safeName}.html`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 3000);
+            });
+        }
 
         /* ─── share buttons ─── */
         document.getElementById('copyLinkBtn').addEventListener('click', function() {
