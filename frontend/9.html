@@ -1188,7 +1188,8 @@ Yeh chhota sa surprise sirf itna batane ke liye hai — I appreciate you.</texta
     }
   }
 
-  // ─── Auto-load from URL ───
+  // ─── Auto-load from URL (DISABLED - localStorage doesn't work cross-device) ───
+  /*
   (function loadFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -1198,6 +1199,7 @@ Yeh chhota sa surprise sirf itna batane ke liye hai — I appreciate you.</texta
       loadFromId(id);
     }
   })();
+  */
 
   // ─── Expired restart ───
   const expiredRestartBtn = document.getElementById('expiredRestartBtn');

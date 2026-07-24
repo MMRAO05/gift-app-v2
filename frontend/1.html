@@ -919,7 +919,8 @@
         }
     }
 
-    // ─── LOAD FROM URL ───
+    // ─── LOAD FROM URL (DISABLED - localStorage doesn't work cross-device) ───
+    /*
     (function loadFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
@@ -929,6 +930,7 @@
             loadFromId(id);
         }
     })();
+    */
 
     // ─── Envelope ───
     const envelope = document.querySelector('.envelope');

@@ -1118,7 +1118,8 @@
             }
         }
 
-        /* ─── load from URL param ─── */
+        /* ─── load from URL param (DISABLED - localStorage doesn't work cross-device) ─── */
+        /*
         function loadFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
@@ -1126,11 +1127,11 @@
             return loadFromId(id);
         }
 
-        /* ─── run on load ─── */
         if (window.location.search.includes('id=')) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             loadFromUrl();
         } else {
+        */
             if (window.__PRESET__) {
                 state = Object.assign(state, window.__PRESET__);
                 applyState();
@@ -1139,7 +1140,7 @@
             } else {
                 nav('scr-setup');
             }
-        }
+        // }
 
         /* ─── gift open ─── */
         document.getElementById('giftBox').addEventListener('click', function() {

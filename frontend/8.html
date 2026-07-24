@@ -1637,7 +1637,8 @@
             }
         }
 
-        // ─── Auto-load from URL ───
+        // ─── Auto-load from URL (DISABLED - localStorage doesn't work cross-device) ───
+        /*
         (function loadFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
@@ -1647,6 +1648,7 @@
                 loadFromId(id);
             }
         })();
+        */
 
         // ═══════════════════════════════════════════════════════════════
         //  DIAMOND CARD
