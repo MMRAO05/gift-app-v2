@@ -162,7 +162,8 @@
             letter-spacing: .02em;
         }
         .field input,
-        .field textarea {
+        .field textarea,
+        .field select {
             width: 100%;
             padding: 10px 14px;
             border-radius: 14px;
@@ -173,10 +174,14 @@
             transition: border-color 0.2s;
         }
         .field input:focus,
-        .field textarea:focus {
+        .field textarea:focus,
+        .field select:focus {
             outline: none;
             border-color: var(--primary-pink);
             box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.12);
+        }
+        .field select option {
+            color: #592532;
         }
         .field small {
             display: block;
@@ -594,6 +599,16 @@
             min-width: 120px;
         }
 
+        .expiry-badge {
+            display: inline-block;
+            background: rgba(255, 77, 109, 0.1);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: var(--primary-pink);
+            margin-top: 6px;
+        }
+
         @media (max-width: 420px) {
             .pink-card {
                 padding: 20px 16px;
@@ -660,9 +675,19 @@
                     <small>Leave blank to use 1122</small>
                 </div>
                 <div class="field">
-                    <label>⏳ Link Expires In (hours)</label>
-                    <input type="number" id="inpExpires" min="1" max="720" value="24" />
-                    <small>After this many hours, the link will expire. (1–720 hours)</small>
+                    <label>⏳ Link Expires In</label>
+                    <select id="inpExpires">
+                        <option value="1">1 hour</option>
+                        <option value="6">6 hours</option>
+                        <option value="12">12 hours</option>
+                        <option value="24" selected>24 hours</option>
+                        <option value="48">48 hours</option>
+                        <option value="72">72 hours</option>
+                        <option value="168">7 days</option>
+                        <option value="720">30 days</option>
+                        <option value="0">♾️ Never Expire</option>
+                    </select>
+                    <small>Choose when this link should expire</small>
                 </div>
 
                 <div class="flex-row">
@@ -779,10 +804,10 @@
                 <div class="gift-box" id="giftBox" role="button" aria-label="Open gift">🎁</div>
                 <div class="gift-message-wrap" id="giftMessageWrap">
                     <span id="giftMessage">You mean everything to me. ❤️</span>
-                </div>
-          <!--  </div>
-            <button class="restart-link" id="restartBtn">🔄 create another one</button>
-        </div> -->
+               <!-- </div>
+                <button class="restart-link" id="restartBtn">🔄 Create another one</button>
+            </div> -->
+        </div>
 
     </div>
 
@@ -853,8 +878,9 @@
             state.giftMsg = document.getElementById('inpGiftMsg').value.trim() || 'You mean everything to me. ❤️';
             const pk = document.getElementById('inpPasskey').value.trim();
             state.passkey = /^\d{4}$/.test(pk) ? pk : '1122';
-            const exp = parseInt(document.getElementById('inpExpires').value) || 24;
-            state.expiresIn = Math.min(Math.max(exp, 1), 720);
+            // Read expires from select
+            const expVal = parseInt(document.getElementById('inpExpires').value);
+            state.expiresIn = isNaN(expVal) ? 24 : expVal;
             state.createdAt = Date.now();
         }
 
@@ -942,12 +968,9 @@
             // Capture photo if selected but not yet stored in state
             const fileInput = document.getElementById('inpMainImg');
             if (fileInput && fileInput.files && fileInput.files.length > 0 && state.mainImg === DEFAULT_IMG) {
-                // Simulate change event to load the image
                 const evt = new Event('change');
                 fileInput.dispatchEvent(evt);
-                // Wait a bit for the file reader to finish
                 setTimeout(() => {
-                    // Now state.mainImg should be updated, proceed
                     doCreateLink();
                 }, 200);
                 return;
@@ -956,7 +979,6 @@
         }
 
         function doCreateLink() {
-            // Ensure createdAt is set
             state.createdAt = Date.now();
 
             const id = genId();
@@ -970,10 +992,16 @@
 
             const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
             document.getElementById('shareLinkInput').value = shareUrl;
-            document.getElementById('expiryHint').innerText = '🔗 This link will expire in ' + state.expiresIn +
-                ' hour' + (state.expiresIn > 1 ? 's' : '');
 
-            // Show share screen
+            // Show expiry hint
+            const hintEl = document.getElementById('expiryHint');
+            if (state.expiresIn === 0) {
+                hintEl.innerText = '♾️ This link will NEVER expire! Share it anytime.';
+            } else {
+                hintEl.innerText = '🔗 This link will expire in ' + state.expiresIn +
+                    ' hour' + (state.expiresIn > 1 ? 's' : '');
+            }
+
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             nav('scr-share');
 
@@ -1030,16 +1058,19 @@
             }
             try {
                 const data = JSON.parse(raw);
-                // Check expiration
-                const now = Date.now();
-                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                if (expTime > 0 && now > expTime) {
-                    const d = new Date(expTime);
-                    document.getElementById('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    document.getElementById('scr-expired').classList.add('active');
-                    return false;
+                // Check expiration - ONLY if expiresIn > 0
+                if (data.expiresIn > 0) {
+                    const now = Date.now();
+                    const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                    if (expTime > 0 && now > expTime) {
+                        const d = new Date(expTime);
+                        document.getElementById('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
+                        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                        document.getElementById('scr-expired').classList.add('active');
+                        return false;
+                    }
                 }
+                // If expiresIn === 0, link never expires
 
                 // Apply data
                 state = data;
@@ -1072,7 +1103,6 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             loadFromUrl();
         } else {
-            // Check if we have a preset from exported (legacy) – we keep for backward compatibility
             if (window.__PRESET__) {
                 state = Object.assign(state, window.__PRESET__);
                 applyState();
@@ -1157,6 +1187,7 @@
 
         console.log('💖 Surprise Builder with Link System loaded!');
         console.log('🔗 Use "Create Link" to generate a shareable URL.');
+        console.log('♾️ Select "Never Expire" for permanent links.');
     </script>
 
 </body>

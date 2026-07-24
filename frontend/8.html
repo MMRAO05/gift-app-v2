@@ -2,33 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>🌊 Ocean of Love</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <title>Eclipse · A Dark Celebration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js">
     </script>
     <style>
         /* ────────── ROOT ────────── */
         :root {
-            --deep-blue: #081624;
-            --mid-blue: #0f2847;
-            --teal: #1a6b7a;
-            --gold: #f7d875;
-            --gold-dim: rgba(247, 216, 117, 0.15);
-            --pink: #ff6b9d;
-            --pink-dim: rgba(255, 107, 157, 0.12);
-            --card-bg: rgba(255, 255, 255, 0.06);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --text-light: #f0f4ff;
-            --text-soft: #b0c8e0;
-            --text-muted: #7a96b0;
-            --shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
-            --radius: 28px;
-            --radius-sm: 16px;
-            --transition: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --font-serif: 'Playfair Display', serif;
-            --font-sans: 'Poppins', sans-serif;
+            --bg-deep: #0a0a0f;
+            --bg-card: rgba(20, 20, 30, 0.6);
+            --border-glow: rgba(212, 175, 55, 0.15);
+            --gold: #d4af37;
+            --gold-dim: rgba(212, 175, 55, 0.1);
+            --gold-glow: rgba(212, 175, 55, 0.2);
+            --gold-soft: #e8d5a3;
+            --text-light: #f0ece4;
+            --text-soft: #a09888;
+            --text-muted: #6b6358;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            --radius: 16px;
+            --radius-sm: 8px;
         }
         * {
             box-sizing: border-box;
@@ -39,28 +34,58 @@
         html,
         body {
             height: 100%;
-            font-family: var(--font-sans);
-            background: var(--deep-blue);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
             color: var(--text-light);
             overflow: hidden;
         }
+
+        /* ────────── STAGE ────────── */
         #stage {
             position: relative;
             width: 100%;
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            background: var(--deep-blue);
+            background: var(--bg-deep);
         }
-        #waveCanvas {
+
+        /* ────────── GEOMETRIC BACKGROUND ────────── */
+        #geoCanvas {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
             pointer-events: none;
-            display: block;
+            opacity: 0.3;
         }
+
+        /* ── diamond glow ── */
+        .diamond-glow {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.08;
+        }
+        .diamond-glow.g1 {
+            width: 600px;
+            height: 600px;
+            top: -20%;
+            right: -20%;
+            background: var(--gold);
+        }
+        .diamond-glow.g2 {
+            width: 400px;
+            height: 400px;
+            bottom: -20%;
+            left: -20%;
+            background: #8b7a5a;
+        }
+
+        /* ────────── SCREENS ────────── */
         .screen {
             position: absolute;
             inset: 0;
@@ -68,207 +93,143 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 16px;
+            padding: 24px 20px;
             text-align: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: scale(0.92) translateY(20px);
             z-index: 2;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
-        }
-        .screen::-webkit-scrollbar {
-            width: 3px;
-        }
-        .screen::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
         }
         .screen.active {
             opacity: 1;
             pointer-events: auto;
             transform: scale(1) translateY(0);
         }
+
         .glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--card-border);
+            background: var(--bg-card);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-glow);
             border-radius: var(--radius);
-            box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-            transition: all 0.4s ease;
-        }
-        .glass:hover {
-            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(212, 175, 55, 0.04);
         }
 
-        /* ─── BUTTONS ─── */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: var(--font-sans);
-            letter-spacing: 0.02em;
-            position: relative;
-            overflow: hidden;
+        /* ────────── SETUP ────────── */
+        #scr-setup {
+            background: radial-gradient(ellipse at 50% 40%, #14141e 0%, var(--bg-deep) 80%);
         }
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .btn:hover::after {
-            opacity: 1;
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #1a6b7a, #2a8a9a);
-            color: #fff;
-            box-shadow: 0 6px 28px rgba(26, 107, 122, 0.35);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(26, 107, 122, 0.45);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold), #d4a830);
-            color: var(--deep-blue);
-            box-shadow: 0 6px 28px rgba(247, 216, 117, 0.25);
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(247, 216, 117, 0.35);
-        }
-        .btn-pink {
-            background: linear-gradient(135deg, var(--pink), #d44a7a);
-            color: #fff;
-            box-shadow: 0 6px 28px rgba(255, 107, 157, 0.3);
-        }
-        .btn-pink:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(255, 107, 157, 0.4);
-        }
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-soft);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-        .btn-group .btn {
-            flex: 1;
-            min-width: 100px;
-        }
-
-        /* ─── SETUP CARD ─── */
         .setup-card {
             width: 100%;
             max-width: 460px;
-            padding: 32px 28px;
-            max-height: 94vh;
+            padding: 32px 28px 36px;
+            max-height: 92vh;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
+            scrollbar-color: rgba(212, 175, 55, 0.1) transparent;
         }
         .setup-card::-webkit-scrollbar {
             width: 3px;
         }
         .setup-card::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
+            background: rgba(212, 175, 55, 0.15);
+            border-radius: 8px;
         }
-        .setup-card .brand {
+
+        .eclipse-brand {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             margin-bottom: 2px;
         }
-        .setup-card .brand-icon {
-            font-size: 34px;
-            animation: floatIcon 3s ease-in-out infinite;
+        .eclipse-logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 30px;
+            letter-spacing: -0.02em;
+            color: var(--gold);
+            position: relative;
         }
-        .setup-card h1 {
-            font-family: var(--font-serif);
-            font-style: italic;
+        .eclipse-logo::before {
+            content: '◆';
+            font-size: 14px;
+            color: var(--gold);
+            opacity: 0.3;
+            margin-right: 8px;
+        }
+        .eclipse-logo::after {
+            content: '◇';
+            font-size: 14px;
+            color: var(--gold);
+            opacity: 0.2;
+            margin-left: 6px;
+        }
+        .eclipse-badge {
+            font-size: 8px;
             font-weight: 700;
-            font-size: 32px;
-            margin: 0 0 2px;
-            background: linear-gradient(135deg, #7ac7d4, var(--gold), var(--pink));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            padding: 2px 10px;
+            border-radius: 100px;
         }
-        .setup-card .sub {
-            color: var(--text-soft);
+        .setup-card .tagline {
             font-size: 12px;
+            color: var(--text-soft);
+            margin: 0 0 26px;
             font-weight: 300;
-            margin: 0 0 18px;
-            letter-spacing: 0.03em;
-            opacity: 0.8;
+            letter-spacing: 0.04em;
         }
+
         .field {
             text-align: left;
             margin-bottom: 14px;
         }
         .field label {
-            display: block;
-            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9.5px;
             font-weight: 600;
             color: var(--text-soft);
-            margin-bottom: 4px;
-            letter-spacing: 0.08em;
+            margin-bottom: 5px;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            opacity: 0.7;
+        }
+        .field label .label-icon {
+            font-size: 10px;
+            color: var(--gold);
+            opacity: 0.4;
         }
         .field input,
         .field textarea,
         .field select {
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            font-family: var(--font-sans);
-            font-size: 13px;
+            padding: 11px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
             color: var(--text-light);
-            transition: all 0.3s ease;
-            outline: none;
+            transition: all 0.3s;
         }
         .field input:focus,
         .field textarea:focus,
         .field select:focus {
+            outline: none;
             border-color: var(--gold);
             box-shadow: 0 0 0 3px var(--gold-dim);
-            background: rgba(0, 0, 0, 0.4);
         }
         .field select option {
-            background: var(--deep-blue);
-            color: #fff;
+            background: #0a0a0f;
+            color: #f0ece4;
         }
         .field textarea {
-            min-height: 60px;
+            min-height: 68px;
             resize: vertical;
             line-height: 1.5;
         }
@@ -278,40 +239,89 @@
             color: var(--text-muted);
             font-size: 10px;
         }
-        .file-input-wrapper {
+        .row2 {
             display: flex;
-            align-items: center;
             gap: 10px;
+        }
+        .row2 .field {
+            flex: 1;
+        }
+
+        .photo-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
             flex-wrap: wrap;
         }
-        .file-input-wrapper label {
-            padding: 7px 16px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            font-size: 11px;
+        .photo-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid rgba(212, 175, 55, 0.06);
+        }
+        .upload-btn {
+            border: 1.5px dashed rgba(212, 175, 55, 0.06);
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-size: 11.5px;
             color: var(--text-soft);
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
-            font-weight: 400;
-            text-transform: none;
-            letter-spacing: 0;
+            background: rgba(212, 175, 55, 0.02);
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
-        .file-input-wrapper label:hover {
+        .upload-btn:hover {
             border-color: var(--gold);
-            color: #fff;
-            background: var(--gold-dim);
+            color: var(--text-light);
         }
-        .file-input-wrapper input[type="file"] {
-            display: none;
-        }
-        .file-name {
-            font-size: 10px;
-            color: var(--text-muted);
-            max-width: 130px;
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+            letter-spacing: 0.04em;
+            font-family: 'Inter', sans-serif;
+            position: relative;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        }
+        .btn-primary {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            box-shadow: none;
+        }
+        .btn-primary:hover {
+            background: var(--gold-dim);
+            transform: translateY(-2px);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #b8962a);
+            color: #0a0a0f;
+            box-shadow: 0 8px 32px var(--gold-glow);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--gold-glow);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 12.5px;
+            padding: 12px 8px;
         }
         .ghost-hint {
             margin-top: 14px;
@@ -319,106 +329,87 @@
             color: var(--text-muted);
             line-height: 1.6;
             letter-spacing: 0.02em;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding-top: 14px;
-        }
-        .ghost-hint span {
-            color: var(--gold);
         }
 
-        /* ─── SHARE ─── */
+        /* ────────── SHARE ────────── */
         .share-card {
             width: 100%;
             max-width: 440px;
-            padding: 32px 28px;
+            padding: 32px 26px;
         }
         .share-card .success-icon {
-            font-size: 52px;
+            font-size: 40px;
             margin-bottom: 2px;
             animation: bounceIn 0.8s ease;
         }
-        .share-card h2 {
-            font-family: var(--font-serif);
-            color: var(--gold);
-            margin: 0;
-            font-size: 26px;
-            font-weight: 600;
-        }
-        .share-card .sub {
-            color: var(--text-soft);
-            font-size: 13px;
-            margin: 4px 0 18px;
-            opacity: 0.7;
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.12);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
         .share-link-box {
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: var(--radius-sm);
-            padding: 8px 12px;
+            padding: 12px 16px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            margin-bottom: 14px;
-            flex-wrap: wrap;
+            border: 1px solid rgba(212, 175, 55, 0.04);
+            margin-bottom: 18px;
         }
         .share-link-box input {
             flex: 1;
             border: none;
             background: transparent;
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--text-light);
             outline: none;
-            font-family: var(--font-sans);
+            font-family: 'Inter', sans-serif;
             min-width: 0;
-            word-break: break-all;
-            padding: 4px 0;
-            cursor: text;
         }
         .copy-btn {
             background: var(--gold);
-            color: var(--deep-blue);
+            color: #0a0a0f;
             border: none;
-            padding: 5px 16px;
-            border-radius: 8px;
-            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 11.5px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-            font-family: var(--font-sans);
-            min-width: 52px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
         .copy-btn:hover {
-            background: #f7e08a;
-            transform: scale(1.02);
+            background: #e8c84a;
         }
         .copy-btn.copied {
             background: #34d399;
-            color: var(--deep-blue);
-        }
-        .copy-btn.error {
-            background: #ef4444;
-            color: #fff;
         }
         .share-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 4px;
         }
         .share-actions button {
-            padding: 9px 16px;
+            padding: 10px 18px;
             border: none;
             border-radius: var(--radius-sm);
-            font-size: 11px;
+            font-size: 11.5px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             flex: 1;
-            min-width: 70px;
-            font-family: var(--font-sans);
+            min-width: 80px;
+            font-family: 'Inter', sans-serif;
         }
         .share-actions button:hover {
             transform: translateY(-2px);
@@ -438,560 +429,521 @@
             background: #c62828;
         }
         .share-actions .open-gift {
-            background: linear-gradient(135deg, #1a6b7a, #2a8a9a);
-            color: #fff;
+            background: var(--gold);
+            color: #0a0a0f;
             flex: 1.5;
         }
-        .share-actions .open-gift:hover {
-            filter: brightness(1.1);
-        }
         .expiry-hint {
-            margin-top: 6px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        .share-note {
-            font-size: 10px;
-            color: #34d399;
-            margin-top: 4px;
-            background: rgba(52, 211, 153, 0.08);
-            padding: 4px 14px;
-            border-radius: 20px;
-            display: inline-block;
-            border: 1px solid rgba(52, 211, 153, 0.08);
-        }
-        .share-back-link {
             margin-top: 14px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
             font-size: 10.5px;
-            text-decoration: underline;
-            cursor: pointer;
-            font-family: var(--font-sans);
-            transition: color 0.3s ease;
-        }
-        .share-back-link:hover {
-            color: var(--text-soft);
+            color: var(--text-muted);
         }
 
-        /* ─── EXPIRED / NOT FOUND ─── */
-        .status-card {
+        /* ────────── EXPIRED ────────── */
+        .expired-card {
             width: 100%;
             max-width: 400px;
-            padding: 40px 32px;
+            padding: 40px 30px;
         }
-        .status-card .icon {
-            font-size: 64px;
-            margin-bottom: 6px;
+        .expired-card .icon {
+            font-size: 44px;
+            margin-bottom: 4px;
         }
-        .status-card h2 {
-            font-family: var(--font-serif);
-            color: var(--pink);
-            margin: 0;
-            font-size: 28px;
-            font-weight: 600;
-        }
-        .status-card p {
-            color: var(--text-soft);
-            font-size: 14px;
-            margin: 10px 0 22px;
-            line-height: 1.7;
-            opacity: 0.8;
-        }
-
-        /* ─── PASSKEY ─── */
-        .pass-card {
-            width: 100%;
-            max-width: 380px;
-            padding: 32px 28px;
-        }
-        .pass-card .lock-icon {
-            font-size: 38px;
-            margin-bottom: 2px;
-        }
-        .pass-card h3 {
-            font-family: var(--font-serif);
-            margin: 4px 0 2px;
+        .expired-card h2 {
+            font-family: 'Playfair Display', serif;
             color: var(--gold);
+            margin: 0;
             font-size: 24px;
             font-weight: 600;
+            opacity: 0.6;
         }
-        .pass-card .sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin: 0 0 8px;
-        }
-        .pass-dots {
-            display: flex;
-            gap: 14px;
-            margin: 14px 0 18px;
-            justify-content: center;
-        }
-        .pass-dots span {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            transition: all 0.3s ease;
-            background: rgba(247, 216, 117, 0.04);
-        }
-        .pass-dots span.filled {
-            background: var(--gold);
-            box-shadow: 0 0 24px rgba(247, 216, 117, 0.3);
-            border-color: var(--gold);
-            transform: scale(1.1);
-        }
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 62px);
-            gap: 12px;
-            justify-content: center;
-            margin: 4px 0 10px;
-        }
-        .keypad button {
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(255, 255, 255, 0.03);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            font-size: 18px;
-            color: var(--text-light);
-            cursor: pointer;
-            font-family: var(--font-sans);
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-        .keypad button:active {
-            background: var(--gold-dim);
-            transform: scale(0.90);
-        }
-        .keypad button.clear-key {
-            font-size: 9px;
-            color: var(--pink);
-            font-weight: 700;
-            letter-spacing: 0.04em;
-        }
-        .pass-error {
-            margin-top: 12px;
-            color: var(--pink);
-            font-size: 12px;
-            min-height: 18px;
-            font-weight: 500;
-        }
-        .pass-hint {
-            margin-top: 10px;
-            color: var(--text-muted);
-            font-size: 10.5px;
-        }
-        @keyframes shakePass {
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-            20% {
-                transform: translateX(-10px);
-            }
-            40% {
-                transform: translateX(10px);
-            }
-            60% {
-                transform: translateX(-6px);
-            }
-            80% {
-                transform: translateX(6px);
-            }
-        }
-        .shake-pass {
-            animation: shakePass 0.4s ease;
+        .expired-card p {
+            color: var(--text-soft);
+            font-size: 13.5px;
+            margin: 12px 0 24px;
+            line-height: 1.6;
         }
 
-        /* ─── OCEAN CARD ─── */
-        .ocean-card {
-            max-width: 420px;
-            padding: 34px 28px 28px;
-            position: relative;
-            overflow: hidden;
+        /* ────────── DIAMOND CARD ────────── */
+        .diamond-container {
+            perspective: 1200px;
+            width: 180px;
+            height: 240px;
+            cursor: pointer;
+            margin: 8px 0 18px;
         }
-        .ocean-card .wave-overlay {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 80%, rgba(8, 22, 36, 0.6), transparent 60%);
+        .diamond-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .diamond-card:hover:not(.opened) {
+            transform: rotateY(8deg) rotateX(2deg);
+        }
+        .diamond-card.opened {
+            transform: rotateY(180deg) scale(0.6);
+            opacity: 0;
             pointer-events: none;
         }
-        .ocean-icon {
-            font-size: 54px;
-            margin-bottom: 2px;
-            animation: floatIcon 3s ease-in-out infinite;
+        .diamond-face {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
         }
-        @keyframes floatIcon {
+        .diamond-front {
+            background: linear-gradient(160deg, rgba(212, 175, 55, 0.04), rgba(20, 20, 30, 0.8));
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.02);
+            backdrop-filter: blur(4px);
+        }
+        .diamond-front .diamond-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+            animation: pulseGold 3s ease-in-out infinite;
+        }
+        @keyframes pulseGold {
             0%,
             100% {
-                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.1));
             }
             50% {
-                transform: translateY(-10px) scale(1.04);
+                filter: drop-shadow(0 0 24px rgba(212, 175, 55, 0.25));
             }
         }
-        .ocean-title {
-            font-family: var(--font-serif);
+        .diamond-front .diamond-label {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+        .diamond-front .diamond-shine {
+            position: absolute;
+            top: 6%;
+            left: 20%;
+            width: 35%;
+            height: 20%;
+            background: radial-gradient(ellipse, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .diamond-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(160deg, rgba(20, 20, 30, 0.9), rgba(212, 175, 55, 0.03));
+            border: 1px solid rgba(212, 175, 55, 0.04);
+            font-size: 44px;
+            backdrop-filter: blur(4px);
+        }
+
+        .env-name {
+            font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 30px;
-            background: linear-gradient(135deg, #7ac7d4, var(--gold));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin: 2px 0 4px;
+            font-size: 28px;
+            margin: 0 0 2px;
+            color: var(--gold);
             font-weight: 700;
+            letter-spacing: -0.01em;
         }
-        .ocean-sub {
-            font-size: 15px;
-            color: var(--text-light);
-            line-height: 1.7;
-            white-space: pre-wrap;
-            margin: 4px 0 12px;
-            opacity: 0.9;
+        .tap-caption {
+            font-size: 11px;
+            color: var(--text-soft);
+            letter-spacing: 0.06em;
+            font-weight: 300;
         }
-        .ocean-photo-wrap {
-            width: 100%;
-            max-width: 240px;
-            margin: 6px auto 10px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.25);
-            aspect-ratio: 1/1;
+
+        /* ────────── HERO ────────── */
+        .hero-ring {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 30%, rgba(212, 175, 55, 0.04), transparent 70%);
+            border: 1px solid rgba(212, 175, 55, 0.04);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s ease;
+            font-size: 48px;
+            animation: floatRing 4s ease-in-out infinite;
         }
-        .ocean-photo-wrap:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        .ocean-photo-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .ocean-photo-wrap .placeholder {
-            font-size: 44px;
-            color: var(--text-muted);
-            user-select: none;
-        }
-        .ocean-music {
-            margin: 8px 0 10px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-        .ocean-music audio {
-            width: 100%;
-            max-width: 280px;
-            border-radius: 30px;
-            background: rgba(0, 0, 0, 0.2);
-            outline: none;
-            height: 38px;
-        }
-        .ocean-music audio::-webkit-media-controls-panel {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .ocean-music audio::-webkit-media-controls-play-button {
-            background-color: var(--gold);
+        .hero-ring::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
             border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.04);
+            animation: ringPulse 3s ease-in-out infinite;
         }
-        .ocean-btn {
-            margin-top: 12px;
-            min-width: 160px;
+        .hero-ring::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.02);
+            animation: ringPulse 4s ease-in-out infinite reverse;
         }
-        .occasion-badge {
-            display: inline-block;
-            padding: 4px 18px;
-            border-radius: 50px;
-            font-size: 10.5px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            color: var(--text-soft);
-            letter-spacing: 0.04em;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        /* ─── VIDEO ─── */
-        .video-card {
-            width: 100%;
-            max-width: 420px;
-            padding: 28px 24px;
-        }
-        .video-card h2 {
-            font-family: var(--font-serif);
-            color: var(--gold);
-            margin: 0 0 2px;
-            font-size: 26px;
-            font-weight: 600;
-        }
-        .video-card .sub {
-            color: var(--text-soft);
-            font-size: 12px;
-            margin: 0 0 14px;
-            opacity: 0.7;
-        }
-        .video-preview {
-            width: 100%;
-            max-width: 360px;
-            aspect-ratio: 16/9;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            background: #000;
-            margin: 4px auto 12px;
-            position: relative;
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
-        }
-        .video-preview canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        .record-btns {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 6px;
-        }
-        .record-btns .btn {
-            flex: 1;
-            min-width: 100px;
-        }
-        .record-status {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            min-height: 20px;
-        }
-        .record-status.recording {
-            color: var(--pink);
-        }
-        .record-status.done {
-            color: #34d399;
-        }
-
-        /* ─── FINAL ─── */
-        .final-card {
-            width: 100%;
-            max-width: 420px;
-            padding: 36px 28px 30px;
-            text-align: center;
-        }
-        .final-card .heart-burst {
-            font-size: 60px;
-            margin-bottom: 4px;
-            animation: heartPulse 1.4s ease-in-out infinite;
-        }
-        @keyframes heartPulse {
+        @keyframes ringPulse {
             0%,
             100% {
                 transform: scale(1);
+                opacity: 0.2;
             }
             50% {
-                transform: scale(1.12);
+                transform: scale(1.1);
+                opacity: 0.05;
             }
         }
-        .final-card .final-head {
-            font-family: var(--font-serif);
+        @keyframes floatRing {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 28px;
+            margin: 12px 0 4px;
+            color: var(--gold);
+            letter-spacing: -0.01em;
+        }
+        .hero-sub {
+            font-size: 13.5px;
+            color: var(--text-soft);
+            max-width: 360px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        .hero-continue {
+            margin-top: 24px;
+            border: none;
+            background: none;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 2px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            opacity: 0.7;
+        }
+        .hero-continue:hover {
+            opacity: 1;
+        }
+
+        /* ────────── WISH ────────── */
+        .wish-card {
+            padding: 34px 28px;
+            max-width: 380px;
+        }
+        .wish-text {
+            font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 32px;
-            background: linear-gradient(135deg, var(--gold), var(--pink));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin: 2px 0 4px;
+            font-size: 21px;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+        .wish-text .hl {
+            color: var(--gold);
             font-weight: 700;
         }
-        .final-card .final-msg {
-            font-size: 15px;
-            color: var(--text-light);
-            line-height: 1.7;
-            margin: 6px 0 18px;
-            opacity: 0.9;
-        }
-        .restart-link {
-            background: none;
+        .continue-btn {
+            margin-top: 26px;
             border: none;
+            background: none;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 2px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            opacity: 0.7;
+        }
+        .continue-btn:hover {
+            opacity: 1;
+        }
+
+        /* ────────── PASSKEY ────────── */
+        .pass-dots {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+        .pass-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            transition: all 0.3s;
+        }
+        .pass-dots span.filled {
+            background: var(--gold);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 64px);
+            gap: 12px;
+        }
+        .keypad button {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.04);
+            background: rgba(20, 20, 30, 0.6);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+        .keypad button:active {
+            background: rgba(212, 175, 55, 0.06);
+            transform: scale(0.92);
+        }
+        .keypad button.clear {
+            font-size: 9.5px;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            opacity: 0.5;
+        }
+        .pass-error {
+            margin-top: 14px;
+            color: var(--gold);
+            font-size: 12px;
+            min-height: 18px;
+            font-weight: 500;
+            opacity: 0.6;
+        }
+        .pass-hint {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 10.5px;
+        }
+
+        /* ────────── UNLOCK ────────── */
+        .unlock-icon {
+            font-size: 40px;
+            animation: bounceIn 0.7s ease;
+        }
+        .unlock-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 22px;
+            color: var(--gold);
+        }
+
+        /* ────────── PHOTOS ────────── */
+        .photo-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+        .photo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            max-width: 400px;
+            max-height: 48vh;
+            overflow-y: auto;
+            padding: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(212, 175, 55, 0.06) transparent;
+        }
+        .photo-grid::-webkit-scrollbar {
+            width: 3px;
+        }
+        .photo-grid::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.06);
+            border-radius: 8px;
+        }
+        .polaroid-dark {
+            background: rgba(20, 20, 30, 0.8);
+            padding: 6px 6px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 110px;
+            transform: rotate(var(--r, 0deg));
+            border: 1px solid rgba(212, 175, 55, 0.02);
+            transition: transform 0.3s;
+        }
+        .polaroid-dark:hover {
+            transform: rotate(0deg) scale(1.04) !important;
+        }
+        .polaroid-dark img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .no-photos {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--text-soft);
+            font-size: 15px;
+        }
+
+        /* ────────── LETTER ────────── */
+        .letter-paper {
+            max-width: 400px;
+            width: 100%;
+            padding: 32px 26px;
+            max-height: 56vh;
+            overflow-y: auto;
+            text-align: left;
+            border: 1px solid rgba(212, 175, 55, 0.02);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(212, 175, 55, 0.04) transparent;
+        }
+        .letter-paper::-webkit-scrollbar {
+            width: 3px;
+        }
+        .letter-paper::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.04);
+            border-radius: 8px;
+        }
+        .letter-paper .salutation {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 19px;
+            color: var(--gold);
+            margin-bottom: 14px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        .letter-paper .body-text {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-light);
+            white-space: pre-wrap;
+            font-weight: 300;
+        }
+        .letter-paper .sign {
+            margin-top: 22px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--gold-soft);
+        }
+        .restart-btn {
+            margin-top: 18px;
+            border: none;
+            background: none;
             color: var(--text-muted);
             font-size: 11px;
             text-decoration: underline;
             cursor: pointer;
-            font-family: var(--font-sans);
-            transition: color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
         }
-        .restart-link:hover {
-            color: var(--text-soft);
-        }
-
-        /* ─── ANIMATIONS ─── */
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.12);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .animate-in {
-            animation: fadeInUp 0.6s ease forwards;
+        .restart-btn:hover {
+            color: var(--gold);
         }
 
-        /* ─── TOAST ─── */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 999;
-            opacity: 0;
-            transition: all 0.4s ease;
-            pointer-events: none;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-            font-family: var(--font-sans);
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .toast.success {
-            border-color: #34d399;
-            color: #34d399;
-        }
-        .toast.error {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 480px) {
+        /* ────────── RESPONSIVE ────────── */
+        @media(max-width:440px) {
             .setup-card {
-                padding: 24px 18px;
+                padding: 20px 16px 24px;
             }
-            .setup-card h1 {
-                font-size: 26px;
-            }
-            .ocean-card {
-                padding: 24px 18px;
-            }
-            .ocean-title {
+            .eclipse-logo {
                 font-size: 24px;
             }
-            .ocean-icon {
-                font-size: 44px;
-            }
-            .ocean-photo-wrap {
-                max-width: 160px;
-            }
-            .video-preview {
-                max-width: 280px;
-            }
-            .btn-group {
+            .row2 {
                 flex-direction: column;
-            }
-            .btn-group .btn {
-                min-width: unset;
+                gap: 0;
             }
             .keypad {
                 gap: 10px;
             }
             .keypad button {
-                width: 52px;
-                height: 52px;
+                width: 54px;
+                height: 54px;
                 font-size: 16px;
             }
-            .share-link-box {
-                flex-wrap: wrap;
+            .wish-text {
+                font-size: 18px;
             }
-            .share-link-box input {
-                font-size: 11px;
-                min-width: 100%;
-            }
-            .share-actions button {
-                font-size: 10px;
-                padding: 8px 12px;
-            }
-            .final-card .final-head {
-                font-size: 26px;
-            }
-            .final-card .heart-burst {
-                font-size: 48px;
-            }
-            .pass-card {
-                padding: 24px 18px;
-            }
-            .share-card {
-                padding: 24px 18px;
-            }
-            .status-card {
-                padding: 30px 20px;
-            }
-            .status-card .icon {
-                font-size: 48px;
-            }
-            .status-card h2 {
+            .hero-title {
                 font-size: 22px;
             }
-            .ocean-card .ocean-sub {
-                font-size: 13px;
+            .hero-ring {
+                width: 100px;
+                height: 100px;
+                font-size: 38px;
+            }
+            .diamond-container {
+                width: 150px;
+                height: 200px;
+            }
+            .diamond-front .diamond-icon {
+                font-size: 32px;
+            }
+            .env-name {
+                font-size: 22px;
+            }
+            .polaroid-dark {
+                width: 90px;
+            }
+            .polaroid-dark img {
+                height: 82px;
+            }
+            .letter-paper .body-text {
+                font-size: 13.5px;
+            }
+            .btn-group {
+                flex-direction: column;
+                gap: 6px;
             }
         }
-        @media (max-width: 380px) {
+        @media(max-width:360px) {
             .keypad {
                 gap: 8px;
             }
             .keypad button {
-                width: 44px;
-                height: 44px;
+                width: 46px;
+                height: 46px;
                 font-size: 14px;
             }
             .pass-dots {
-                gap: 10px;
+                gap: 8px;
             }
             .pass-dots span {
-                width: 12px;
-                height: 12px;
+                width: 10px;
+                height: 10px;
             }
-        }
-        @media (min-height: 800px) {
-            .setup-card {
-                padding: 40px 32px;
+            .diamond-container {
+                width: 120px;
+                height: 160px;
             }
-            .ocean-card {
-                padding: 40px 32px 32px;
+            .hero-ring {
+                width: 80px;
+                height: 80px;
+                font-size: 30px;
             }
         }
     </style>
@@ -999,84 +951,99 @@
 <body>
 
     <div id="stage">
-        <canvas id="waveCanvas"></canvas>
+        <!-- ─── BACKGROUND GLOWS ─── -->
+        <div class="diamond-glow g1"></div>
+        <div class="diamond-glow g2"></div>
+
+        <!-- ─── GEOMETRIC CANVAS ─── -->
+        <canvas id="geoCanvas"></canvas>
 
         <!-- ─── SETUP ─── -->
         <div class="screen active" id="scr-setup">
             <div class="setup-card glass">
-                <div class="brand">
-                    <span class="brand-icon">🌊</span>
-                    <h1>Ocean of Love</h1>
+                <div class="eclipse-brand">
+                    <span class="eclipse-logo">Eclipse</span>
+                    <span class="eclipse-badge">v7</span>
                 </div>
-                <p class="sub">Create a sea‑spired surprise with music, video &amp; a passkey</p>
+                <p class="tagline">A dark celebration · crafted in shadow and gold</p>
 
                 <div class="field">
-                    <label>🎯 Occasion</label>
-                    <select id="inpOccasion">
-                        <option value="birthday">🎂 Birthday</option>
-                        <option value="mothersday">💐 Mother's Day</option>
-                        <option value="fathersday">🦸 Father's Day</option>
-                        <option value="anniversary">💞 Anniversary</option>
-                        <option value="valentine">💘 Valentine's Day</option>
-                        <option value="congratulations">🎊 Congratulations</option>
-                        <option value="justbecause" selected>🎁 Just Because</option>
-                    </select>
+                    <label><span class="label-icon">◇</span> Recipient</label>
+                    <input type="text" id="inpName" placeholder="e.g. Selene" maxlength="30" value="MM Rao" />
                 </div>
 
-                <div class="field">
-                    <label>💕 Recipient's Name</label>
-                    <input type="text" id="inpName" value="My Love" placeholder="Enter name..." />
-                </div>
-
-                <div class="field">
-                    <label>💌 Your Message</label>
-                    <textarea id="inpMessage" rows="2" placeholder="Write your heart out...">You are the tide that pulls my heart, the calm in every storm. 🌊</textarea>
-                </div>
-
-                <div class="field">
-                    <label>🔑 Passkey (4 digits, optional)</label>
-                    <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="e.g. 1122" />
-                    <small>Leave blank to skip the passkey step</small>
-                </div>
-
-                <div class="field">
-                    <label>🖼️ Photo (optional)</label>
-                    <div class="file-input-wrapper">
-                        <label for="inpPhoto">Choose Image</label>
-                        <input type="file" id="inpPhoto" accept="image/*" />
-                        <span class="file-name" id="photoFileName">No file chosen</span>
+                <div class="row2">
+                    <div class="field">
+                        <label><span class="label-icon">◇</span> Occasion</label>
+                        <select id="inpOccasion">
+                            <option value="birthday">Birthday</option>
+                            <option value="anniversary">Anniversary</option>
+                            <option value="valentine">Valentine's Day</option>
+                            <option value="mothersday">Mother's Day</option>
+                            <option value="fathersday">Father's Day</option>
+                            <option value="justbecause">Just Because</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><span class="label-icon">◇</span> Date</label>
+                        <input type="date" id="inpDate" />
                     </div>
                 </div>
 
                 <div class="field">
-                    <label>🎵 Music (optional, MP3)</label>
-                    <div class="file-input-wrapper">
-                        <label for="inpMusic">Choose Audio</label>
-                        <input type="file" id="inpMusic" accept="audio/*" />
-                        <span class="file-name" id="musicFileName">No file chosen</span>
+                    <label><span class="label-icon">◇</span> Short Wish</label>
+                    <input type="text" id="inpWish" placeholder="A short, meaningful wish..." maxlength="100" value="In the darkness, you are my light." />
+                </div>
+
+                <div class="field">
+                    <label><span class="label-icon">◇</span> Letter</label>
+                    <textarea id="inpLetter" rows="3">In the quiet of the night, when the world falls silent, I think of you. You are the light that cuts through the darkness — the gold in a world of shadow. This is my eclipse, and you are the glow that remains.</textarea>
+                </div>
+
+                <div class="row2">
+                    <div class="field">
+                        <label><span class="label-icon">◇</span> Passkey</label>
+                        <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122" />
+                    </div>
+                    <div class="field">
+                        <label><span class="label-icon">◇</span> Expires</label>
+                        <select id="inpExpires">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                            <option value="72">72 hours</option>
+                            <option value="168">7 days</option>
+                            <option value="720">30 days</option>
+                            <option value="0">♾️ Never Expire</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label>⏳ Link Expires In (hours)</label>
-                    <input type="number" id="inpExpires" min="1" max="720" value="24" />
-                    <small>1–720 hours. After this, the link will expire.</small>
+                    <label><span class="label-icon">◇</span> Photos</label>
+                    <div class="photo-row">
+                        <label class="upload-btn" for="photoInput">+ Add</label>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" />
+                        <div id="photoPreview" class="photo-row"></div>
+                    </div>
                 </div>
 
                 <div class="btn-group">
-                    <button class="btn btn-primary" id="btnPreview">👀 Preview</button>
-                    <button class="btn btn-gold" id="btnCreateLink">🔗 Create Link</button>
+                    <button class="btn btn-primary" id="previewBtn">◇ Preview</button>
+                    <button class="btn btn-gold" id="createLinkBtn">◆ Create Link</button>
                 </div>
-                <div class="ghost-hint">✨ <span>Preview</span> tests it here. <span>Create Link</span> generates a short ID stored in your browser.</div>
+                <div class="ghost-hint">Preview locally · Create Link generates a unique, time‑limited URL.</div>
             </div>
         </div>
 
         <!-- ─── SHARE ─── -->
         <div class="screen" id="scr-share">
             <div class="glass share-card">
-                <div class="success-icon">🌊</div>
-                <h2>Ocean Ready!</h2>
-                <p class="sub">Share this short link with your special person.</p>
+                <div class="success-icon">◆</div>
+                <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0;font-size:24px;font-weight:600;">Eclipse Ready</h2>
+                <p style="color:var(--text-soft);font-size:13px;margin:4px 0 20px;">Share this dark celebration with your special person.</p>
                 <div class="share-link-box">
                     <input type="text" id="shareLinkInput" readonly />
                     <button class="copy-btn" id="copyLinkBtn">Copy</button>
@@ -1084,190 +1051,105 @@
                 <div class="share-actions">
                     <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
                     <button class="email" id="emailBtn">✉️ Email</button>
-                    <button class="open-gift" id="openGiftBtn">Open 🌊</button>
+                    <button class="open-gift" id="openGiftBtn">Open ◆</button>
                 </div>
                 <div class="expiry-hint" id="expiryHint"></div>
-                <div class="share-note" id="shareNote">🔗 Short ID link — stored in your browser (localStorage)</div>
-                <button class="share-back-link" id="shareBackBtn">← Back to setup</button>
             </div>
         </div>
 
         <!-- ─── EXPIRED ─── -->
         <div class="screen" id="scr-expired">
-            <div class="glass status-card">
-                <div class="icon">⏳</div>
-                <h2>Link Expired</h2>
-                <p>This oceanic link has gently faded. The magic was meant to be cherished in the moment.</p>
-                <button class="btn btn-primary" id="expiredRestartBtn">Create a New One</button>
-                <div style="margin-top:12px;font-size:10.5px;color:var(--text-muted);" id="expiryDetail"></div>
+            <div class="glass expired-card">
+                <div class="icon">◆</div>
+                <h2>Eclipse Faded</h2>
+                <p>This dark celebration has dimmed. The magic was meant to be experienced in the moment.</p>
+                <button class="btn btn-gold" id="expiredRestartBtn">Create New Eclipse</button>
+                <div style="margin-top:12px;font-size:11px;color:var(--text-muted);" id="expiryDetail"></div>
             </div>
         </div>
 
-        <!-- ─── NOT FOUND ─── -->
-        <div class="screen" id="scr-notfound">
-            <div class="glass status-card">
-                <div class="icon">🔍</div>
-                <h2>Link Not Found</h2>
-                <p>The ocean memory you're looking for doesn't exist or has been cleared from this browser.</p>
-                <button class="btn btn-primary" id="notfoundRestartBtn">Create a New One</button>
+        <!-- ─── DIAMOND CARD ─── -->
+        <div class="screen" id="scr-card">
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-soft);margin-bottom:2px;">A dark celebration for</div>
+            <div class="env-name" id="displayName">someone special</div>
+            <div class="diamond-container" id="cardTap">
+                <div class="diamond-card" id="diamondCard">
+                    <div class="diamond-face diamond-front">
+                        <div class="diamond-icon">◆</div>
+                        <div class="diamond-label">tap to reveal</div>
+                        <div class="diamond-shine"></div>
+                    </div>
+                    <div class="diamond-face diamond-back">◇</div>
+                </div>
+            </div>
+            <div class="tap-caption">(tap the diamond to unveil the eclipse)</div>
+        </div>
+
+        <!-- ─── HERO ─── -->
+        <div class="screen" id="scr-hero">
+            <div class="hero-ring" id="heroOrb">◆</div>
+            <div class="hero-title" id="heroTitle">Eclipse Rising</div>
+            <div class="hero-sub" id="heroSub"></div>
+            <button class="hero-continue" id="toWishBtn">Continue →</button>
+        </div>
+
+        <!-- ─── WISH ─── -->
+        <div class="screen" id="scr-wish">
+            <div class="wish-card glass">
+                <div class="wish-text" id="wishLine">In the darkness, you are my <span class="hl">light</span>.</div>
+                <button class="continue-btn" id="toPassBtn">Continue →</button>
             </div>
         </div>
 
         <!-- ─── PASSKEY ─── -->
         <div class="screen" id="scr-pass">
-            <div class="glass pass-card">
-                <div class="lock-icon">🔒</div>
-                <h3>Enter Passkey</h3>
-                <p class="sub">Unlock the ocean of love</p>
-                <div class="pass-dots" id="passDots">
-                    <span></span><span></span><span></span><span></span>
-                </div>
-                <div class="keypad" id="passKeypad">
-                    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-                    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-                    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-                    <button class="clear-key" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
-                </div>
-                <div class="pass-error" id="passError"></div>
-                <div class="pass-hint" id="passHint">💡 Enter the 4‑digit passkey</div>
+            <div style="font-size:24px;">◇</div>
+            <h3 style="font-family:'Playfair Display',serif;margin:6px 0 4px;color:var(--gold);font-weight:600;">Enter the Eclipse Key</h3>
+            <p style="font-size:11.5px;color:var(--text-soft);margin:0 0 6px;">4-digit passkey</p>
+            <div class="pass-dots" id="passDots"><span></span><span></span><span></span><span></span></div>
+            <div class="keypad" id="keypad">
+                <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+                <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+                <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+                <button class="clear" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
             </div>
+            <div class="pass-error" id="passError"></div>
+            <div class="pass-hint">Hint: the passkey you set</div>
         </div>
 
-        <!-- ─── OCEAN ─── -->
-        <div class="screen" id="scr-ocean">
-            <div class="glass ocean-card">
-                <div class="wave-overlay"></div>
-                <div class="occasion-badge" id="occBadge">🎁 Just Because</div>
-                <div class="ocean-icon" id="occIcon">🎁</div>
-                <div class="ocean-title" id="oceanTitle">For My Love</div>
-                <div class="ocean-photo-wrap" id="oceanPhotoWrap">
-                    <div class="placeholder">🌅</div>
-                </div>
-                <div class="ocean-sub" id="oceanMessage">You are the tide that pulls my heart...</div>
-                <div class="ocean-music" id="oceanMusicContainer"></div>
-                <button class="btn btn-gold ocean-btn" id="oceanContinue">Continue →</button>
-            </div>
+        <!-- ─── UNLOCK ─── -->
+        <div class="screen" id="scr-unlock">
+            <div class="unlock-icon">✦</div>
+            <div class="unlock-text">Eclipse Unlocked</div>
         </div>
 
-        <!-- ─── VIDEO ─── -->
-        <div class="screen" id="scr-video">
-            <div class="glass video-card">
-                <h2>Capture the Memory</h2>
-                <p class="sub">Record a short video of this ocean moment, or skip ahead.</p>
-                <div class="video-preview">
-                    <canvas id="videoCanvas"></canvas>
-                </div>
-                <div class="record-btns">
-                    <button class="btn btn-primary" id="recordBtn">⏺ Record &amp; Download</button>
-                    <button class="btn btn-pink" id="skipBtn">⏭ Skip</button>
-                </div>
-                <div class="record-status" id="recordStatus">⏳ Ready to record</div>
-            </div>
+        <!-- ─── PHOTOS ─── -->
+        <div class="screen" id="scr-photos">
+            <div class="photo-title">Eclipse Memories</div>
+            <div class="photo-grid" id="photoGrid"></div>
+            <button class="continue-btn" id="toLetterBtn" style="opacity:1;">Read Letter →</button>
         </div>
 
-        <!-- ─── FINAL ─── -->
-        <div class="screen" id="scr-final">
-            <div class="glass final-card">
-                <div class="heart-burst" id="finalIcon">💖</div>
-                <div class="final-head" id="finalHead">Forever Yours</div>
-                <div class="final-msg" id="finalMsg">You are my ocean, my endless love. 🌊</div>
-                <button class="restart-link" id="restartBtn">✨ create another one</button>
+        <!-- ─── LETTER ─── -->
+        <div class="screen" id="scr-letter">
+            <div class="letter-paper glass">
+                <div class="salutation" id="letterSalutation">Dear friend,</div>
+                <div class="body-text" id="letterBody"></div>
+                <div class="sign" id="letterSign">— with all my light</div>
+              <!--  <button class="restart-btn" id="restartBtn">⟳ Create another eclipse</button>-->
             </div>
         </div>
     </div>
 
-    <!-- ─── TOAST ─── -->
-    <div class="toast" id="toast"></div>
-
     <script>
         // ═══════════════════════════════════════════════════════════════
-        //  OCCASION CONFIG
+        //  GEOMETRIC BACKGROUND (Diamonds & Hexagons)
         // ═══════════════════════════════════════════════════════════════
-        const OCCASIONS = {
-            birthday: {
-                label: 'Birthday',
-                icon: '🎂',
-                badge: '🎂 Birthday Celebration',
-                title: 'Happy Birthday!',
-                finalHead: 'Happy Birthday to You! 🎉',
-                finalMsg: 'Wishing you the most beautiful day filled with joy, love, and everything you deserve.',
-                colors: ['#ff6b6b', '#f7d875', '#ff6b9d'],
-                particles: ['🎂', '🎈', '🎉', '🎊', '⭐', '🎁']
-            },
-            mothersday: {
-                label: "Mother's Day",
-                icon: '💐',
-                badge: '💐 Mother\'s Day',
-                title: 'Happy Mother\'s Day!',
-                finalHead: 'To the Most Amazing Mom 💐',
-                finalMsg: 'Thank you for your endless love, your strength, and your beautiful heart. You are my inspiration.',
-                colors: ['#f472b6', '#f7d875', '#a78bfa'],
-                particles: ['🌸', '🌺', '🌹', '💐', '🌷', '🌻']
-            },
-            fathersday: {
-                label: "Father's Day",
-                icon: '🦸',
-                badge: '🦸 Father\'s Day',
-                title: 'Happy Father\'s Day!',
-                finalHead: 'To My Hero 🦸',
-                finalMsg: 'Thank you for being my strength, my guide, and my protector. I love you more than words can say.',
-                colors: ['#3b82f6', '#60a5fa', '#f7d875'],
-                particles: ['🦸', '💪', '⭐', '🎯', '🏆', '🔵']
-            },
-            anniversary: {
-                label: 'Anniversary',
-                icon: '💞',
-                badge: '💞 Happy Anniversary',
-                title: 'Happy Anniversary!',
-                finalHead: 'Forever and Always 💞',
-                finalMsg: 'Every day with you is a gift. Thank you for being my partner, my best friend, and my greatest love.',
-                colors: ['#ef4444', '#f472b6', '#f7d875'],
-                particles: ['💕', '💞', '❤️', '💗', '💖', '💘']
-            },
-            valentine: {
-                label: "Valentine's Day",
-                icon: '💘',
-                badge: '💘 Valentine\'s Day',
-                title: 'Happy Valentine\'s Day!',
-                finalHead: 'You Have My Heart 💘',
-                finalMsg: 'You are the love of my life, the beat of my heart, and the reason I believe in magic. I love you.',
-                colors: ['#ff6b6b', '#f472b6', '#f7d875'],
-                particles: ['❤️', '💗', '💖', '💕', '💘', '💝']
-            },
-            congratulations: {
-                label: 'Congratulations',
-                icon: '🎊',
-                badge: '🎊 Congratulations!',
-                title: 'Congratulations! 🎉',
-                finalHead: 'You Did It! 🎊',
-                finalMsg: 'So proud of you and everything you\'ve achieved. This is just the beginning of something extraordinary.',
-                colors: ['#f7d875', '#f59e0b', '#34d399'],
-                particles: ['🎊', '🎉', '✨', '⭐', '🏆', '🎈']
-            },
-            justbecause: {
-                label: 'Just Because',
-                icon: '🎁',
-                badge: '🎁 Just Because',
-                title: 'Just Because! ✨',
-                finalHead: 'A Little Surprise 🎁',
-                finalMsg: 'Just because you deserve the world, and I wanted to remind you how truly special you are.',
-                colors: ['#a78bfa', '#f472b6', '#34d399'],
-                particles: ['🎁', '✨', '💫', '🌟', '🌈', '🎀']
-            }
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        //  WAVES
-        // ═══════════════════════════════════════════════════════════════
-        (function initWaves() {
-            const canvas = document.getElementById('waveCanvas');
+        (function initGeometry() {
+            const canvas = document.getElementById('geoCanvas');
             const ctx = canvas.getContext('2d');
             let w, h;
             let time = 0;
-            let occasionParticles = [];
-            let particleEmojis = ['✨', '💖', '⭐'];
-            let particleColors = ['#f7d875', '#ff6b9d', '#7ac7d4'];
-            let animId = null;
 
             function resize() {
                 w = canvas.width = window.innerWidth;
@@ -1276,644 +1158,375 @@
             resize();
             window.addEventListener('resize', resize);
 
-            const baseColors = [
-                { r: 26, g: 74, b: 122 },
-                { r: 42, g: 122, b: 154 },
-                { r: 90, g: 176, b: 192 },
-                { r: 180, g: 220, b: 235 },
-            ];
-
-            function updateParticlesForOccasion(occasionKey) {
-                const occ = OCCASIONS[occasionKey] || OCCASIONS.justbecause;
-                particleEmojis = occ.particles || ['✨', '💖', '⭐'];
-                const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
-                particleColors = colors;
-                occasionParticles = [];
-                for (let i = 0; i < 28; i++) {
-                    occasionParticles.push({
-                        x: Math.random() * w,
-                        y: Math.random() * h * 0.7 + h * 0.1,
-                        vx: (Math.random() - 0.5) * 0.3,
-                        vy: -0.2 - Math.random() * 0.35,
-                        size: 14 + Math.random() * 20,
-                        emoji: particleEmojis[Math.floor(Math.random() * particleEmojis.length)],
-                        opacity: 0.3 + Math.random() * 0.4,
-                        phase: Math.random() * Math.PI * 2
-                    });
-                }
-            }
-            updateParticlesForOccasion('justbecause');
-
-            function drawWaves() {
-                time += 0.007;
+            function drawDiamonds() {
+                time += 0.003;
                 ctx.clearRect(0, 0, w, h);
 
-                for (let layer = 0; layer < 4; layer++) {
-                    const offset = layer * 0.7 + time * 0.2;
-                    const baseY = h * (0.5 + layer * 0.08);
-                    const amp = 50 + layer * 20 + Math.sin(time * 0.5 + layer) * 10;
-                    const freq = 0.008 + layer * 0.002;
+                const size = 60;
+                const spacing = size * 1.8;
 
-                    const points = [];
-                    const steps = 140;
-                    for (let i = 0; i <= steps; i++) {
-                        const x = (i / steps) * w;
-                        const y = baseY + Math.sin(x * freq + offset) * amp +
-                            Math.sin(x * freq * 0.6 + offset * 1.7) * amp * 0.4 +
-                            Math.sin(x * freq * 0.3 + offset * 2.3) * amp * 0.2;
-                        points.push({ x, y });
+                for (let row = -2; row < Math.ceil(h / spacing) + 4; row++) {
+                    for (let col = -2; col < Math.ceil(w / spacing) + 4; col++) {
+                        const x = col * spacing + (row % 2) * spacing * 0.5 + time * 2;
+                        const y = row * spacing * 0.85 + time * 1.2;
+
+                        const distFromCenter = Math.hypot(x - w / 2, y - h / 2);
+                        const alpha = 0.03 + (1 - Math.min(distFromCenter / (Math.max(w, h) / 2), 1)) * 0.04;
+
+                        ctx.save();
+                        ctx.translate(x, y);
+                        ctx.rotate(time * 0.02 + row * 0.1 + col * 0.05);
+
+                        // Diamond shape
+                        ctx.beginPath();
+                        ctx.moveTo(0, -size * 0.4);
+                        ctx.lineTo(size * 0.35, 0);
+                        ctx.lineTo(0, size * 0.4);
+                        ctx.lineTo(-size * 0.35, 0);
+                        ctx.closePath();
+
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${alpha * 0.5})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+
+                        // Inner diamond
+                        ctx.beginPath();
+                        ctx.moveTo(0, -size * 0.2);
+                        ctx.lineTo(size * 0.18, 0);
+                        ctx.lineTo(0, size * 0.2);
+                        ctx.lineTo(-size * 0.18, 0);
+                        ctx.closePath();
+                        ctx.strokeStyle = `rgba(212, 175, 55, ${alpha * 0.2})`;
+                        ctx.lineWidth = 0.4;
+                        ctx.stroke();
+
+                        ctx.restore();
                     }
-
-                    const grad = ctx.createLinearGradient(0, baseY - amp - 30, 0, baseY + amp + 30);
-                    const c = baseColors[layer % baseColors.length];
-                    const alpha = 0.3 + layer * 0.05;
-                    grad.addColorStop(0, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.2})`);
-                    grad.addColorStop(0.3, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.8})`);
-                    grad.addColorStop(0.5, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`);
-                    grad.addColorStop(0.7, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.8})`);
-                    grad.addColorStop(1, `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha * 0.2})`);
-
-                    ctx.beginPath();
-                    ctx.moveTo(points[0].x, points[0].y);
-                    for (let i = 1; i < points.length; i++) {
-                        const p = points[i];
-                        const prev = points[i - 1];
-                        const cx = (prev.x + p.x) / 2;
-                        const cy = (prev.y + p.y) / 2;
-                        ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
-                    }
-                    const last = points[points.length - 1];
-                    ctx.lineTo(last.x, h);
-                    ctx.lineTo(points[0].x, h);
-                    ctx.closePath();
-                    ctx.fillStyle = grad;
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    for (let i = 0; i < points.length; i++) {
-                        const p = points[i];
-                        if (i === 0) ctx.moveTo(p.x, p.y);
-                        else {
-                            const prev = points[i - 1];
-                            const cx = (prev.x + p.x) / 2;
-                            const cy = (prev.y + p.y) / 2;
-                            ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
-                        }
-                    }
-                    ctx.strokeStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${0.08 + layer * 0.02})`;
-                    ctx.lineWidth = 2 + layer * 2;
-                    ctx.shadowColor = `rgba(${c.r}, ${c.g}, ${c.b}, 0.04)`;
-                    ctx.shadowBlur = 30;
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
                 }
 
-                occasionParticles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy -= 0.002;
-                    p.x += Math.sin(time * 0.5 + p.phase) * 0.15;
-
-                    if (p.y < -20) {
-                        p.y = h + 20;
-                        p.x = Math.random() * w;
-                        p.vy = -0.2 - Math.random() * 0.35;
-                        p.emoji = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
-                    }
-                    if (p.x < -20) p.x = w + 20;
-                    if (p.x > w + 20) p.x = -20;
-
-                    const alpha = p.opacity * (0.6 + Math.sin(time * 0.5 + p.phase) * 0.3);
-                    ctx.font = `${p.size}px sans-serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.globalAlpha = alpha;
-                    ctx.fillText(p.emoji, p.x, p.y);
-                    ctx.globalAlpha = 1;
-                });
-
-                for (let i = 0; i < 14; i++) {
-                    const x = (Math.sin(i * 1.7 + time * 0.6) * 0.5 + 0.5) * w;
-                    const y = (Math.cos(i * 2.1 + time * 0.5) * 0.3 + 0.5) * h;
-                    const size = 1.5 + Math.sin(time * 2 + i) * 0.5 + 0.5;
-                    const col = particleColors[i % particleColors.length];
+                // Draw some floating gold dots
+                for (let i = 0; i < 30; i++) {
+                    const x = (Math.sin(i * 1.7 + time * 0.1) * 0.5 + 0.5) * w;
+                    const y = (Math.cos(i * 2.3 + time * 0.08) * 0.5 + 0.5) * h;
+                    const r = 0.8 + Math.sin(i + time) * 0.5;
                     ctx.beginPath();
-                    ctx.arc(x, y, size, 0, Math.PI * 2);
-                    ctx.fillStyle = col;
-                    ctx.globalAlpha = 0.15 + Math.sin(time * 1.5 + i) * 0.08 + 0.08;
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(212, 175, 55, ${0.03 + Math.sin(i + time) * 0.02 + 0.02})`;
                     ctx.fill();
-                    ctx.globalAlpha = 1;
                 }
 
-                animId = requestAnimationFrame(drawWaves);
+                requestAnimationFrame(drawDiamonds);
             }
-            drawWaves();
-
-            window.updateOccasionParticles = function(occKey) {
-                updateParticlesForOccasion(occKey || 'justbecause');
-            };
-
-            window.addEventListener('beforeunload', function() {
-                if (animId) cancelAnimationFrame(animId);
-            });
+            drawDiamonds();
         })();
 
         // ═══════════════════════════════════════════════════════════════
-        //  TOAST
+        //  DOM REFS
         // ═══════════════════════════════════════════════════════════════
-        let toastTimer = null;
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.textContent = message;
-            toast.className = 'toast ' + type;
-            // Force reflow for animation restart
-            void toast.offsetWidth;
-            toast.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+        const $ = id => document.getElementById(id);
+        const screens = {
+            setup: $('scr-setup'),
+            share: $('scr-share'),
+            expired: $('scr-expired'),
+            card: $('scr-card'),
+            hero: $('scr-hero'),
+            wish: $('scr-wish'),
+            pass: $('scr-pass'),
+            unlock: $('scr-unlock'),
+            photos: $('scr-photos'),
+            letter: $('scr-letter'),
+        };
 
         // ═══════════════════════════════════════════════════════════════
         //  STATE
         // ═══════════════════════════════════════════════════════════════
-        const DEFAULTS = {
-            occasion: 'justbecause',
-            name: 'My Love',
-            message: 'You are the tide that pulls my heart, the calm in every storm. 🌊',
-            passkey: '',
-            photo: '',
-            music: '',
+        const state = {
+            name: '',
+            occasion: 'birthday',
+            wish: '',
+            letter: '',
+            passkey: '1122',
+            photos: [],
             expiresIn: 24,
             createdAt: 0,
-            id: ''
+            currentScreen: 'setup',
+            passEntry: '',
+            cardOpened: false,
+            unlocked: false,
         };
-        let state = Object.assign({}, DEFAULTS);
-        let musicDataURL = '';
-        let photoDataURL = '';
-        let passEntry = '';
-        let currentId = '';
-        let currentShortUrl = '';
-
-        const $ = id => document.getElementById(id);
-        const screens = {
-            'scr-setup': $('scr-setup'),
-            'scr-share': $('scr-share'),
-            'scr-expired': $('scr-expired'),
-            'scr-notfound': $('scr-notfound'),
-            'scr-pass': $('scr-pass'),
-            'scr-ocean': $('scr-ocean'),
-            'scr-video': $('scr-video'),
-            'scr-final': $('scr-final'),
-        };
+        let currentGiftId = null;
+        const photoData = [];
 
         // ═══════════════════════════════════════════════════════════════
-        //  NAVIGATION
+        //  HELPERS
         // ═══════════════════════════════════════════════════════════════
-        function nav(id) {
+        function showScreen(id) {
             Object.keys(screens).forEach(k => {
-                if (screens[k]) {
-                    screens[k].classList.toggle('active', k === id);
-                }
+                if (screens[k]) screens[k].classList.toggle('active', k === id);
             });
-            if (id === 'scr-pass') {
-                passEntry = '';
-                updatePassDots();
-                const errEl = $('passError');
-                const hintEl = $('passHint');
-                if (errEl) errEl.textContent = '';
-                if (hintEl) hintEl.textContent = '💡 Enter the 4‑digit passkey';
-                const dots = $('passDots');
-                if (dots) dots.classList.remove('shake-pass');
-            }
-            if (id === 'scr-ocean') {
-                applyOceanUI();
-                renderOceanPhoto();
-                renderOceanMusic();
-            }
-            if (id === 'scr-video') {
-                startVideoPreview();
-            }
-            if (id === 'scr-final') {
-                if (typeof confetti !== 'undefined' && confetti) {
-                    try {
-                        confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
-                        setTimeout(() => {
-                            confetti({ particleCount: 60, angle: 50, spread: 50, origin: { x: 0 } });
-                            confetti({ particleCount: 60, angle: 130, spread: 50, origin: { x: 1 } });
-                        }, 300);
-                    } catch (_) { /* ignore */ }
-                }
-            }
+            state.currentScreen = id;
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  RENDER HELPERS
-        // ═══════════════════════════════════════════════════════════════
-        function renderOceanPhoto() {
-            const wrap = $('oceanPhotoWrap');
-            if (!wrap) return;
-            wrap.innerHTML = '';
-            if (photoDataURL && photoDataURL.length > 50 && photoDataURL.startsWith('data:image')) {
-                const img = document.createElement('img');
-                img.src = photoDataURL;
-                img.alt = 'Ocean photo';
-                img.onerror = function() {
-                    wrap.innerHTML = '<div class="placeholder">🌅</div>';
-                };
-                wrap.appendChild(img);
-            } else {
-                const div = document.createElement('div');
-                div.className = 'placeholder';
-                div.textContent = '🌅';
-                wrap.appendChild(div);
-            }
+        function getOccasionIcon(occ) {
+            const map = {
+                birthday: '🎂',
+                anniversary: '💞',
+                valentine: '💘',
+                mothersday: '💐',
+                fathersday: '🦸',
+                justbecause: '◇'
+            };
+            return map[occ] || '◆';
         }
 
-        function renderOceanMusic() {
-            const container = $('oceanMusicContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            if (musicDataURL && musicDataURL.length > 50 && musicDataURL.startsWith('data:audio')) {
-                const audio = document.createElement('audio');
-                audio.src = musicDataURL;
-                audio.controls = true;
-                audio.autoplay = true;
-                audio.loop = true;
-                audio.style.width = '100%';
-                audio.style.maxWidth = '280px';
-                container.appendChild(audio);
-            }
+        function getOccasionTitle(occ) {
+            const map = {
+                birthday: 'Happy Birthday',
+                anniversary: 'Happy Anniversary',
+                valentine: 'Happy Valentine\'s Day',
+                mothersday: 'Happy Mother\'s Day',
+                fathersday: 'Happy Father\'s Day',
+                justbecause: 'Eclipse Rising'
+            };
+            return map[occ] || 'Celebration';
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  OCCASION UI
-        // ═══════════════════════════════════════════════════════════════
-        function applyOceanUI() {
-            const occKey = state.occasion || 'justbecause';
-            const occ = OCCASIONS[occKey] || OCCASIONS.justbecause;
-
-            const badge = $('occBadge');
-            const icon = $('occIcon');
-            const title = $('oceanTitle');
-            const msg = $('oceanMessage');
-            const finalHead = $('finalHead');
-            const finalMsg = $('finalMsg');
-            const finalIcon = $('finalIcon');
-
-            if (badge) badge.textContent = occ.badge;
-            if (icon) icon.textContent = occ.icon;
-            if (title) title.textContent = `${occ.title} ${state.name}!`;
-            if (msg) msg.textContent = state.message;
-            if (finalHead) finalHead.textContent = occ.finalHead;
-            if (finalMsg) finalMsg.textContent = occ.finalMsg;
-            if (finalIcon) finalIcon.textContent = occ.icon;
-
-            if (window.updateOccasionParticles) {
-                window.updateOccasionParticles(occKey);
-            }
-
-            const colors = occ.colors || ['#f7d875', '#ff6b9d', '#7ac7d4'];
-            document.documentElement.style.setProperty('--theme-color', colors[0]);
-            document.documentElement.style.setProperty('--theme-glow', colors[0] + '44');
+        function getDefaultWish(occ, name) {
+            const map = {
+                birthday: `Every year with ${name} is a light in the darkness.`,
+                anniversary: `${name}, you are my eternal eclipse.`,
+                valentine: `My heart only beats for you, ${name}.`,
+                mothersday: `Thank you for being my guiding light, ${name}.`,
+                fathersday: `You're my hero, ${name}. Love you beyond the shadows.`,
+                justbecause: `Just because you shine brighter than gold, ${name}. ◆`
+            };
+            return map[occ] || `You are my light, ${name}. ◆`;
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  FILE HANDLING
-        // ═══════════════════════════════════════════════════════════════
-        const photoInput = $('inpPhoto');
-        const musicInput = $('inpMusic');
+        // ─── Auto-wish ───
+        const nameInput = $('inpName');
+        const occSelect = $('inpOccasion');
+        const wishInput = $('inpWish');
+
+        function autoWish() {
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            if (wishInput && (!wishInput.value || wishInput.value === '')) {
+                wishInput.value = getDefaultWish(occ, name);
+            }
+        }
+        if (nameInput) nameInput.addEventListener('input', autoWish);
+        if (occSelect) occSelect.addEventListener('change', autoWish);
+
+        // ─── Photos ───
+        const photoInput = $('photoInput');
+        const photoPreview = $('photoPreview');
 
         if (photoInput) {
             photoInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    if (!file.type.startsWith('image/')) {
-                        alert('Please select a valid image file.');
-                        this.value = '';
-                        return;
-                    }
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('Image size should be less than 5MB.');
-                        this.value = '';
-                        return;
-                    }
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
                     const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        photoDataURL = ev.target.result;
-                        renderOceanPhoto();
-                    };
-                    reader.onerror = () => {
-                        alert('Failed to read image file.');
+                    reader.onload = function(ev) {
+                        photoData.push(ev.target.result);
+                        renderPhotoPreviews();
                     };
                     reader.readAsDataURL(file);
-                    $('photoFileName').textContent = file.name;
-                } else {
-                    photoDataURL = '';
-                    $('photoFileName').textContent = 'No file chosen';
-                    renderOceanPhoto();
-                }
-            });
-        }
-
-        if (musicInput) {
-            musicInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    if (!file.type.startsWith('audio/')) {
-                        alert('Please select a valid audio file.');
-                        this.value = '';
-                        return;
-                    }
-                    if (file.size > 10 * 1024 * 1024) {
-                        alert('Audio size should be less than 10MB.');
-                        this.value = '';
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        musicDataURL = ev.target.result;
-                        renderOceanMusic();
-                    };
-                    reader.onerror = () => {
-                        alert('Failed to read audio file.');
-                    };
-                    reader.readAsDataURL(file);
-                    $('musicFileName').textContent = file.name;
-                } else {
-                    musicDataURL = '';
-                    $('musicFileName').textContent = 'No file chosen';
-                    renderOceanMusic();
-                }
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  PASSKEY
-        // ═══════════════════════════════════════════════════════════════
-        function updatePassDots() {
-            const dots = document.querySelectorAll('#passDots span');
-            const len = passEntry.length;
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('filled', i < len);
-            });
-        }
-
-        function setupPasskeyHandler() {
-            const keypad = $('passKeypad');
-            if (!keypad) return;
-            keypad.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const key = this.dataset.k;
-                    const errEl = $('passError');
-                    const hintEl = $('passHint');
-                    const dots = $('passDots');
-
-                    if (key === 'clear') {
-                        passEntry = '';
-                        updatePassDots();
-                        if (errEl) errEl.textContent = '';
-                        if (hintEl) hintEl.textContent = '💡 Enter the 4‑digit passkey';
-                        if (dots) dots.classList.remove('shake-pass');
-                        return;
-                    }
-                    if (key === 'back') {
-                        passEntry = passEntry.slice(0, -1);
-                        updatePassDots();
-                        if (errEl) errEl.textContent = '';
-                        if (dots) dots.classList.remove('shake-pass');
-                        return;
-                    }
-                    if (passEntry.length >= 4) return;
-
-                    passEntry += key;
-                    updatePassDots();
-                    if (errEl) errEl.textContent = '';
-                    if (dots) dots.classList.remove('shake-pass');
-
-                    if (passEntry.length === 4) {
-                        const expected = state.passkey || '';
-                        if (expected === '' || passEntry === expected) {
-                            setTimeout(() => nav('scr-ocean'), 350);
-                        } else {
-                            if (errEl) errEl.textContent = '❌ Wrong passkey, try again';
-                            if (hintEl) hintEl.textContent = '💡 Hint: the passkey you set';
-                            if (dots) dots.classList.add('shake-pass');
-                            setTimeout(() => {
-                                passEntry = '';
-                                updatePassDots();
-                                if (errEl) errEl.textContent = '';
-                                if (dots) dots.classList.remove('shake-pass');
-                                if (hintEl) hintEl.textContent = '💡 Enter the 4‑digit passkey';
-                            }, 900);
-                        }
-                    }
                 });
+                photoInput.value = '';
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  STATE READ / APPLY
-        // ═══════════════════════════════════════════════════════════════
+        function renderPhotoPreviews() {
+            if (!photoPreview) return;
+            photoPreview.innerHTML = '';
+            photoData.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.className = 'photo-thumb';
+                img.src = url;
+                img.alt = 'photo';
+                const wrap = document.createElement('span');
+                wrap.style.position = 'relative';
+                wrap.appendChild(img);
+                const del = document.createElement('span');
+                del.textContent = '✕';
+                del.style.cssText =
+                    'position:absolute;top:-6px;right:-6px;background:#d4af37;color:#0a0a0f;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;text-align:center;cursor:pointer;border:1px solid rgba(212,175,55,.2);';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    photoData.splice(i, 1);
+                    renderPhotoPreviews();
+                });
+                wrap.appendChild(del);
+                photoPreview.appendChild(wrap);
+            });
+        }
+
+        // ─── Read form ───
         function readFormIntoState() {
-            state.occasion = $('inpOccasion')?.value || 'justbecause';
-            state.name = $('inpName')?.value.trim() || DEFAULTS.name;
-            state.message = $('inpMessage')?.value.trim() || DEFAULTS.message;
-            state.passkey = $('inpPasskey')?.value.trim() || '';
-            state.photo = photoDataURL || '';
-            state.music = musicDataURL || '';
-            const exp = parseInt($('inpExpires')?.value) || 24;
-            state.expiresIn = Math.min(Math.max(exp, 1), 720);
+            const name = nameInput ? nameInput.value.trim() || 'you' : 'you';
+            const occ = occSelect ? occSelect.value : 'birthday';
+            const wish = wishInput ? wishInput.value.trim() || getDefaultWish(occ, name) : getDefaultWish(occ, name);
+            const letter = $('inpLetter') ? $('inpLetter').value.trim() || 'You are amazing.' :
+            'You are amazing.';
+            const pass = $('inpPasskey') ? $('inpPasskey').value.trim() || '1122' : '1122';
+            const expires = parseInt($('inpExpires') ? $('inpExpires').value : '24') || 24;
+            state.name = name;
+            state.occasion = occ;
+            state.wish = wish;
+            state.letter = letter;
+            state.passkey = pass.padStart(4, '0').slice(0, 4);
+            state.photos = [...photoData];
+            state.expiresIn = expires;
             state.createdAt = Date.now();
         }
 
-        function applyState() {
-            applyOceanUI();
-            renderOceanPhoto();
-            renderOceanMusic();
-            const hintEl = $('passHint');
-            if (hintEl) {
-                hintEl.textContent = state.passkey ? '💡 Enter the 4‑digit passkey' :
-                    '💡 No passkey set — just tap any 4 digits';
+        // ─── Apply state to UI ───
+        function applyStateToUI() {
+            const nameDisplay = $('displayName');
+            if (nameDisplay) nameDisplay.textContent = state.name;
+
+            const card = $('diamondCard');
+            if (card) card.classList.remove('opened');
+
+            const heroOrb = $('heroOrb');
+            if (heroOrb) heroOrb.textContent = getOccasionIcon(state.occasion);
+            const heroTitle = $('heroTitle');
+            if (heroTitle) heroTitle.textContent = getOccasionTitle(state.occasion);
+            const heroSub = $('heroSub');
+            if (heroSub) heroSub.textContent = state.wish;
+
+            const wishLine = $('wishLine');
+            if (wishLine) {
+                const text = state.wish.replace(/\[name\]/g, state.name);
+                wishLine.innerHTML = text.replace(/\b(you|your)\b/gi, (m) => `<span class="hl">${m}</span>`);
+                if (!wishLine.querySelector('.hl')) {
+                    wishLine.innerHTML = text + ` <span class="hl">${state.name}</span>`;
+                }
             }
+
+            const salutation = $('letterSalutation');
+            if (salutation) salutation.textContent = `Dear ${state.name},`;
+            const body = $('letterBody');
+            if (body) body.textContent = state.letter;
+            const sign = $('letterSign');
+            if (sign) sign.textContent = '— with all my light';
+
+            const grid = $('photoGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                if (!state.photos || state.photos.length === 0) {
+                    grid.innerHTML = '<div class="no-photos">Even without photos, the light remains.</div>';
+                } else {
+                    state.photos.forEach((url) => {
+                        const div = document.createElement('div');
+                        div.className = 'polaroid-dark';
+                        const rot = (Math.random() - 0.5) * 8;
+                        div.style.setProperty('--r', rot + 'deg');
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'memory';
+                        div.appendChild(img);
+                        grid.appendChild(div);
+                    });
+                }
+            }
+
+            state.passEntry = '';
+            document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+            const passError = $('passError');
+            if (passError) passError.textContent = '';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PREVIEW
+        // ═══════════════════════════════════════════════════════════════
+        const previewBtn = $('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                readFormIntoState();
+                applyStateToUI();
+                showScreen('card');
+            });
         }
 
         // ═══════════════════════════════════════════════════════════════
         //  ID GENERATION
         // ═══════════════════════════════════════════════════════════════
-        function generateShortId() {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let id = '';
-            for (let i = 0; i < 8; i++) {
-                id += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return id;
+        function genId() {
+            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  EXPIRATION CHECK
+        //  CREATE SHAREABLE LINK
         // ═══════════════════════════════════════════════════════════════
-        function isLinkExpired(createdAt, expiresIn) {
-            const now = Date.now();
-            const created = typeof createdAt === 'number' ? createdAt : parseInt(createdAt) || 0;
-            const expires = typeof expiresIn === 'number' ? expiresIn : parseInt(expiresIn) || 0;
-            if (expires <= 0 || created <= 0) return false;
-            const expTime = created + expires * 3600000;
-            return now > expTime;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  COPY LINK — FIXED with multiple robust methods
-        // ═══════════════════════════════════════════════════════════════
-        function copyLinkToClipboard(text) {
-            return new Promise((resolve, reject) => {
-                // Method 1: Modern Clipboard API (requires HTTPS)
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text)
-                        .then(() => resolve())
-                        .catch(() => {
-                            // Fall through to next method
-                            fallbackCopy(text, resolve, reject);
-                        });
-                } else {
-                    fallbackCopy(text, resolve, reject);
-                }
-            });
-        }
-
-        function fallbackCopy(text, resolve, reject) {
-            // Method 2: Create a temporary textarea
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.top = '-9999px';
-                textarea.style.left = '-9999px';
-                textarea.style.width = '1px';
-                textarea.style.height = '1px';
-                textarea.style.opacity = '0';
-                textarea.setAttribute('readonly', '');
-                document.body.appendChild(textarea);
-
-                // Select the text
-                textarea.focus();
-                textarea.select();
-
-                // Try execCommand
-                const success = document.execCommand('copy');
-                document.body.removeChild(textarea);
-
-                if (success) {
-                    resolve();
-                } else {
-                    reject(new Error('execCommand copy failed'));
-                }
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        //  CREATE LINK
-        // ═══════════════════════════════════════════════════════════════
-        const createLinkBtn = $('btnCreateLink');
+        const createLinkBtn = $('createLinkBtn');
         if (createLinkBtn) {
             createLinkBtn.addEventListener('click', function() {
                 readFormIntoState();
-                if (!state.name) {
-                    alert('🌊 Please enter a name before creating a link!');
+                if (!state.letter) {
+                    alert('◇ Please write a message before creating a link!');
                     return;
                 }
-
-                const id = generateShortId();
-                state.id = id;
-                state.createdAt = Date.now();
-
-                try {
-                    const dataToStore = {
-                        occasion: state.occasion,
-                        name: state.name,
-                        message: state.message,
-                        passkey: state.passkey,
-                        expiresIn: state.expiresIn,
-                        createdAt: state.createdAt,
-                        id: state.id
-                    };
-                    localStorage.setItem('ocean_data_' + id, JSON.stringify(dataToStore));
-                    localStorage.setItem('ocean_photo_' + id, photoDataURL || '');
-                    localStorage.setItem('ocean_music_' + id, musicDataURL || '');
-                } catch (e) {
-                    console.warn('localStorage save error:', e);
-                    alert('⚠️ Could not save data. Please try again or free up some storage.');
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && state.photos.length === 0) {
+                    const evt = new Event('change');
+                    photoInput.dispatchEvent(evt);
+                    setTimeout(() => doCreateLink(), 200);
                     return;
                 }
-
-                currentId = id;
-
-                const base = window.location.origin + window.location.pathname;
-                const shortUrl = base + '?id=' + id;
-                currentShortUrl = shortUrl;
-
-                const input = $('shareLinkInput');
-                if (input) input.value = shortUrl;
-
-                const hint = $('expiryHint');
-                if (hint) {
-                    hint.textContent = '🌊 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-                        's' : '');
-                }
-
-                nav('scr-share');
-                console.log('🌊 Ocean link created! ID:', id, 'URL:', shortUrl);
+                doCreateLink();
             });
         }
 
+        function doCreateLink() {
+            state.createdAt = Date.now();
+            const id = genId();
+            currentGiftId = id;
+            const dataToStore = JSON.parse(JSON.stringify(state));
+            localStorage.setItem('eclipse_v7_' + id, JSON.stringify(dataToStore));
+
+            let allIds = JSON.parse(localStorage.getItem('eclipse_v7_ids') || '[]');
+            if (!allIds.includes(id)) allIds.push(id);
+            localStorage.setItem('eclipse_v7_ids', JSON.stringify(allIds));
+
+            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
+            const input = $('shareLinkInput');
+            if (input) input.value = shareUrl;
+            const hint = $('expiryHint');
+            if (hint) {
+                if (state.expiresIn === 0) {
+                    hint.textContent = '♾️ This link will NEVER expire! Share it anytime.';
+                } else {
+                    hint.textContent = '◆ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                        's' : '');
+                }
+            }
+
+            showScreen('share');
+            console.log('◆ Eclipse link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state
+                .expiresIn + ' hours');
+        }
+
         // ═══════════════════════════════════════════════════════════════
-        //  SHARE BUTTONS – with fixed copy
+        //  SHARE BUTTONS
         // ═══════════════════════════════════════════════════════════════
         const copyBtn = $('copyLinkBtn');
         if (copyBtn) {
-            copyBtn.addEventListener('click', async function() {
+            copyBtn.addEventListener('click', function() {
                 const input = $('shareLinkInput');
-                if (!input || !input.value) {
-                    showToast('No link to copy', 'error');
-                    return;
-                }
-
-                const linkText = input.value;
-                const btn = this;
-                const originalText = btn.textContent;
-
-                try {
-                    await copyLinkToClipboard(linkText);
-                    btn.textContent = '✓ Copied!';
-                    btn.className = 'copy-btn copied';
-                    showToast('✅ Link copied to clipboard!', 'success');
+                if (!input || !input.value) return;
+                navigator.clipboard.writeText(input.value).then(() => {
+                    this.textContent = '✓ Copied!';
+                    this.classList.add('copied');
                     setTimeout(() => {
-                        btn.textContent = originalText;
-                        btn.className = 'copy-btn';
-                    }, 2500);
-                } catch (err) {
-                    console.warn('Copy failed:', err);
-                    // Last resort: show the link and instruct user to copy manually
-                    try {
-                        input.removeAttribute('readonly');
-                        input.select();
-                        input.setAttribute('readonly', '');
-                        showToast('📋 Please copy the link manually (Ctrl+C)', 'error');
-                        btn.textContent = 'Manual';
-                        btn.className = 'copy-btn error';
-                        setTimeout(() => {
-                            btn.textContent = originalText;
-                            btn.className = 'copy-btn';
-                        }, 3000);
-                    } catch (_) {
-                        showToast('❌ Could not copy. Please copy the link manually.', 'error');
-                    }
-                }
+                        this.textContent = 'Copy';
+                        this.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    input.select();
+                    document.execCommand('copy');
+                    alert('Link copied!');
+                });
             });
         }
 
@@ -1921,7 +1534,7 @@
         if (whatsappBtn) {
             whatsappBtn.addEventListener('click', () => {
                 const link = $('shareLinkInput')?.value || '';
-                window.open('https://wa.me/?text=' + encodeURIComponent('🌊 A ocean of love for you! ' + link),
+                window.open('https://wa.me/?text=' + encodeURIComponent('◆ An Eclipse celebration for you! ' + link),
                     '_blank');
             });
         }
@@ -1930,343 +1543,254 @@
         if (emailBtn) {
             emailBtn.addEventListener('click', () => {
                 const link = $('shareLinkInput')?.value || '';
-                window.location.href = 'mailto:?subject=Ocean of Love&body=🌊 A ocean of love for you! ' + link;
+                window.location.href = 'mailto:?subject=An Eclipse Celebration&body=◆ An Eclipse celebration for you! ' +
+                    link;
             });
         }
 
         const openGiftBtn = $('openGiftBtn');
         if (openGiftBtn) {
             openGiftBtn.addEventListener('click', function() {
-                const link = $('shareLinkInput')?.value || '';
-                if (link) window.open(link, '_blank');
-                else window.location.reload();
-            });
-        }
-
-        const shareBackBtn = $('shareBackBtn');
-        if (shareBackBtn) {
-            shareBackBtn.addEventListener('click', () => {
-                nav('scr-setup');
+                const id = currentGiftId;
+                if (id) loadFromId(id);
             });
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  LOAD FROM URL
+        //  LOAD FROM ID (FIXED with Never Expire)
         // ═══════════════════════════════════════════════════════════════
-        function loadFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
+        function loadFromId(id) {
+            console.log('🔍 Loading Eclipse gift with ID:', id);
 
-            if (!id) return false;
+            let raw = localStorage.getItem('eclipse_v7_' + id);
+
+            if (!raw) {
+                console.log('🔄 Trying v6 format...');
+                raw = localStorage.getItem('eclipse_v6_' + id);
+                if (raw) {
+                    console.log('✅ Found in v6 format, converting to v7');
+                    localStorage.setItem('eclipse_v7_' + id, raw);
+                    localStorage.removeItem('eclipse_v6_' + id);
+                    let allIds = JSON.parse(localStorage.getItem('eclipse_v7_ids') || '[]');
+                    if (!allIds.includes(id)) allIds.push(id);
+                    localStorage.setItem('eclipse_v7_ids', JSON.stringify(allIds));
+                    raw = localStorage.getItem('eclipse_v7_' + id);
+                }
+            }
+
+            if (!raw) {
+                console.warn('⚠️ Gift not found in localStorage:', id);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'This Eclipse link no longer exists.';
+                showScreen('expired');
+                return false;
+            }
 
             try {
-                const stored = localStorage.getItem('ocean_data_' + id);
-                if (!stored) {
-                    hideAllScreens();
-                    nav('scr-notfound');
-                    return false;
-                }
+                const data = JSON.parse(raw);
+                const now = Date.now();
 
-                const data = JSON.parse(stored);
-                state = Object.assign({}, DEFAULTS, data);
-
-                const photo = localStorage.getItem('ocean_photo_' + id) || '';
-                const music = localStorage.getItem('ocean_music_' + id) || '';
-                state.photo = photo;
-                state.music = music;
-                musicDataURL = music;
-                photoDataURL = photo;
-                currentId = id;
-
-                if (isLinkExpired(state.createdAt, state.expiresIn)) {
-                    const d = new Date(state.createdAt + state.expiresIn * 3600000);
-                    const detail = $('expiryDetail');
-                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
-                    hideAllScreens();
-                    nav('scr-expired');
-                    return false;
-                }
-
-                applyState();
-                hideAllScreens();
-
-                if (state.passkey) {
-                    passEntry = '';
-                    updatePassDots();
-                    const errEl = $('passError');
-                    if (errEl) errEl.textContent = '';
-                    nav('scr-pass');
+                // ✅ FIX: Only check expiry if expiresIn > 0 (Never Expire = 0)
+                if (data.expiresIn > 0) {
+                    const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                    if (expTime > 0 && now > expTime) {
+                        const d = new Date(expTime);
+                        const detail = $('expiryDetail');
+                        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                        showScreen('expired');
+                        console.log('⏰ Link expired! Expired at:', d);
+                        return false;
+                    }
                 } else {
-                    nav('scr-ocean');
+                    console.log('♾️ This Eclipse link NEVER expires!');
                 }
 
-                console.log('✅ Ocean loaded from ID:', id);
+                state.name = data.name || 'you';
+                state.occasion = data.occasion || 'birthday';
+                state.wish = data.wish || getDefaultWish(state.occasion, state.name);
+                state.letter = data.letter || 'You are amazing.';
+                state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+                state.photos = data.photos || [];
+                state.expiresIn = data.expiresIn || 24;
+                state.createdAt = data.createdAt || Date.now();
+                state.cardOpened = false;
+                state.unlocked = false;
+                state.passEntry = '';
+                currentGiftId = id;
+
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const card = $('diamondCard');
+                if (card) card.classList.remove('opened');
+
+                applyStateToUI();
+                showScreen('card');
+                console.log('✅ Eclipse gift loaded successfully!');
                 return true;
 
             } catch (e) {
-                console.warn('Error loading from localStorage:', e);
-                hideAllScreens();
-                nav('scr-notfound');
+                console.error('❌ Error loading gift:', e);
+                const detail = $('expiryDetail');
+                if (detail) detail.textContent = 'Error loading Eclipse link.';
+                showScreen('expired');
                 return false;
             }
         }
 
-        function hideAllScreens() {
-            Object.keys(screens).forEach(k => {
-                if (screens[k]) screens[k].classList.remove('active');
+        // ─── Auto-load from URL ───
+        (function loadFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                console.log('🔗 Loading from URL with ID:', id);
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                loadFromId(id);
+            }
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        //  DIAMOND CARD
+        // ═══════════════════════════════════════════════════════════════
+        const cardContainer = $('cardTap');
+        const diamondCard = $('diamondCard');
+        if (cardContainer) {
+            cardContainer.addEventListener('click', function() {
+                if (diamondCard.classList.contains('opened')) return;
+                diamondCard.classList.add('opened');
+                state.cardOpened = true;
+                setTimeout(() => {
+                    showScreen('hero');
+                    spawnEclipseParticles();
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 40, spread: 50, origin: { y: 0.5 } });
+                    }
+                }, 700);
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  VIDEO RECORDING
-        // ═══════════════════════════════════════════════════════════════
-        let videoCanvas = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let recording = false;
-        let videoAnimId = null;
-        let stream = null;
-
-        function startVideoPreview() {
-            const canvas = $('videoCanvas');
-            if (!canvas) return;
-            videoCanvas = canvas;
-            const ctx = canvas.getContext('2d');
-            canvas.width = 640;
-            canvas.height = 360;
-
-            if (videoAnimId) {
-                cancelAnimationFrame(videoAnimId);
-                videoAnimId = null;
-            }
-
-            const occ = OCCASIONS[state.occasion || 'justbecause'] || OCCASIONS.justbecause;
-
-            function animatePreview() {
-                const time = Date.now() * 0.002;
-                ctx.fillStyle = '#081624';
-                ctx.fillRect(0, 0, 640, 360);
-
-                for (let layer = 0; layer < 3; layer++) {
-                    const offset = layer * 0.8 + time * 0.15;
-                    const baseY = 140 + layer * 40;
-                    const amp = 30 + layer * 12;
-                    const freq = 0.015 + layer * 0.003;
-
-                    ctx.beginPath();
-                    for (let i = 0; i <= 120; i++) {
-                        const x = (i / 120) * 640;
-                        const y = baseY + Math.sin(x * freq + offset) * amp +
-                            Math.sin(x * freq * 0.7 + offset * 1.5) * amp * 0.4;
-                        if (i === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    }
-                    const colors = ['#1a6b7a', '#2a8a9a', '#7ac7d4'];
-                    ctx.strokeStyle = colors[layer % colors.length];
-                    ctx.lineWidth = 2 + layer * 2;
-                    ctx.shadowColor = 'rgba(90,176,192,0.2)';
-                    ctx.shadowBlur = 20;
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
-                }
-
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = '48px sans-serif';
-                ctx.fillText(occ.icon || '💖', 320, 60);
-
-                ctx.font = 'bold 28px "Playfair Display", serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 20;
-                ctx.fillText(state.name || 'You', 320, 170);
-
-                ctx.font = '16px "Poppins", sans-serif';
-                ctx.fillStyle = 'rgba(247,216,117,0.6)';
-                ctx.fillText('✨ Ocean of Love ✨', 320, 220);
-                ctx.shadowBlur = 0;
-
-                ctx.font = '24px sans-serif';
-                ctx.fillStyle = '#ff6b9d';
-                ctx.fillText('❤️', 320, 270);
-
-                videoAnimId = requestAnimationFrame(animatePreview);
-            }
-            animatePreview();
-        }
-
-        function startRecording() {
-            const canvas = $('videoCanvas');
-            if (!canvas) {
-                const status = $('recordStatus');
-                if (status) status.textContent = '❌ Canvas not ready';
-                return;
-            }
-
-            try {
-                stream = canvas.captureStream(25);
-            } catch (e) {
-                const status = $('recordStatus');
-                if (status) status.textContent = '❌ Browser does not support video capture';
-                return;
-            }
-
-            recordedChunks = [];
-
-            try {
-                mediaRecorder = new MediaRecorder(stream, {
-                    mimeType: 'video/webm;codecs=vp9,opus',
-                    videoBitsPerSecond: 2500000
+        // ─── Eclipse particles ───
+        function spawnEclipseParticles() {
+            const container = document.getElementById('hero-screen');
+            if (!container) return;
+            const emojis = ['◆', '◇', '✦', '★', '☆', '⟡'];
+            for (let i = 0; i < 25; i++) {
+                const p = document.createElement('div');
+                p.style.cssText =
+                    `
+              position: absolute;
+              pointer-events: none;
+              font-size: ${14 + Math.random() * 24}px;
+              left: ${Math.random() * 100}%;
+              top: ${10 + Math.random() * 80}%;
+              opacity: 0;
+              z-index: 1;
+              transform: rotate(${Math.random() * 360}deg);
+              transition: all ${3 + Math.random() * 4}s cubic-bezier(.34,1.56,.64,1);
+            `;
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                container.appendChild(p);
+                requestAnimationFrame(() => {
+                    p.style.opacity = '0.7';
+                    p.style.transform =
+                        `translate(${(Math.random()-0.5)*160}px, ${-70 - Math.random()*140}px) rotate(${Math.random()*720}deg)`;
                 });
-            } catch (_) {
-                try {
-                    mediaRecorder = new MediaRecorder(stream, {
-                        mimeType: 'video/webm;codecs=vp8,opus',
-                        videoBitsPerSecond: 2500000
-                    });
-                } catch (__) {
-                    try {
-                        mediaRecorder = new MediaRecorder(stream, {
-                            mimeType: 'video/webm',
-                            videoBitsPerSecond: 2500000
-                        });
-                    } catch (___) {
-                        const status = $('recordStatus');
-                        if (status) status.textContent = '❌ No supported video codec';
-                        return;
-                    }
-                }
+                setTimeout(() => {
+                    p.style.opacity = '0';
+                    setTimeout(() => p.remove(), 800);
+                }, 3500 + Math.random() * 1500);
             }
-
-            mediaRecorder.ondataavailable = function(e) {
-                if (e.data.size > 0) recordedChunks.push(e.data);
-            };
-
-            mediaRecorder.onstop = function() {
-                recording = false;
-                const status = $('recordStatus');
-                if (recordedChunks.length === 0) {
-                    if (status) {
-                        status.textContent = '⚠️ No data recorded. Try again.';
-                        status.className = 'record-status';
-                    }
-                    return;
-                }
-                try {
-                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `ocean-memory-${state.name || 'you'}.webm`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(url), 3000);
-                    if (status) {
-                        status.textContent = '✅ Video downloaded!';
-                        status.className = 'record-status done';
-                    }
-                } catch (e) {
-                    if (status) {
-                        status.textContent = '❌ Error saving video';
-                        status.className = 'record-status';
-                    }
-                }
-                const btn = $('recordBtn');
-                if (btn) btn.textContent = '⏺ Record & Download';
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                    stream = null;
-                }
-            };
-
-            mediaRecorder.start();
-            recording = true;
-            const status = $('recordStatus');
-            if (status) {
-                status.textContent = '🔴 Recording... (5s)';
-                status.className = 'record-status recording';
-            }
-            const btn = $('recordBtn');
-            if (btn) btn.textContent = '⏹ Recording...';
-
-            setTimeout(() => {
-                if (mediaRecorder && recording) {
-                    mediaRecorder.stop();
-                    recording = false;
-                    const btn2 = $('recordBtn');
-                    if (btn2) btn2.textContent = '⏺ Record & Download';
-                }
-            }, 5000);
         }
 
-        const recordBtn = $('recordBtn');
-        if (recordBtn) {
-            recordBtn.addEventListener('click', function() {
-                if (recording) {
-                    if (mediaRecorder) {
-                        mediaRecorder.stop();
-                        recording = false;
-                    }
-                    const status = $('recordStatus');
-                    if (status) {
-                        status.textContent = '⏹ Stopped recording.';
-                        status.className = 'record-status';
-                    }
-                    this.textContent = '⏺ Record & Download';
-                    return;
-                }
-                startRecording();
-            });
-        }
-
-        const skipBtn = $('skipBtn');
-        if (skipBtn) {
-            skipBtn.addEventListener('click', function() {
-                if (recording) {
-                    if (mediaRecorder) {
-                        mediaRecorder.stop();
-                        recording = false;
-                    }
-                    const btn = $('recordBtn');
-                    if (btn) btn.textContent = '⏺ Record & Download';
-                    const status = $('recordStatus');
-                    if (status) {
-                        status.textContent = '⏭ Skipped';
-                        status.className = 'record-status';
-                    }
-                }
-                nav('scr-final');
+        // ═══════════════════════════════════════════════════════════════
+        //  HERO → WISH
+        // ═══════════════════════════════════════════════════════════════
+        const toWishBtn = $('toWishBtn');
+        if (toWishBtn) {
+            toWishBtn.addEventListener('click', function() {
+                showScreen('wish');
             });
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  OCEAN CONTINUE → VIDEO
+        //  WISH → PASSKEY
         // ═══════════════════════════════════════════════════════════════
-        const oceanContinue = $('oceanContinue');
-        if (oceanContinue) {
-            oceanContinue.addEventListener('click', function() {
-                nav('scr-video');
+        const toPassBtn = $('toPassBtn');
+        if (toPassBtn) {
+            toPassBtn.addEventListener('click', function() {
+                showScreen('pass');
+                state.passEntry = '';
+                document.querySelectorAll('#passDots span').forEach(s => s.classList.remove('filled'));
+                const passError = $('passError');
+                if (passError) passError.textContent = '';
             });
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  PREVIEW
+        //  PASSKEY KEYPAD
         // ═══════════════════════════════════════════════════════════════
-        const previewBtn = $('btnPreview');
-        if (previewBtn) {
-            previewBtn.addEventListener('click', function() {
-                readFormIntoState();
-                applyState();
-                if (state.passkey) {
-                    passEntry = '';
+        const passDots = document.querySelectorAll('#passDots span');
+        const passError = $('passError');
+
+        function updatePassDots() {
+            const len = state.passEntry.length;
+            passDots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < len);
+            });
+        }
+
+        document.querySelectorAll('#keypad button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const key = this.dataset.k;
+                if (key === 'clear') {
+                    state.passEntry = '';
+                    if (passError) passError.textContent = '';
                     updatePassDots();
-                    const errEl = $('passError');
-                    if (errEl) errEl.textContent = '';
-                    nav('scr-pass');
-                } else {
-                    nav('scr-ocean');
+                    return;
                 }
+                if (key === 'back') {
+                    state.passEntry = state.passEntry.slice(0, -1);
+                    if (passError) passError.textContent = '';
+                    updatePassDots();
+                    return;
+                }
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '◇ Wrong key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
+                }
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  PHOTOS → LETTER
+        // ═══════════════════════════════════════════════════════════════
+        const toLetterBtn = $('toLetterBtn');
+        if (toLetterBtn) {
+            toLetterBtn.addEventListener('click', function() {
+                showScreen('letter');
             });
         }
 
@@ -2274,79 +1798,102 @@
         //  RESTART
         // ═══════════════════════════════════════════════════════════════
         function goToSetup() {
-            if (recording && mediaRecorder) {
-                try { mediaRecorder.stop(); } catch (_) {}
-                recording = false;
-            }
-            if (stream) {
-                try { stream.getTracks().forEach(t => t.stop()); } catch (_) {}
-                stream = null;
-            }
-            if (videoAnimId) {
-                cancelAnimationFrame(videoAnimId);
-                videoAnimId = null;
-            }
-            hideAllScreens();
-            nav('scr-setup');
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            showScreen('setup');
             if (window.history && window.history.pushState) {
                 window.history.pushState({}, '', window.location.pathname);
             }
-            currentShortUrl = '';
-            currentId = '';
         }
 
         const restartBtn = $('restartBtn');
-        if (restartBtn) restartBtn.addEventListener('click', goToSetup);
-
-        const expiredRestartBtn = $('expiredRestartBtn');
-        if (expiredRestartBtn) expiredRestartBtn.addEventListener('click', goToSetup);
-
-        const notfoundRestartBtn = $('notfoundRestartBtn');
-        if (notfoundRestartBtn) notfoundRestartBtn.addEventListener('click', goToSetup);
-
-        // ─── Occasion change preview in setup ──────────────────────────
-        const occSelect = $('inpOccasion');
-        if (occSelect) {
-            occSelect.addEventListener('change', function() {
-                const occ = OCCASIONS[this.value] || OCCASIONS.justbecause;
-                const iconEl = document.querySelector('.brand-icon');
-                if (iconEl) iconEl.textContent = occ.icon;
-            });
-            const initialOcc = OCCASIONS[occSelect.value] || OCCASIONS.justbecause;
-            const iconEl = document.querySelector('.brand-icon');
-            if (iconEl) iconEl.textContent = initialOcc.icon;
+        if (restartBtn) {
+            restartBtn.addEventListener('click', goToSetup);
         }
 
-        // ─── Init ──────────────────────────────────────────────────────
-        (function init() {
-            const loaded = loadFromUrl();
-            if (!loaded) {
-                hideAllScreens();
-                const setup = $('scr-setup');
-                if (setup) setup.classList.add('active');
-                const sel = $('inpOccasion');
-                if (sel) {
-                    const occ = OCCASIONS[sel.value] || OCCASIONS.justbecause;
-                    const iconEl = document.querySelector('.brand-icon');
-                    if (iconEl) iconEl.textContent = occ.icon;
+        const expiredRestartBtn = $('expiredRestartBtn');
+        if (expiredRestartBtn) {
+            expiredRestartBtn.addEventListener('click', goToSetup);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  KEYBOARD SUPPORT
+        // ═══════════════════════════════════════════════════════════════
+        document.addEventListener('keydown', function(e) {
+            if (state.currentScreen !== 'pass') return;
+            if (e.key >= '0' && e.key <= '9') {
+                if (state.passEntry.length >= 4) return;
+                state.passEntry += e.key;
+                updatePassDots();
+                if (passError) passError.textContent = '';
+                if (state.passEntry.length === 4) {
+                    if (state.passEntry === state.passkey) {
+                        state.unlocked = true;
+                        setTimeout(() => {
+                            showScreen('unlock');
+                            setTimeout(() => {
+                                if (state.photos && state.photos.length > 0) {
+                                    showScreen('photos');
+                                } else {
+                                    showScreen('letter');
+                                }
+                                if (typeof confetti === 'function') {
+                                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+                                }
+                            }, 1200);
+                        }, 300);
+                    } else {
+                        if (passError) passError.textContent = '◇ Wrong key, try again';
+                        setTimeout(() => {
+                            state.passEntry = '';
+                            updatePassDots();
+                            if (passError) passError.textContent = '';
+                        }, 800);
+                    }
                 }
             }
-            setupPasskeyHandler();
+            if (e.key === 'Backspace') {
+                state.passEntry = state.passEntry.slice(0, -1);
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+            if (e.key === 'Escape' || e.key === 'c') {
+                state.passEntry = '';
+                if (passError) passError.textContent = '';
+                updatePassDots();
+            }
+        });
 
-            window.addEventListener('popstate', function() {
-                const params = new URLSearchParams(window.location.search);
-                const id = params.get('id');
-                if (id) {
-                    loadFromUrl();
-                } else {
-                    goToSetup();
-                }
-            });
-        })();
+        // ═══════════════════════════════════════════════════════════════
+        //  AUTO-DATE
+        // ═══════════════════════════════════════════════════════════════
+        const dateInput = $('inpDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+        setTimeout(autoWish, 100);
 
-        console.log('🌊 Ocean of Love — Copy Link FIXED!');
-        console.log('📌 Link format: ?id=xxxxx (stored in localStorage)');
-        console.log('✅ Copy functionality now works with multiple fallback methods.');
+        // ═══════════════════════════════════════════════════════════════
+        //  LEGACY PRESET SUPPORT
+        // ═══════════════════════════════════════════════════════════════
+        if (window.__PRESET__) {
+            const data = window.__PRESET__;
+            state.name = data.name || 'you';
+            state.occasion = data.occasion || 'birthday';
+            state.wish = data.wish || getDefaultWish(state.occasion, state.name);
+            state.letter = data.letter || 'You are amazing.';
+            state.passkey = (data.passkey || '1122').padStart(4, '0').slice(0, 4);
+            state.photos = data.photos || [];
+            state.expiresIn = data.expiresIn || 24;
+            state.createdAt = data.createdAt || Date.now();
+            delete window.__PRESET__;
+            applyStateToUI();
+            showScreen('card');
+        }
+
+        console.log('◆ Eclipse v7 — Dark Luxury Celebration with Shareable Links (FIXED)');
+        console.log('◇ Use "Create Link" to generate a unique, time-limited URL.');
+        console.log('♾️ Select "Never Expire" for permanent links.');
     </script>
 </body>
 </html>

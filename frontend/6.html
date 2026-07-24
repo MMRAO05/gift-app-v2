@@ -1053,8 +1053,18 @@
                         <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122" />
                     </div>
                     <div class="field">
-                        <label><span class="label-icon">◈</span> Expires (hrs)</label>
-                        <input type="number" id="inpExpires" min="1" max="720" value="24" />
+                        <label><span class="label-icon">◈</span> Expires</label>
+                        <select id="inpExpires">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                            <option value="72">72 hours</option>
+                            <option value="168">7 days</option>
+                            <option value="720">30 days</option>
+                            <option value="0">♾️ Never Expire</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1173,9 +1183,9 @@
                 <div class="salutation" id="letterSalutation">Dear friend,</div>
                 <div class="body-text" id="letterBody"></div>
                 <div class="sign" id="letterSign">— with all my light</div>
-          <!-- </div>
-            <button class="restart-btn" id="restartBtn">⟳ Create another nexus</button>
-        </div> --> 
+               <!-- <button class="restart-btn" id="restartBtn">⟳ Create another nexus</button> -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1244,7 +1254,6 @@
                         }
                     }
                 }
-                // Mouse connections
                 if (mouseActive && mouse.x !== null) {
                     for (const p of particles) {
                         const dx = p.x - mouse.x;
@@ -1418,7 +1427,6 @@
                 const current = wishInput ? wishInput.value.trim() : '';
                 const filtered = suggestions.filter(s => s !== current);
                 if (filtered.length === 0) {
-                    // Cycle through all
                     const idx = (suggestionIndex % suggestions.length);
                     wishInput.value = suggestions[idx];
                     suggestionIndex++;
@@ -1428,7 +1436,6 @@
                     suggestionIndex++;
                 }
                 updateWishPreview();
-                // Add a subtle animation
                 wishInput.style.transition = 'all 0.2s';
                 wishInput.style.borderColor = 'var(--gold)';
                 setTimeout(() => { wishInput.style.borderColor = ''; }, 400);
@@ -1495,7 +1502,7 @@
             state.letter = letter;
             state.passkey = pass.padStart(4, '0').slice(0, 4);
             state.photos = [...photoData];
-            state.expiresIn = Math.min(Math.max(expires, 1), 720);
+            state.expiresIn = expires;
             state.createdAt = Date.now();
         }
 
@@ -1648,11 +1655,18 @@
             const input = $('shareLinkInput');
             if (input) input.value = shareUrl;
             const hint = $('expiryHint');
-            if (hint) hint.textContent = '◆ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-                's' : '');
+            if (hint) {
+                if (state.expiresIn === 0) {
+                    hint.textContent = '♾️ This link will NEVER expire! Share it anytime.';
+                } else {
+                    hint.textContent = '◆ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                        's' : '');
+                }
+            }
 
             showScreen('share');
-            console.log('◆ Nexus link created! ID:', id);
+            console.log('◆ Nexus link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state
+            .expiresIn + ' hours');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1705,15 +1719,13 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  LOAD FROM ID (FIXED)
+        //  LOAD FROM ID (FIXED with Never Expire support)
         // ═══════════════════════════════════════════════════════════════
         function loadFromId(id) {
             console.log('🔍 Loading Nexus gift with ID:', id);
 
-            // Try v6 first
             let raw = localStorage.getItem('nexus_v6_' + id);
 
-            // Fallback to v5 if not found
             if (!raw) {
                 console.log('🔄 Trying v5 format...');
                 raw = localStorage.getItem('nexus_v5_' + id);
@@ -1721,7 +1733,6 @@
                     console.log('✅ Found in v5 format, converting to v6');
                     localStorage.setItem('nexus_v6_' + id, raw);
                     localStorage.removeItem('nexus_v5_' + id);
-                    // Update IDs list
                     let allIds = JSON.parse(localStorage.getItem('nexus_v6_ids') || '[]');
                     if (!allIds.includes(id)) allIds.push(id);
                     localStorage.setItem('nexus_v6_ids', JSON.stringify(allIds));
@@ -1729,7 +1740,6 @@
                 }
             }
 
-            // Fallback to v4
             if (!raw) {
                 console.log('🔄 Trying v4 format...');
                 raw = localStorage.getItem('nexus_v4_' + id);
@@ -1755,13 +1765,20 @@
             try {
                 const data = JSON.parse(raw);
                 const now = Date.now();
-                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                if (expTime > 0 && now > expTime) {
-                    const d = new Date(expTime);
-                    const detail = $('expiryDetail');
-                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
-                    showScreen('expired');
-                    return false;
+
+                // ✅ FIX: Only check expiry if expiresIn > 0 (Never Expire = 0)
+                if (data.expiresIn > 0) {
+                    const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                    if (expTime > 0 && now > expTime) {
+                        const d = new Date(expTime);
+                        const detail = $('expiryDetail');
+                        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                        showScreen('expired');
+                        console.log('⏰ Link expired! Expired at:', d);
+                        return false;
+                    }
+                } else {
+                    console.log('♾️ This Nexus link NEVER expires!');
                 }
 
                 // Apply data to state
@@ -1838,7 +1855,8 @@
             const emojis = ['◆', '✦', '◈', '◇', '☆', '★', '⟡', '⟢'];
             for (let i = 0; i < 30; i++) {
                 const p = document.createElement('div');
-                p.style.cssText = `
+                p.style.cssText =
+                    `
               position: absolute;
               pointer-events: none;
               font-size: ${14 + Math.random() * 26}px;
@@ -2056,7 +2074,7 @@
 
         console.log('◆ Nexus v6 — Professional Celebration with Shareable Links (FIXED)');
         console.log('◈ Use "Create Link" to generate a unique, time-limited URL.');
-        console.log('✦ All data stored locally in your browser.');
+        console.log('♾️ Select "Never Expire" for permanent links.');
     </script>
 </body>
 </html>

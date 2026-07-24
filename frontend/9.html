@@ -94,9 +94,10 @@
 
   .field { text-align: left; margin-bottom: 14px; width: 100%; }
   .field label { font-size: 11px; font-weight: 600; color: var(--soft-text); display: block; margin-bottom: 4px; }
-  .field input[type=text], .field input[type=date], .field input[type=time], .field input[type=url], .field textarea {
+  .field input[type=text], .field input[type=date], .field input[type=time], .field input[type=url], .field textarea, .field select {
     width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #f0cad2; background: white; font-family: inherit; font-size: 13px;
   }
+  .field select option { background: white; color: #2b1e22; }
   .field small { display: block; margin-top: 4px; color: #b98c95; font-size: 10.5px; }
   .section-label { text-align: left; width: 100%; font-size: 11px; font-weight: 700; color: var(--accent-pink); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; border-top: 1px dashed #f0cad2; padding-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .section-label:first-of-type { border-top: none; margin-top: 4px; padding-top: 0; }
@@ -120,20 +121,17 @@
   .pin-error { min-height: 16px; font-size: 12px; color: var(--accent-pink); margin-bottom: 8px; }
   @keyframes shakePin { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
 
-  /* Countdown */
   .countdown-grid { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
   .cd-box { background: #fff5f7; border: 1px solid #f3cfd6; border-radius: 14px; padding: 10px 6px; min-width: 58px; }
   .cd-num { font-size: 24px; font-weight: 600; color: var(--accent-pink); font-family: 'Playfair Display', serif; }
   .cd-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--soft-text); margin-top: 2px; }
 
-  /* Gift box */
   .giftbox-wrap { margin: 20px 0; cursor: pointer; user-select: none; }
   .gift-emoji { font-size: 90px; display: inline-block; transition: transform .25s; }
   .gift-emoji.shaking { animation: giftShake .5s ease-in-out infinite; }
   .gift-emoji.opened { transform: scale(1.25) rotate(-6deg); }
   @keyframes giftShake { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-8deg);} 75%{transform:rotate(8deg);} }
 
-  /* Gallery */
   .gallery-wrap { position: relative; width: 100%; }
   .gallery-track { display: flex; overflow: hidden; border-radius: 20px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
   .gallery-track img { width: 100%; height: 260px; object-fit: cover; flex-shrink: 0; display: block; }
@@ -143,7 +141,6 @@
   .gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: #f0cad2; }
   .gallery-dot.active { background: var(--accent-pink); }
 
-  /* Music floating button */
   .music-fab { position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px; border-radius: 50%; background: var(--accent-pink); color: #fff; border: none; box-shadow: 0 6px 20px rgba(230,57,86,0.35); font-size: 18px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 200; }
   .music-fab.show { display: flex; }
   .music-fab.spin { animation: spinSlow 3s linear infinite; }
@@ -151,13 +148,38 @@
 
   .toggles-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
   .mini-check { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--soft-text); background: #fff5f7; border: 1px solid #f3cfd6; padding: 6px 10px; border-radius: 20px; }
+
+  .share-card .success-icon { font-size: 44px; margin-bottom: 4px; animation: bounceIn 0.8s ease; }
+  @keyframes bounceIn { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+  .share-link-box { background: rgba(0,0,0,0.04); border-radius: 14px; padding: 12px 16px; display: flex; gap: 10px; align-items: center; border: 1px solid #f3cfd6; margin-bottom: 18px; }
+  .share-link-box input { flex: 1; border: none; background: transparent; font-size: 13px; color: var(--heading-color); outline: none; font-family: 'Poppins', sans-serif; min-width: 0; }
+  .copy-btn { background: var(--accent-pink); color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+  .copy-btn:hover { background: #c4284a; }
+  .copy-btn.copied { background: #27ae60; }
+  .share-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .share-actions button { padding: 10px 18px; border: none; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; flex: 1; min-width: 80px; }
+  .share-actions button:hover { transform: translateY(-2px); }
+  .share-actions .whatsapp { background: #25D366; color: #fff; }
+  .share-actions .whatsapp:hover { background: #1da851; }
+  .share-actions .email { background: #EA4335; color: #fff; }
+  .share-actions .email:hover { background: #c62828; }
+  .share-actions .open-gift { background: var(--accent-pink); color: #fff; flex: 1.5; }
+  .expiry-hint { margin-top: 14px; font-size: 11px; color: var(--soft-text); }
+
+  .expired-card .icon { font-size: 44px; margin-bottom: 4px; }
+  .expired-card h2 { font-family: 'Playfair Display', serif; color: var(--accent-pink); margin: 0; font-size: 24px; opacity: 0.6; }
+  .expired-card p { color: var(--soft-text); font-size: 13.5px; margin: 12px 0 24px; line-height: 1.6; }
+
+  .btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #1a1a2e; box-shadow: 0 8px 32px rgba(251,191,36,0.25); border: none; padding: 14px 28px; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s; width: 100%; }
+  .btn-gold:active { transform: scale(0.96); }
+  .btn-gold:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body>
 
 <div class="app-viewport">
 
-  <!-- SETUP SCREEN -->
+  <!-- ─── SETUP SCREEN ─── -->
   <div class="screen active" id="scr-setup">
     <div class="v-card">
       <h2 class="script-font" style="font-size: 26px;">Build Your Surprise</h2>
@@ -181,12 +203,13 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-lock" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-lock">
-        <div class="field"><label>Main Name / Title</label><input type="text" id="inpTitle"></div>
-        <div class="field"><label>Small Tag Line (above the title)</label><input type="text" id="inpEyebrow1"></div>
-        <div class="field"><label>Quote / Subtitle</label><textarea id="inpQuote1" rows="2"></textarea></div>
-        <div class="field"><label>4-Digit Pin Code</label><input type="text" id="inpPin" maxlength="4"><small>Leave blank to skip the passcode check (screen still shows)</small></div>
-        <div class="field"><label>Pin Hint Text</label><input type="text" id="inpPinHint"></div>
-        <div class="field"><label>Unlock Button Text</label><input type="text" id="inpBtn1"></div>
+        <div class="field"><label>Main Name / Title</label><input type="text" id="inpTitle" value="MM RAO"></div>
+        <div class="field"><label>Small Tag Line (above the title)</label><input type="text" id="inpEyebrow1" value="A Little Surprise ✨"></div>
+        <div class="field"><label>Quote / Subtitle</label><textarea id="inpQuote1" rows="2">Kuch khaas cheez tumhare liye banayi hai...
+Enter karo aur dekho 💌</textarea></div>
+        <div class="field"><label>4-Digit Pin Code</label><input type="text" id="inpPin" maxlength="4" value="0207"><small>Leave blank to skip the passcode check (screen still shows)</small></div>
+        <div class="field"><label>Pin Hint Text</label><input type="text" id="inpPinHint" value="Hint: hamari pehli mulaqaat ki date 😉"></div>
+        <div class="field"><label>Unlock Button Text</label><input type="text" id="inpBtn1" value="Unlock ✨"></div>
       </div>
 
       <div class="section-label">
@@ -194,11 +217,11 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-countdown" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-countdown">
-        <div class="field"><label>Tag Line</label><input type="text" id="inpCdEyebrow"></div>
-        <div class="field"><label>Heading</label><input type="text" id="inpCdHeading"></div>
-        <div class="field"><label>Count down to (date)</label><input type="date" id="inpCdDate"></div>
-        <div class="field"><label>Count down to (time)</label><input type="time" id="inpCdTime"></div>
-        <div class="field"><label>Continue Button Text</label><input type="text" id="inpCdBtn"><small>Always tappable — the numbers keep ticking for atmosphere</small></div>
+        <div class="field"><label>Tag Line</label><input type="text" id="inpCdEyebrow" value="The Wait Is Almost Over"></div>
+        <div class="field"><label>Heading</label><input type="text" id="inpCdHeading" value="Something's Coming..."></div>
+        <div class="field"><label>Count down to (date)</label><input type="date" id="inpCdDate" value="2026-08-14"></div>
+        <div class="field"><label>Count down to (time)</label><input type="time" id="inpCdTime" value="00:00"></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpCdBtn" value="I Can't Wait — Continue ➔"></div>
       </div>
 
       <div class="section-label">
@@ -206,10 +229,10 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-question" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-question">
-        <div class="field"><label>Question / Heading</label><input type="text" id="inpQ2"></div>
-        <div class="field"><label>Yes Button Text</label><input type="text" id="inpBtn2Yes"></div>
-        <div class="field"><label>"No / Think About It" Button Text</label><input type="text" id="inpBtn2No"></div>
-        <div class="field"><label>Popup Text (shown if they hesitate)</label><input type="text" id="inpToast"></div>
+        <div class="field"><label>Question / Heading</label><input type="text" id="inpQ2" value="Ready for this?"></div>
+        <div class="field"><label>Yes Button Text</label><input type="text" id="inpBtn2Yes" value="Yes, Let's Go 💫"></div>
+        <div class="field"><label>"No / Think About It" Button Text</label><input type="text" id="inpBtn2No" value="Wait, Let Me Think"></div>
+        <div class="field"><label>Popup Text (shown if they hesitate)</label><input type="text" id="inpToast" value="You know you want to 😉"></div>
       </div>
 
       <div class="section-label">
@@ -217,10 +240,10 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-giftbox" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-giftbox">
-        <div class="field"><label>Tag Line</label><input type="text" id="inpGiftEyebrow"></div>
-        <div class="field"><label>Instruction (before opening)</label><input type="text" id="inpGiftHeading"></div>
-        <div class="field"><label>Message (after opening)</label><input type="text" id="inpGiftOpened"></div>
-        <div class="field"><label>Continue Button Text</label><input type="text" id="inpGiftBtn"></div>
+        <div class="field"><label>Tag Line</label><input type="text" id="inpGiftEyebrow" value="For You"></div>
+        <div class="field"><label>Instruction (before opening)</label><input type="text" id="inpGiftHeading" value="Tap the box to open it 🎁"></div>
+        <div class="field"><label>Message (after opening)</label><input type="text" id="inpGiftOpened" value="Surprise! There's more waiting just ahead 💝"></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpGiftBtn" value="Continue ➔"></div>
       </div>
 
       <div class="section-label">
@@ -228,10 +251,12 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-message" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-message">
-        <div class="field"><label>Small Badge Text</label><input type="text" id="inpBadge"></div>
-        <div class="field"><label>Heading</label><input type="text" id="inpHeading3"></div>
-        <div class="field"><label>Points (one per line)</label><textarea id="inpNotes" rows="4"></textarea></div>
-        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn3"></div>
+        <div class="field"><label>Small Badge Text</label><input type="text" id="inpBadge" value="A Little Something"></div>
+        <div class="field"><label>Heading</label><input type="text" id="inpHeading3" value="Here's What I Want To Say"></div>
+        <div class="field"><label>Points (one per line)</label><textarea id="inpNotes" rows="4">Tumhare saath guzara har lamha khaas hai.
+Tumhari smile mera favorite part of the day hai.
+Yeh chhota sa surprise sirf itna batane ke liye hai — I appreciate you.</textarea></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn3" value="Continue ➔"></div>
       </div>
 
       <div class="section-label">
@@ -239,10 +264,10 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-gallery" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-gallery">
-        <div class="field"><label>Small Tag Line</label><input type="text" id="inpEyebrow4"></div>
+        <div class="field"><label>Small Tag Line</label><input type="text" id="inpEyebrow4" value="A Moment To Remember"></div>
         <div class="field"><label>Photos (choose one or several)</label><input type="file" id="inpPhoto" accept="image/*" multiple><small id="photoHint">Optional — default photos show if you skip this</small></div>
-        <div class="field"><label>Caption Below Photos</label><textarea id="inpCaption4" rows="2"></textarea></div>
-        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn4"></div>
+        <div class="field"><label>Caption Below Photos</label><textarea id="inpCaption4" rows="2">Har memory tumhare saath matter karti hai.</textarea></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpBtn4" value="Continue ➔"></div>
       </div>
 
       <div class="section-label">
@@ -250,11 +275,11 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-video"><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body section-off" id="body-video">
-        <div class="field"><label>Tag Line</label><input type="text" id="inpVidEyebrow"></div>
+        <div class="field"><label>Tag Line</label><input type="text" id="inpVidEyebrow" value="One More Thing"></div>
         <div class="field"><label>Upload a video</label><input type="file" id="inpVideoFile" accept="video/*"><small>Uploaded video plays directly. Leave empty to use a YouTube link instead.</small></div>
         <div class="field"><label>YouTube Link (used if no file uploaded)</label><input type="url" id="inpVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
-        <div class="field"><label>Caption</label><input type="text" id="inpVidCaption"></div>
-        <div class="field"><label>Continue Button Text</label><input type="text" id="inpVidBtn"></div>
+        <div class="field"><label>Caption</label><input type="text" id="inpVidCaption" value="Yeh dekho, tumhare liye banaya hai."></div>
+        <div class="field"><label>Continue Button Text</label><input type="text" id="inpVidBtn" value="Continue ➔"></div>
       </div>
 
       <div class="section-label">
@@ -262,9 +287,9 @@
         <label class="toggle-switch"><input type="checkbox" class="section-toggle" data-target="body-final" checked><span class="toggle-slider"></span></label>
       </div>
       <div class="section-body" id="body-final">
-        <div class="field"><label>Final Heading</label><input type="text" id="inpHeading5"></div>
-        <div class="field"><label>Final Message</label><textarea id="inpQuote5" rows="2"></textarea></div>
-        <div class="field"><label>Replay Button Text</label><input type="text" id="inpBtn5"></div>
+        <div class="field"><label>Final Heading</label><input type="text" id="inpHeading5" value="With Love"></div>
+        <div class="field"><label>Final Message</label><textarea id="inpQuote5" rows="2">Wishing you all the happiness in the world. 💕</textarea></div>
+        <div class="field"><label>Replay Button Text</label><input type="text" id="inpBtn5" value="🔄 Replay Again"></div>
       </div>
 
       <div class="section-label">
@@ -275,31 +300,81 @@
         <div class="field"><label>Upload music (mp3)</label><input type="file" id="inpMusicFile" accept="audio/*"><small>Adds a floating music button. Browsers block autoplay, so it starts on the first tap.</small></div>
       </div>
 
+      <div class="section-label">
+        <span>⏳ Link Expiry</span>
+      </div>
+      <div class="field">
+        <label>Expires In</label>
+        <select id="inpExpires">
+          <option value="1">1 hour</option>
+          <option value="6">6 hours</option>
+          <option value="12">12 hours</option>
+          <option value="24" selected>24 hours</option>
+          <option value="48">48 hours</option>
+          <option value="72">72 hours</option>
+          <option value="168">7 days</option>
+          <option value="720">30 days</option>
+          <option value="0">♾️ Never Expire</option>
+        </select>
+        <small>After this time, the link will expire</small>
+      </div>
+
       <button class="btn-pink" id="btnPreview" style="margin-top: 10px;">Live Preview ✨</button>
       <button class="btn-outline" id="btnExport">Export Standalone HTML 📤</button>
-      <small style="display:block;margin-top:8px;">Export downloads a ready file — send that one, it opens straight to the first active screen.</small>
+      <button class="btn-gold" id="btnCreateLink">🔗 Create Shareable Link</button>
+      <small style="display:block;margin-top:8px;">Export downloads a ready file — Create Link generates a unique URL with expiration.</small>
     </div>
   </div>
 
-  <!-- SCREEN: LOCK -->
+  <!-- ─── SHARE SCREEN ─── -->
+  <div class="screen" id="scr-share">
+    <div class="v-card share-card">
+      <div class="success-icon">🎉</div>
+      <h2 style="font-family:'Playfair Display',serif;color:var(--accent-pink);margin:0;font-size:24px;">Surprise Ready!</h2>
+      <p style="color:var(--soft-text);font-size:13px;margin:4px 0 20px;">Share this unique link with your special person.</p>
+      <div class="share-link-box">
+        <input type="text" id="shareLinkInput" readonly />
+        <button class="copy-btn" id="copyLinkBtn">Copy</button>
+      </div>
+      <div class="share-actions">
+        <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+        <button class="email" id="emailBtn">✉️ Email</button>
+        <button class="open-gift" id="openGiftBtn">Open Surprise →</button>
+      </div>
+      <div class="expiry-hint" id="expiryHint"></div>
+    </div>
+  </div>
+
+  <!-- ─── EXPIRED SCREEN ─── -->
+  <div class="screen" id="scr-expired">
+    <div class="v-card expired-card">
+      <div class="icon">⏳</div>
+      <h2>Link Expired</h2>
+      <p>This surprise link has expired. The magic was meant to be cherished in the moment.</p>
+      <button class="btn-pink" id="expiredRestartBtn">Create a New Surprise</button>
+      <div style="margin-top:12px;font-size:11px;color:var(--soft-text);" id="expiryDetailText">Checking link...</div>
+    </div>
+  </div>
+
+  <!-- ─── SCREEN: LOCK ─── -->
   <div class="screen" id="scr-lock">
     <div class="v-card">
       <div class="eyebrow" id="dispEyebrow1"></div>
       <h1 class="main-title script-font" id="dispTitle"></h1>
       <p class="sub-quote" id="dispQuote1"></p>
       <div class="pin-container" id="pinWrap">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 0)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 1)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 2)">
-        <input type="password" class="pin-box" maxlength="1" oninput="movePin(this, 3)">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input type="password" class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
       </div>
       <div class="pin-error" id="pinError"></div>
       <div style="font-size: 11px; color: var(--soft-text); margin-bottom: 15px;" id="dispPinHint"></div>
-      <button class="btn-pink" onclick="checkPin()" id="dispBtn1"></button>
+      <button class="btn-pink" id="unlockBtn">Unlock ✨</button>
     </div>
   </div>
 
-  <!-- SCREEN: COUNTDOWN -->
+  <!-- ─── SCREEN: COUNTDOWN ─── -->
   <div class="screen" id="scr-countdown">
     <div class="v-card">
       <div class="eyebrow" id="dispCdEyebrow"></div>
@@ -310,43 +385,43 @@
         <div class="cd-box"><div class="cd-num" id="cdMins">00</div><div class="cd-label">Min</div></div>
         <div class="cd-box"><div class="cd-num" id="cdSecs">00</div><div class="cd-label">Sec</div></div>
       </div>
-      <button class="btn-pink" onclick="goNext('countdown')" id="dispCdBtn" style="margin-top:10px;"></button>
+      <button class="btn-pink" id="dispCdBtn" style="margin-top:10px;"></button>
     </div>
   </div>
 
-  <!-- SCREEN: QUESTION -->
+  <!-- ─── SCREEN: QUESTION ─── -->
   <div class="screen" id="scr-question">
     <div class="v-card">
       <h2 class="script-font" style="font-size: 28px; margin-bottom: 25px;" id="dispQ2"></h2>
-      <button class="btn-pink" onclick="goNext('question')" id="dispBtn2Yes"></button>
-      <button class="btn-outline" onclick="showThinkToast()" id="dispBtn2No"></button>
+      <button class="btn-pink" id="dispBtn2Yes"></button>
+      <button class="btn-outline" id="dispBtn2No"></button>
     </div>
   </div>
 
-  <!-- SCREEN: GIFT BOX -->
+  <!-- ─── SCREEN: GIFT BOX ─── -->
   <div class="screen" id="scr-giftbox">
     <div class="v-card">
       <div class="eyebrow" id="dispGiftEyebrow"></div>
       <h2 class="script-font" style="font-size: 24px; margin: 10px 0 5px;" id="dispGiftHeading"></h2>
-      <div class="giftbox-wrap" id="giftboxWrap" onclick="openGift()">
+      <div class="giftbox-wrap" id="giftboxWrap">
         <span class="gift-emoji shaking" id="giftEmoji">🎁</span>
       </div>
       <p class="sub-quote" id="dispGiftOpened" style="display:none;"></p>
-      <button class="btn-pink" onclick="goNext('giftbox')" id="dispGiftBtn" style="display:none;"></button>
+      <button class="btn-pink" id="dispGiftBtn" style="display:none;"></button>
     </div>
   </div>
 
-  <!-- SCREEN: MESSAGE -->
+  <!-- ─── SCREEN: MESSAGE ─── -->
   <div class="screen" id="scr-message">
     <div class="v-card">
       <div class="eyebrow" id="dispBadge"></div>
       <h2 class="script-font" style="font-size: 28px; margin: 10px 0 15px;" id="dispHeading3"></h2>
       <div class="note-list" id="dispNotes"></div>
-      <button class="btn-pink" onclick="goNext('message')" style="margin-top: 15px;" id="dispBtn3"></button>
+      <button class="btn-pink" style="margin-top: 15px;" id="dispBtn3"></button>
     </div>
   </div>
 
-  <!-- SCREEN: GALLERY -->
+  <!-- ─── SCREEN: GALLERY ─── -->
   <div class="screen" id="scr-gallery">
     <div class="v-card">
       <div class="eyebrow" id="dispEyebrow4"></div>
@@ -354,26 +429,26 @@
         <div class="gallery-track" id="galleryTrack"></div>
       </div>
       <div class="gallery-arrows">
-        <button class="gallery-arrow" onclick="galleryMove(-1)">‹</button>
+        <button class="gallery-arrow" id="galleryPrev">‹</button>
         <div class="gallery-dots" id="galleryDots"></div>
-        <button class="gallery-arrow" onclick="galleryMove(1)">›</button>
+        <button class="gallery-arrow" id="galleryNext">›</button>
       </div>
       <p class="sub-quote" style="margin: 12px 0;" id="dispCaption4"></p>
-      <button class="btn-pink" onclick="goNext('gallery')" id="dispBtn4"></button>
+      <button class="btn-pink" id="dispBtn4"></button>
     </div>
   </div>
 
-  <!-- SCREEN: VIDEO -->
+  <!-- ─── SCREEN: VIDEO ─── -->
   <div class="screen" id="scr-video">
     <div class="v-card">
       <div class="eyebrow" id="dispVidEyebrow"></div>
       <div class="frame-box" id="videoFrame" style="margin-top:10px;"></div>
       <p class="sub-quote" style="margin: 12px 0;" id="dispVidCaption"></p>
-      <button class="btn-pink" onclick="goNext('video')" id="dispVidBtn"></button>
+      <button class="btn-pink" id="dispVidBtn"></button>
     </div>
   </div>
 
-  <!-- SCREEN: FINAL -->
+  <!-- ─── SCREEN: FINAL ─── -->
   <div class="screen" id="scr-final">
     <div class="v-card">
       <h1 class="script-font" style="font-size: 32px; color: var(--accent-pink); margin-bottom: 10px;" id="dispHeading5"></h1>
@@ -384,13 +459,16 @@
 
 </div>
 
-<button class="music-fab" id="musicFab" onclick="toggleMusic()">🎵</button>
+<button class="music-fab" id="musicFab">🎵</button>
 <audio id="bgMusic" loop></audio>
 
 <!-- Toast element -->
 <div class="toast-popup" id="thinkToast"></div>
 
 <script>
+  // ═══════════════════════════════════════════════════════════════
+  //  PRISTINE HTML
+  // ═══════════════════════════════════════════════════════════════
   const PRISTINE_HTML = document.documentElement.outerHTML;
   const DEFAULT_PHOTOS = [
     "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500",
@@ -400,9 +478,6 @@
 
   const ORDER = ['lock','countdown','question','giftbox','message','gallery','video','final'];
 
-  // Confetti loads from a CDN with `defer`, so it may not be ready yet (or may
-  // fail entirely if there's no internet). This wrapper makes every confetti
-  // call a safe no-op instead of throwing and breaking the rest of the app.
   function safeConfetti(opts) {
     if (typeof confetti === 'function') {
       try { confetti(opts); } catch (e) { /* ignore */ }
@@ -453,13 +528,16 @@
 
     photos: DEFAULT_PHOTOS.slice(),
     videoFile: '',
-    musicFile: ''
+    musicFile: '',
+    expiresIn: 24,
+    createdAt: Date.now()
   };
 
   const enabled = { lock:true, countdown:true, question:true, giftbox:true, message:true, gallery:true, video:false, final:true, music:false };
   let state = Object.assign({}, DEFAULTS);
   let galleryIndex = 0;
   let cdTimer = null;
+  let currentGiftId = null;
 
   const FORM_MAP = {
     inpTitle:'title', inpEyebrow1:'eyebrow1', inpQuote1:'quote1', inpPin:'pin', inpPinHint:'pinHint', inpBtn1:'btn1',
@@ -472,23 +550,22 @@
     inpHeading5:'heading5', inpQuote5:'quote5', inpBtn5:'btn5'
   };
 
-  // Pre-fill the setup form with sample data on load
+  // ─── Pre-fill form ───
   function prefillForm() {
     Object.keys(FORM_MAP).forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.value = DEFAULTS[FORM_MAP[id]];
+      if (el) el.value = DEFAULTS[FORM_MAP[id]] || '';
     });
   }
   prefillForm();
 
-  // Section on/off toggles show/hide + gray out that section's fields in the setup form
+  // ─── Section toggles ───
   document.querySelectorAll('.section-toggle').forEach(cb => {
     cb.addEventListener('change', () => {
       document.getElementById(cb.dataset.target).classList.toggle('section-off', !cb.checked);
     });
   });
 
-  // Keep the top quick-toggle row and each section's own switch in sync
   const TOGGLE_PAIRS = [
     ['togLock','body-lock'], ['togCountdown','body-countdown'], ['togQuestion','body-question'],
     ['togGiftbox','body-giftbox'], ['togMessage','body-message'], ['togGallery','body-gallery'],
@@ -503,54 +580,71 @@
     sectionToggle.addEventListener('change', () => { quick.checked = sectionToggle.checked; });
   });
 
-  // Photo uploads (multiple)
-  document.getElementById('inpPhoto').addEventListener('change', function(e) {
-    let files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    Promise.all(files.map(f => new Promise((res) => {
-      const r = new FileReader();
-      r.onload = ev => res(ev.target.result);
-      r.readAsDataURL(f);
-    }))).then(results => {
-      state.photos = results;
-      document.getElementById('photoHint').innerText = results.length + ' photo(s) selected ✓';
+  // ─── Photo upload ───
+  const inpPhoto = document.getElementById('inpPhoto');
+  if (inpPhoto) {
+    inpPhoto.addEventListener('change', function(e) {
+      let files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      Promise.all(files.map(f => new Promise((res) => {
+        const r = new FileReader();
+        r.onload = ev => res(ev.target.result);
+        r.readAsDataURL(f);
+      }))).then(results => {
+        state.photos = results;
+        const photoHint = document.getElementById('photoHint');
+        if (photoHint) photoHint.innerText = results.length + ' photo(s) selected ✓';
+      });
     });
-  });
+  }
 
-  document.getElementById('inpVideoFile').addEventListener('change', function(e) {
-    let file = e.target.files[0];
-    if (!file) return;
-    const r = new FileReader();
-    r.onload = ev => { state.videoFile = ev.target.result; };
-    r.readAsDataURL(file);
-  });
+  const inpVideoFile = document.getElementById('inpVideoFile');
+  if (inpVideoFile) {
+    inpVideoFile.addEventListener('change', function(e) {
+      let file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => { state.videoFile = ev.target.result; };
+      r.readAsDataURL(file);
+    });
+  }
 
-  document.getElementById('inpMusicFile').addEventListener('change', function(e) {
-    let file = e.target.files[0];
-    if (!file) return;
-    const r = new FileReader();
-    r.onload = ev => { state.musicFile = ev.target.result; };
-    r.readAsDataURL(file);
-  });
+  const inpMusicFile = document.getElementById('inpMusicFile');
+  if (inpMusicFile) {
+    inpMusicFile.addEventListener('change', function(e) {
+      let file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => { state.musicFile = ev.target.result; };
+      r.readAsDataURL(file);
+    });
+  }
 
+  // ─── Navigation ───
   function activeOrder() {
     return ORDER.filter(id => state.enabled[id]);
   }
 
   function nav(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('scr-' + id).classList.add('active');
+    const el = document.getElementById('scr-' + id);
+    if (el) el.classList.add('active');
 
     if (id === 'lock') {
       document.querySelectorAll('.pin-box').forEach(i => i.value = '');
-      document.getElementById('pinError').innerText = '';
+      const pinError = document.getElementById('pinError');
+      if (pinError) pinError.innerText = '';
+      setTimeout(() => {
+        const firstPin = document.querySelector('.pin-box');
+        if (firstPin) firstPin.focus();
+      }, 100);
     }
     if (id === 'countdown') startCountdown();
     else stopCountdown();
 
     if (id === 'giftbox') resetGift();
     if (id === 'gallery') renderGallery();
-
+    if (id === 'video') renderVideo();
     if (id === 'final') {
       safeConfetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     }
@@ -568,11 +662,24 @@
     nav(order[0] || 'final');
   }
 
-  function movePin(current, index) {
-    if (current.value.length >= 1 && index < 3) {
-      document.querySelectorAll('.pin-box')[index + 1].focus();
-    }
-  }
+  // ─── PIN functions ───
+  document.querySelectorAll('.pin-box').forEach((box, idx) => {
+    box.addEventListener('input', function() {
+      if (this.value.length >= 1 && idx < 3) {
+        const next = document.querySelectorAll('.pin-box')[idx + 1];
+        if (next) next.focus();
+      }
+    });
+    box.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && this.value === '' && idx > 0) {
+        const prev = document.querySelectorAll('.pin-box')[idx - 1];
+        if (prev) prev.focus();
+      }
+      if (e.key === 'Enter') {
+        checkPin();
+      }
+    });
+  });
 
   function checkPin() {
     let inputs = document.querySelectorAll('.pin-box');
@@ -580,23 +687,31 @@
     if (entered === state.pin || state.pin === "") {
       goNext('lock');
     } else {
-      document.getElementById('pinError').innerText = 'Wrong passcode, try again';
+      const pinError = document.getElementById('pinError');
+      if (pinError) pinError.innerText = 'Wrong passcode, try again';
       const wrap = document.getElementById('pinWrap');
-      wrap.style.animation = 'shakePin .4s';
-      setTimeout(() => wrap.style.animation = '', 400);
+      if (wrap) {
+        wrap.style.animation = 'shakePin .4s';
+        setTimeout(() => wrap.style.animation = '', 400);
+      }
       inputs.forEach(i => i.value = '');
       inputs[0].focus();
     }
   }
 
+  const unlockBtn = document.getElementById('unlockBtn');
+  if (unlockBtn) unlockBtn.addEventListener('click', checkPin);
+
   function showThinkToast() {
     let t = document.getElementById('thinkToast');
-    t.innerText = state.toast;
-    t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 2000);
+    if (t) {
+      t.innerText = state.toast;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2000);
+    }
   }
 
-  // ---- Countdown ----
+  // ─── Countdown ───
   function startCountdown() {
     stopCountdown();
     const target = new Date(`${state.cdDate}T${state.cdTime || '00:00'}:00`);
@@ -606,10 +721,14 @@
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
-      document.getElementById('cdDays').innerText = String(d).padStart(2, '0');
-      document.getElementById('cdHours').innerText = String(h).padStart(2, '0');
-      document.getElementById('cdMins').innerText = String(m).padStart(2, '0');
-      document.getElementById('cdSecs').innerText = String(s).padStart(2, '0');
+      const cdDays = document.getElementById('cdDays');
+      const cdHours = document.getElementById('cdHours');
+      const cdMins = document.getElementById('cdMins');
+      const cdSecs = document.getElementById('cdSecs');
+      if (cdDays) cdDays.innerText = String(d).padStart(2, '0');
+      if (cdHours) cdHours.innerText = String(h).padStart(2, '0');
+      if (cdMins) cdMins.innerText = String(m).padStart(2, '0');
+      if (cdSecs) cdSecs.innerText = String(s).padStart(2, '0');
     }
     tick();
     cdTimer = setInterval(tick, 1000);
@@ -618,62 +737,77 @@
     if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
   }
 
-  // ---- Gift box ----
+  // ─── Gift box ───
   function resetGift() {
     const emoji = document.getElementById('giftEmoji');
-    emoji.classList.remove('opened');
-    emoji.classList.add('shaking');
-    emoji.innerText = '🎁';
-    document.getElementById('dispGiftOpened').style.display = 'none';
-    document.getElementById('dispGiftBtn').style.display = 'none';
+    if (emoji) {
+      emoji.classList.remove('opened');
+      emoji.classList.add('shaking');
+      emoji.innerText = '🎁';
+    }
+    const dispGiftOpened = document.getElementById('dispGiftOpened');
+    const dispGiftBtn = document.getElementById('dispGiftBtn');
+    if (dispGiftOpened) dispGiftOpened.style.display = 'none';
+    if (dispGiftBtn) dispGiftBtn.style.display = 'none';
   }
   function openGift() {
     const emoji = document.getElementById('giftEmoji');
-    emoji.classList.remove('shaking');
-    emoji.classList.add('opened');
-    emoji.innerText = '🎉';
+    if (emoji) {
+      emoji.classList.remove('shaking');
+      emoji.classList.add('opened');
+      emoji.innerText = '🎉';
+    }
     safeConfetti({ particleCount: 90, spread: 60, origin: { y: 0.5 } });
-    document.getElementById('dispGiftOpened').style.display = 'block';
-    document.getElementById('dispGiftBtn').style.display = 'block';
+    const dispGiftOpened = document.getElementById('dispGiftOpened');
+    const dispGiftBtn = document.getElementById('dispGiftBtn');
+    if (dispGiftOpened) dispGiftOpened.style.display = 'block';
+    if (dispGiftBtn) dispGiftBtn.style.display = 'block';
   }
 
-  // ---- Gallery ----
+  // ─── Gallery ───
   function renderGallery() {
     const photos = (state.photos && state.photos.length) ? state.photos : DEFAULT_PHOTOS;
     galleryIndex = 0;
     const track = document.getElementById('galleryTrack');
-    track.innerHTML = photos.map(p => `<img src="${p}">`).join('');
-    updateGallery();
+    if (track) {
+      track.innerHTML = photos.map(p => `<img src="${p}">`).join('');
+      updateGallery();
+    }
   }
   function updateGallery() {
     const track = document.getElementById('galleryTrack');
+    if (!track) return;
     const count = track.children.length;
     track.style.transform = `translateX(-${galleryIndex * 100}%)`;
     track.style.transition = 'transform .3s ease';
     track.style.width = '100%';
     const dots = document.getElementById('galleryDots');
-    dots.innerHTML = '';
-    for (let i = 0; i < count; i++) {
-      const d = document.createElement('div');
-      d.className = 'gallery-dot' + (i === galleryIndex ? ' active' : '');
-      dots.appendChild(d);
+    if (dots) {
+      dots.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const d = document.createElement('div');
+        d.className = 'gallery-dot' + (i === galleryIndex ? ' active' : '');
+        dots.appendChild(d);
+      }
     }
   }
   function galleryMove(dir) {
     const track = document.getElementById('galleryTrack');
+    if (!track) return;
     const count = track.children.length;
     if (!count) return;
     galleryIndex = (galleryIndex + dir + count) % count;
     updateGallery();
   }
 
-  // ---- Video ----
+  // ─── Video ───
   function youtubeEmbed(url) {
     const m = url.match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{6,})/);
     return m ? `https://www.youtube.com/embed/${m[1]}` : '';
   }
   function renderVideo() {
     const frame = document.getElementById('videoFrame');
+    if (!frame) return;
     if (state.videoFile) {
       frame.innerHTML = `<video src="${state.videoFile}" controls style="width:100%;border-radius:16px;"></video>`;
     } else if (state.vidUrl) {
@@ -686,81 +820,100 @@
     }
   }
 
-  // ---- Music ----
+  // ─── Music ───
   function toggleMusic() {
     const audio = document.getElementById('bgMusic');
     const fab = document.getElementById('musicFab');
+    if (!audio || !fab) return;
     if (audio.paused) { audio.play().catch(()=>{}); fab.classList.add('spin'); }
     else { audio.pause(); fab.classList.remove('spin'); }
   }
 
+  // ─── Read form ───
   function readFormIntoState() {
     Object.keys(FORM_MAP).forEach(id => {
       const el = document.getElementById(id);
+      if (!el) return;
       const key = FORM_MAP[id];
       if (key === 'pin') { state.pin = el.value.trim(); return; }
       state[key] = el.value.trim() || DEFAULTS[key];
     });
 
-    enabled.lock = document.getElementById('togLock').checked;
-    enabled.countdown = document.getElementById('togCountdown').checked;
-    enabled.question = document.getElementById('togQuestion').checked;
-    enabled.giftbox = document.getElementById('togGiftbox').checked;
-    enabled.message = document.getElementById('togMessage').checked;
-    enabled.gallery = document.getElementById('togGallery').checked;
-    enabled.video = document.getElementById('togVideo').checked;
-    enabled.final = document.getElementById('togFinal').checked;
-    enabled.music = document.getElementById('togMusic').checked;
+    const expEl = document.getElementById('inpExpires');
+    state.expiresIn = parseInt(expEl ? expEl.value : '24') || 24;
+
+    const getCheck = (id) => {
+      const el = document.getElementById(id);
+      return el ? el.checked : false;
+    };
+    enabled.lock = getCheck('togLock');
+    enabled.countdown = getCheck('togCountdown');
+    enabled.question = getCheck('togQuestion');
+    enabled.giftbox = getCheck('togGiftbox');
+    enabled.message = getCheck('togMessage');
+    enabled.gallery = getCheck('togGallery');
+    enabled.video = getCheck('togVideo');
+    enabled.final = getCheck('togFinal');
+    enabled.music = getCheck('togMusic');
     state.enabled = Object.assign({}, enabled);
+    state.createdAt = Date.now();
   }
 
+  // ─── Apply state ───
   function applyState() {
-    document.getElementById('dispTitle').innerText = state.title;
-    document.getElementById('dispEyebrow1').innerText = state.eyebrow1;
-    document.getElementById('dispQuote1').innerText = state.quote1;
-    document.getElementById('dispPinHint').innerText = state.pinHint;
-    document.getElementById('dispBtn1').innerText = state.btn1;
+    const safeSet = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = val;
+    };
 
-    document.getElementById('dispCdEyebrow').innerText = state.cdEyebrow;
-    document.getElementById('dispCdHeading').innerText = state.cdHeading;
-    document.getElementById('dispCdBtn').innerText = state.cdBtn;
+    safeSet('dispTitle', state.title);
+    safeSet('dispEyebrow1', state.eyebrow1);
+    safeSet('dispQuote1', state.quote1);
+    safeSet('dispPinHint', state.pinHint);
+    safeSet('dispBtn1', state.btn1);
 
-    document.getElementById('dispQ2').innerText = state.q2;
-    document.getElementById('dispBtn2Yes').innerText = state.btn2Yes;
-    document.getElementById('dispBtn2No').innerText = state.btn2No;
+    safeSet('dispCdEyebrow', state.cdEyebrow);
+    safeSet('dispCdHeading', state.cdHeading);
+    safeSet('dispCdBtn', state.cdBtn);
 
-    document.getElementById('dispGiftEyebrow').innerText = state.giftEyebrow;
-    document.getElementById('dispGiftHeading').innerText = state.giftHeading;
-    document.getElementById('dispGiftOpened').innerText = state.giftOpened;
-    document.getElementById('dispGiftBtn').innerText = state.giftBtn;
+    safeSet('dispQ2', state.q2);
+    safeSet('dispBtn2Yes', state.btn2Yes);
+    safeSet('dispBtn2No', state.btn2No);
 
-    document.getElementById('dispBadge').innerText = state.badge;
-    document.getElementById('dispHeading3').innerText = state.heading3;
-    document.getElementById('dispBtn3').innerText = state.btn3;
+    safeSet('dispGiftEyebrow', state.giftEyebrow);
+    safeSet('dispGiftHeading', state.giftHeading);
+    safeSet('dispGiftOpened', state.giftOpened);
+    safeSet('dispGiftBtn', state.giftBtn);
 
-    document.getElementById('dispEyebrow4').innerText = state.eyebrow4;
-    document.getElementById('dispCaption4').innerText = state.caption4;
-    document.getElementById('dispBtn4').innerText = state.btn4;
+    safeSet('dispBadge', state.badge);
+    safeSet('dispHeading3', state.heading3);
+    safeSet('dispBtn3', state.btn3);
 
-    document.getElementById('dispVidEyebrow').innerText = state.vidEyebrow;
-    document.getElementById('dispVidCaption').innerText = state.vidCaption;
-    document.getElementById('dispVidBtn').innerText = state.vidBtn;
+    safeSet('dispEyebrow4', state.eyebrow4);
+    safeSet('dispCaption4', state.caption4);
+    safeSet('dispBtn4', state.btn4);
+
+    safeSet('dispVidEyebrow', state.vidEyebrow);
+    safeSet('dispVidCaption', state.vidCaption);
+    safeSet('dispVidBtn', state.vidBtn);
     renderVideo();
 
-    document.getElementById('dispHeading5').innerText = state.heading5;
-    document.getElementById('dispQuote5').innerText = state.quote5;
-    document.getElementById('replayBtn').innerText = state.btn5;
+    safeSet('dispHeading5', state.heading5);
+    safeSet('dispQuote5', state.quote5);
+    safeSet('replayBtn', state.btn5);
 
     let notesArray = state.notes.split('\n');
     let container = document.getElementById('dispNotes');
-    container.innerHTML = '';
-    notesArray.forEach(n => {
-      if (n.trim()) {
-        let p = document.createElement('p');
-        p.innerText = n.trim();
-        container.appendChild(p);
-      }
-    });
+    if (container) {
+      container.innerHTML = '';
+      notesArray.forEach(n => {
+        if (n.trim()) {
+          let p = document.createElement('p');
+          p.innerText = n.trim();
+          container.appendChild(p);
+        }
+      });
+    }
 
     const fab = document.getElementById('musicFab');
     const audio = document.getElementById('bgMusic');
@@ -774,40 +927,317 @@
     }
   }
 
-  document.getElementById('btnPreview').addEventListener('click', () => {
+  // ─── Preview ───
+  const btnPreview = document.getElementById('btnPreview');
+  if (btnPreview) {
+    btnPreview.addEventListener('click', () => {
+      readFormIntoState();
+      applyState();
+      startFlow();
+    });
+  }
+
+  const replayBtn = document.getElementById('replayBtn');
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => {
+      startFlow();
+    });
+  }
+
+  // ─── Countdown button ───
+  const dispCdBtn = document.getElementById('dispCdBtn');
+  if (dispCdBtn) {
+    dispCdBtn.addEventListener('click', () => goNext('countdown'));
+  }
+
+  // ─── Other navigation buttons ───
+  const dispBtn2Yes = document.getElementById('dispBtn2Yes');
+  if (dispBtn2Yes) {
+    dispBtn2Yes.addEventListener('click', () => goNext('question'));
+  }
+
+  const dispGiftBtn = document.getElementById('dispGiftBtn');
+  if (dispGiftBtn) {
+    dispGiftBtn.addEventListener('click', () => goNext('giftbox'));
+  }
+
+  const dispBtn3 = document.getElementById('dispBtn3');
+  if (dispBtn3) {
+    dispBtn3.addEventListener('click', () => goNext('message'));
+  }
+
+  const dispBtn4 = document.getElementById('dispBtn4');
+  if (dispBtn4) {
+    dispBtn4.addEventListener('click', () => goNext('gallery'));
+  }
+
+  const dispVidBtn = document.getElementById('dispVidBtn');
+  if (dispVidBtn) {
+    dispVidBtn.addEventListener('click', () => goNext('video'));
+  }
+
+  // ─── Gift box click ───
+  const giftboxWrap = document.getElementById('giftboxWrap');
+  if (giftboxWrap) {
+    giftboxWrap.addEventListener('click', openGift);
+  }
+
+  // ─── Gallery arrows ───
+  const galleryPrev = document.getElementById('galleryPrev');
+  const galleryNext = document.getElementById('galleryNext');
+  if (galleryPrev) {
+    galleryPrev.addEventListener('click', () => galleryMove(-1));
+  }
+  if (galleryNext) {
+    galleryNext.addEventListener('click', () => galleryMove(1));
+  }
+
+  // ─── Music fab ───
+  const musicFab = document.getElementById('musicFab');
+  if (musicFab) {
+    musicFab.addEventListener('click', toggleMusic);
+  }
+
+  // ─── Question No button ───
+  const dispBtn2No = document.getElementById('dispBtn2No');
+  if (dispBtn2No) {
+    dispBtn2No.addEventListener('click', showThinkToast);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  SHAREABLE LINK SYSTEM (FULLY FIXED - with safe null checks)
+  // ═══════════════════════════════════════════════════════════════
+
+  function genId() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function doCreateLink() {
     readFormIntoState();
-    applyState();
-    startFlow();
-  });
 
-  document.getElementById('replayBtn').addEventListener('click', () => {
-    startFlow();
-  });
+    state.createdAt = Date.now();
+    const id = genId();
+    currentGiftId = id;
+    const dataToStore = JSON.parse(JSON.stringify(state));
 
-  // Safe export: bakes data in as JSON (no manual string interpolation,
-  // so quotes/backticks/emojis in your text can never break the file).
-  document.getElementById('btnExport').addEventListener('click', () => {
-    readFormIntoState();
+    localStorage.setItem('surprise_v16_' + id, JSON.stringify(dataToStore));
 
-    const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-    const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-    const bodyIdx = PRISTINE_HTML.indexOf('<body');
-    const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-    const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+    let allIds = JSON.parse(localStorage.getItem('surprise_v16_ids') || '[]');
+    if (!allIds.includes(id)) allIds.push(id);
+    localStorage.setItem('surprise_v16_ids', JSON.stringify(allIds));
 
-    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
-    a.download = `${safeName}-surprise.html`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
-  });
+    const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
+    const input = document.getElementById('shareLinkInput');
+    if (input) input.value = shareUrl;
 
-  // Auto-start if opened from an exported/preset file
+    const hint = document.getElementById('expiryHint');
+    if (hint) {
+      if (state.expiresIn === 0) {
+        hint.textContent = '♾️ This link will NEVER expire! Share it anytime.';
+      } else {
+        hint.textContent = '🔗 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+      }
+    }
+
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const shareScreen = document.getElementById('scr-share');
+    if (shareScreen) shareScreen.classList.add('active');
+
+    console.log('🎉 Surprise link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state.expiresIn + ' hours');
+  }
+
+  const btnCreateLink = document.getElementById('btnCreateLink');
+  if (btnCreateLink) {
+    btnCreateLink.addEventListener('click', function() {
+      doCreateLink();
+    });
+  }
+
+  // ─── Copy link ───
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  if (copyLinkBtn) {
+    copyLinkBtn.addEventListener('click', function() {
+      const input = document.getElementById('shareLinkInput');
+      if (!input || !input.value) return;
+      navigator.clipboard.writeText(input.value).then(() => {
+        this.textContent = '✓ Copied!';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = 'Copy';
+          this.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        alert('Link copied!');
+      });
+    });
+  }
+
+  // ─── Share buttons ───
+  const whatsappBtn = document.getElementById('whatsappBtn');
+  if (whatsappBtn) {
+    whatsappBtn.addEventListener('click', () => {
+      const link = document.getElementById('shareLinkInput')?.value || '';
+      window.open('https://wa.me/?text=' + encodeURIComponent('✨ A special surprise for you! ' + link), '_blank');
+    });
+  }
+
+  const emailBtn = document.getElementById('emailBtn');
+  if (emailBtn) {
+    emailBtn.addEventListener('click', () => {
+      const link = document.getElementById('shareLinkInput')?.value || '';
+      window.location.href = 'mailto:?subject=A Special Surprise&body=✨ A special surprise for you! ' + link;
+    });
+  }
+
+  const openGiftBtn = document.getElementById('openGiftBtn');
+  if (openGiftBtn) {
+    openGiftBtn.addEventListener('click', function() {
+      const id = currentGiftId;
+      if (id) {
+        loadFromId(id);
+      }
+    });
+  }
+
+  // ─── Load from ID (FULLY FIXED - all null checks) ───
+  function loadFromId(id) {
+    console.log('🔍 Loading surprise with ID:', id);
+
+    // Safely get expiryDetail element
+    const detailEl = document.getElementById('expiryDetailText');
+    if (detailEl) detailEl.innerText = 'Searching for link...';
+
+    let raw = null;
+
+    // Try all possible versions
+    const versions = ['v16_', 'v15_', 'v14_', 'v13_', 'v12_', 'v11_', 'v10_', 'v9_', 'v8_', 'v7_', 'v6_', 'v5_', 'v4_', 'v3_', 'v2_', ''];
+    for (const ver of versions) {
+      const key = 'surprise_' + ver + id;
+      const test = localStorage.getItem(key);
+      if (test) {
+        raw = test;
+        console.log('🔄 Found in version:', ver || 'v1');
+        // Migrate to latest
+        if (ver !== 'v16_') {
+          localStorage.setItem('surprise_v16_' + id, test);
+          let allIds = JSON.parse(localStorage.getItem('surprise_v16_ids') || '[]');
+          if (!allIds.includes(id)) allIds.push(id);
+          localStorage.setItem('surprise_v16_ids', JSON.stringify(allIds));
+        }
+        break;
+      }
+    }
+
+    if (!raw) {
+      console.warn('⚠️ Surprise not found in localStorage:', id);
+      if (detailEl) detailEl.innerText = 'This surprise no longer exists.';
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const expired = document.getElementById('scr-expired');
+      if (expired) expired.classList.add('active');
+      return false;
+    }
+
+    try {
+      const data = JSON.parse(raw);
+      const now = Date.now();
+
+      // ✅ FIX: Proper expiry check - only if expiresIn > 0
+      if (data.expiresIn > 0) {
+        const createdAt = data.createdAt || Date.now();
+        const expTime = createdAt + (data.expiresIn || 0) * 3600000;
+        if (now > expTime) {
+          const d = new Date(expTime);
+          if (detailEl) detailEl.innerText = 'Expired on ' + d.toLocaleString();
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          const expired = document.getElementById('scr-expired');
+          if (expired) expired.classList.add('active');
+          console.log('⏰ Link expired! Expired at:', d);
+          return false;
+        }
+      } else {
+        console.log('♾️ This link NEVER expires!');
+        if (detailEl) detailEl.innerText = 'This link NEVER expires!';
+      }
+
+      // Apply data
+      state = Object.assign({}, DEFAULTS, data);
+      state.enabled = Object.assign({}, enabled, data.enabled || {});
+      state.createdAt = data.createdAt || Date.now();
+      currentGiftId = id;
+
+      applyState();
+
+      // Reset PIN boxes
+      document.querySelectorAll('.pin-box').forEach(i => i.value = '');
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      startFlow();
+
+      console.log('✅ Surprise loaded successfully!');
+      return true;
+
+    } catch (e) {
+      console.error('❌ Error loading surprise:', e);
+      if (detailEl) detailEl.innerText = 'Error: ' + e.message;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const expired = document.getElementById('scr-expired');
+      if (expired) expired.classList.add('active');
+      return false;
+    }
+  }
+
+  // ─── Auto-load from URL ───
+  (function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) {
+      console.log('🔗 Loading from URL with ID:', id);
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      loadFromId(id);
+    }
+  })();
+
+  // ─── Expired restart ───
+  const expiredRestartBtn = document.getElementById('expiredRestartBtn');
+  if (expiredRestartBtn) {
+    expiredRestartBtn.addEventListener('click', function() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const setupScreen = document.getElementById('scr-setup');
+      if (setupScreen) setupScreen.classList.add('active');
+      if (window.history && window.history.pushState) {
+        window.history.pushState({}, '', window.location.pathname);
+      }
+      currentGiftId = null;
+    });
+  }
+
+  // ─── Export ───
+  const btnExport = document.getElementById('btnExport');
+  if (btnExport) {
+    btnExport.addEventListener('click', () => {
+      readFormIntoState();
+      const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
+      const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
+      const bodyIdx = PRISTINE_HTML.indexOf('<body');
+      const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
+      const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
+
+      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = state.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
+      a.download = `${safeName}-surprise.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    });
+  }
+
+  // ─── Auto-start if preset exists ───
   if (window.__PRESET__) {
     state = Object.assign({}, DEFAULTS, window.__PRESET__);
     Object.assign(enabled, window.__PRESET__.enabled || {});
@@ -815,6 +1245,10 @@
     applyState();
     startFlow();
   }
+
+  console.log('🎉 Custom Surprise Builder with Shareable Links (FULLY FIXED - no null errors)!');
+  console.log('🔗 Use "Create Shareable Link" to generate a unique URL.');
+  console.log('♾️ Select "Never Expire" for permanent links.');
 </script>
 
 </body>

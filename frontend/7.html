@@ -30,11 +30,13 @@
   .field label{display:block;font-size:11px;font-weight:600;color:var(--soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
   .field input, .field textarea{width:100%;padding:10px 13px;border-radius:12px;border:1px solid #ffd0d8;background:#fffafb;font-family:inherit;font-size:13px;}
   .field input:focus, .field textarea:focus{outline:2px solid var(--pink);outline-offset:2px;}
+  .field select{width:100%;padding:10px 13px;border-radius:12px;border:1px solid #ffd0d8;background:#fffafb;font-family:inherit;font-size:13px;}
   .btn{width:100%;padding:13px;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;
     background:var(--pink);color:#fff;box-shadow:0 8px 20px rgba(255,77,109,.35);margin-top:8px;transition:transform .15s;}
   .btn:active{transform:scale(.96);}
   .btn.ghost{background:transparent;color:var(--soft);border:1px solid #f0c7cf;box-shadow:none;width:auto;padding:12px 24px;}
   .btn-secondary{background:linear-gradient(135deg, #f39c12, #e67e22);color:#1e1e1e;box-shadow:0 8px 25px rgba(243,156,18,0.3);}
+  .btn-gold{background:linear-gradient(135deg, #fbbf24, #d97706);color:#1a1a2e;box-shadow:0 8px 25px rgba(251,191,36,0.3);}
   .btn-group{display:flex;gap:10px;flex-wrap:wrap;}
   .btn-group .btn{flex:1;min-width:100px;}
 
@@ -110,9 +112,19 @@
       </div>
 
       <div class="field">
-        <label>⏳ Link Expires In (hours)</label>
-        <input type="number" id="inpExpires" min="1" max="720" value="24">
-        <small>After this many hours, the link will expire. (1–720 hours)</small>
+        <label>⏳ Link Expires In</label>
+        <select id="inpExpires">
+          <option value="1">1 hour</option>
+          <option value="6">6 hours</option>
+          <option value="12">12 hours</option>
+          <option value="24" selected>24 hours</option>
+          <option value="48">48 hours</option>
+          <option value="72">72 hours</option>
+          <option value="168">7 days</option>
+          <option value="720">30 days</option>
+          <option value="0">♾️ Never Expire</option>
+        </select>
+        <small>After this time, the link will expire. Select "Never Expire" for permanent link.</small>
       </div>
 
       <div class="btn-group">
@@ -168,8 +180,8 @@
       <div class="heart-burst">💖</div>
       <h1 class="script" id="dispFinalHead" style="font-size:30px;margin:0;"></h1>
       <p class="final-msg" id="dispFinalMsg"></p>
-    <!-- <button class="restart-link" id="restartBtn">create another one</button>
-    </div> --> 
+     <!--<button class="restart-link" id="restartBtn">create another one</button>--> 
+    </div>
   </div>
 
 </div>
@@ -223,7 +235,7 @@
     state.finalHead = document.getElementById('inpFinalHead').value.trim() || DEFAULTS.finalHead;
     state.finalMsg = document.getElementById('inpFinalMsg').value.trim() || DEFAULTS.finalMsg;
     const exp = parseInt(document.getElementById('inpExpires').value) || 24;
-    state.expiresIn = Math.min(Math.max(exp, 1), 720);
+    state.expiresIn = exp;
     state.createdAt = Date.now();
   }
 
@@ -285,7 +297,7 @@
   }
 
   // ============================================================
-  //  SHAREABLE LINK SYSTEM
+  //  SHAREABLE LINK SYSTEM (FIXED)
   // ============================================================
   function createShareableLink() {
     readFormIntoState();
@@ -298,19 +310,25 @@
     const id = genId();
     currentGiftId = id;
     const dataToStore = JSON.parse(JSON.stringify(state));
-    localStorage.setItem('love_question_' + id, JSON.stringify(dataToStore));
+    localStorage.setItem('love_question_v2_' + id, JSON.stringify(dataToStore));
 
-    let allIds = JSON.parse(localStorage.getItem('love_question_ids') || '[]');
+    let allIds = JSON.parse(localStorage.getItem('love_question_v2_ids') || '[]');
     if (!allIds.includes(id)) allIds.push(id);
-    localStorage.setItem('love_question_ids', JSON.stringify(allIds));
+    localStorage.setItem('love_question_v2_ids', JSON.stringify(allIds));
 
     const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
     document.getElementById('shareLinkInput').value = shareUrl;
-    document.getElementById('expiryHint').innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+
+    const hintEl = document.getElementById('expiryHint');
+    if (state.expiresIn === 0) {
+      hintEl.innerText = '♾️ This link will NEVER expire! Share it anytime.';
+    } else {
+      hintEl.innerText = '💕 This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ? 's' : '');
+    }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     nav('scr-share');
-    console.log('💕 Love link created! ID:', id);
+    console.log('💕 Love link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state.expiresIn + ' hours');
     return id;
   }
 
@@ -352,12 +370,28 @@
   });
 
   // ============================================================
-  //  LOAD FROM ID (FIXED)
+  //  LOAD FROM ID (FIXED - with Never Expire support)
   // ============================================================
   function loadFromId(id) {
     console.log('🔍 Loading love question with ID:', id);
 
-    let raw = localStorage.getItem('love_question_' + id);
+    // Try v2 first
+    let raw = localStorage.getItem('love_question_v2_' + id);
+
+    // Fallback to v1
+    if (!raw) {
+      console.log('🔄 Trying v1 format...');
+      raw = localStorage.getItem('love_question_' + id);
+      if (raw) {
+        console.log('✅ Found in v1 format, converting to v2');
+        localStorage.setItem('love_question_v2_' + id, raw);
+        localStorage.removeItem('love_question_' + id);
+        let allIds = JSON.parse(localStorage.getItem('love_question_v2_ids') || '[]');
+        if (!allIds.includes(id)) allIds.push(id);
+        localStorage.setItem('love_question_v2_ids', JSON.stringify(allIds));
+        raw = localStorage.getItem('love_question_v2_' + id);
+      }
+    }
 
     if (!raw) {
       console.warn('⚠️ Love question not found in localStorage:', id);
@@ -371,14 +405,21 @@
     try {
       const data = JSON.parse(raw);
       const now = Date.now();
-      const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-      if (expTime > 0 && now > expTime) {
-        const d = new Date(expTime);
-        const detailEl = document.getElementById('expiryDetail');
-        if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-expired').classList.add('active');
-        return false;
+
+      // ✅ FIX: Only check expiry if expiresIn > 0 (Never Expire = 0)
+      if (data.expiresIn > 0) {
+        const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+        if (expTime > 0 && now > expTime) {
+          const d = new Date(expTime);
+          const detailEl = document.getElementById('expiryDetail');
+          if (detailEl) detailEl.textContent = 'Expired on ' + d.toLocaleString();
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          document.getElementById('scr-expired').classList.add('active');
+          console.log('⏰ Link expired! Expired at:', d);
+          return false;
+        }
+      } else {
+        console.log('♾️ This love link NEVER expires!');
       }
 
       // Apply data
@@ -429,12 +470,10 @@
   function goToSetup() {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     nav('scr-setup');
-    // Clear URL parameters
     if (window.history && window.history.pushState) {
       window.history.pushState({}, '', window.location.pathname);
     }
     currentGiftId = null;
-    // Reset No button position
     const noBtnEl = document.getElementById('noBtn');
     if (noBtnEl) {
       noBtnEl.style.position = '';
@@ -456,8 +495,9 @@
     delete window.__PRESET__;
   }
 
-  console.log('💕 Do You Love Me? with Shareable Link System loaded!');
+  console.log('💕 Do You Love Me? with Shareable Link System (FIXED)!');
   console.log('🔗 Use "Create Link" to generate a unique, time-limited URL.');
+  console.log('♾️ Select "Never Expire" for permanent links.');
 </script>
 </body>
 </html>

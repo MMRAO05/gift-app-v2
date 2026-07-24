@@ -991,8 +991,18 @@
                         <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="1122" value="1122" />
                     </div>
                     <div class="field">
-                        <label>⏳ Expires (hours)</label>
-                        <input type="number" id="inpExpires" min="1" max="720" value="24" />
+                        <label>⏳ Link Expires</label>
+                        <select id="inpExpires">
+                            <option value="1">1 hour</option>
+                            <option value="6">6 hours</option>
+                            <option value="12">12 hours</option>
+                            <option value="24" selected>24 hours</option>
+                            <option value="48">48 hours</option>
+                            <option value="72">72 hours</option>
+                            <option value="168">7 days</option>
+                            <option value="720">30 days</option>
+                            <option value="0">♾️ Never Expire</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1111,9 +1121,9 @@
                 <div class="salutation" id="letterSalutation">Dear friend,</div>
                 <div class="body-text" id="letterBody"></div>
                 <div class="sign" id="letterSign">— with all my light</div>
-        <!--   </div>
-            <button class="restart-btn" id="restartBtn">⟳ Create another aurora</button>
-        </div> --> 
+             <!--  <button class="restart-btn" id="restartBtn">⟳ Create another aurora</button> --> 
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1134,10 +1144,10 @@
             window.addEventListener('resize', resize);
 
             const colors = [
-                { r: 0, g: 212, b: 255 }, // cyan
-                { r: 124, g: 58, b: 237 }, // purple
-                { r: 236, g: 72, b: 153 }, // pink
-                { r: 245, g: 158, b: 11 }, // gold
+                { r: 0, g: 212, b: 255 },
+                { r: 124, g: 58, b: 237 },
+                { r: 236, g: 72, b: 153 },
+                { r: 245, g: 158, b: 11 },
             ];
 
             function drawAurora() {
@@ -1416,7 +1426,7 @@
             state.letter = letter;
             state.passkey = pass.padStart(4, '0').slice(0, 4);
             state.photos = [...photoData];
-            state.expiresIn = Math.min(Math.max(expires, 1), 720);
+            state.expiresIn = expires;
             state.createdAt = Date.now();
         }
 
@@ -1534,11 +1544,18 @@
             const input = $('shareLinkInput');
             if (input) input.value = shareUrl;
             const hint = $('expiryHint');
-            if (hint) hint.textContent = '✦ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
-                's' : '');
+            if (hint) {
+                if (state.expiresIn === 0) {
+                    hint.textContent = '♾️ This link will NEVER expire! Share it anytime.';
+                } else {
+                    hint.textContent = '✦ This link will expire in ' + state.expiresIn + ' hour' + (state.expiresIn > 1 ?
+                        's' : '');
+                }
+            }
 
             showScreen('share');
-            console.log('🌊 Aurora link created! ID:', id);
+            console.log('🌊 Aurora link created! ID:', id, 'Expires in:', state.expiresIn === 0 ? 'NEVER' : state
+            .expiresIn + ' hours');
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1590,15 +1607,13 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        //  LOAD FROM ID (FIXED)
+        //  LOAD FROM ID (FIXED - with Never Expire support)
         // ═══════════════════════════════════════════════════════════════
         function loadFromId(id) {
             console.log('🔍 Loading aurora gift with ID:', id);
 
-            // Try v5 first
             let raw = localStorage.getItem('aurora_v5_' + id);
 
-            // Fallback to v4 if not found
             if (!raw) {
                 console.log('🔄 Trying v4 format...');
                 raw = localStorage.getItem('aurora_v4_' + id);
@@ -1606,7 +1621,6 @@
                     console.log('✅ Found in v4 format, converting to v5');
                     localStorage.setItem('aurora_v5_' + id, raw);
                     localStorage.removeItem('aurora_v4_' + id);
-                    // Update IDs list
                     let allIds = JSON.parse(localStorage.getItem('aurora_v5_ids') || '[]');
                     if (!allIds.includes(id)) allIds.push(id);
                     localStorage.setItem('aurora_v5_ids', JSON.stringify(allIds));
@@ -1625,13 +1639,20 @@
             try {
                 const data = JSON.parse(raw);
                 const now = Date.now();
-                const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                if (expTime > 0 && now > expTime) {
-                    const d = new Date(expTime);
-                    const detail = $('expiryDetail');
-                    if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
-                    showScreen('expired');
-                    return false;
+
+                // ✅ FIX: Only check expiry if expiresIn > 0 (Never Expire = 0)
+                if (data.expiresIn > 0) {
+                    const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
+                    if (expTime > 0 && now > expTime) {
+                        const d = new Date(expTime);
+                        const detail = $('expiryDetail');
+                        if (detail) detail.textContent = 'Expired on ' + d.toLocaleString();
+                        showScreen('expired');
+                        console.log('⏰ Link expired! Expired at:', d);
+                        return false;
+                    }
+                } else {
+                    console.log('♾️ This aurora link NEVER expires!');
                 }
 
                 // Apply data to state
@@ -1708,7 +1729,8 @@
             const emojis = ['✦', '🌊', '💫', '🌟', '✨', '🌌', '🪐', '☄️'];
             for (let i = 0; i < 35; i++) {
                 const p = document.createElement('div');
-                p.style.cssText = `
+                p.style.cssText =
+                    `
               position: absolute;
               pointer-events: none;
               font-size: ${16 + Math.random() * 28}px;
@@ -1926,7 +1948,7 @@
 
         console.log('🌊 Aurora v5 — Premium Celestial Experience with Shareable Links (FIXED)!');
         console.log('✦ Use "Create Link" to generate a unique, time-limited URL.');
-        console.log('💎 All data stored locally in your browser.');
+        console.log('♾️ Select "Never Expire" for permanent links.');
     </script>
 </body>
 </html>
