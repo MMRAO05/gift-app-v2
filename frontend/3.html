@@ -747,9 +747,9 @@
                 <div class="gift-box" id="giftBox" role="button" aria-label="Open gift">🎁</div>
                 <div class="gift-message-wrap" id="giftMessageWrap">
                     <span id="giftMessage">You mean everything to me. ❤️</span>
-               <!-- </div>
+                </div>
                 <button class="restart-link" id="restartBtn">🔄 Create another one</button>
-            </div>-->
+            </div>
         </div>
 
     </div>
@@ -890,19 +890,6 @@
             document.getElementById('giftMessageWrap').classList.remove('show');
             nav('scr-1');
         });
-
-        /* ─── generate short ID ─── */
-        function genShortId() {
-            // Generate a short 6-8 character ID using timestamp + random
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let id = '';
-            const timestamp = Date.now().toString(36);
-            id += timestamp.slice(-4);
-            for (let i = 0; i < 4; i++) {
-                id += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return id;
-        }
 
         /* ─── CREATE SHAREABLE LINK WITH DATA EMBEDDED ─── */
         document.getElementById('btnCreateLink').addEventListener('click', function() {
