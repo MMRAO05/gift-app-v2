@@ -1,238 +1,291 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs').promises;
 const path = require('path');
-require('dotenv').config();
+const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-// ===== MIDDLEWARE =====
-// Helmet with CSP that allows inline scripts and styles for the frontend
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            scriptSrc: [
-                "'self'",
-                "'unsafe-inline'",
-                "https://cdn.jsdelivr.net"   // ← yeh add karein
-            ],
-            imgSrc: ["'self'", "data:", "blob:"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            connectSrc: ["'self'"],
-        },
-    },
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-app.use(compression());
+// Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100
+// Store gifts in memory
+const gifts = new Map();
+const htmlCache = new Map();
+
+// ─── Helper: Read HTML file ───
+function getHtmlContent(filename) {
+  if (htmlCache.has(filename)) {
+    return htmlCache.get(filename);
+  }
+  try {
+    const content = fs.readFileSync(path.join(__dirname, '../frontend', filename), 'utf8');
+    htmlCache.set(filename, content);
+    return content;
+  } catch (e) {
+    console.error(`❌ Failed to read ${filename}:`, e.message);
+    return null;
+  }
+}
+
+// ─── Serve static HTML files ───
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
-app.use('/api/', limiter);
 
-// ===== SERVE FRONTEND =====
-const frontendPath = path.join(__dirname, '..', 'frontend');
-console.log('📁 Frontend path:', frontendPath);
-app.use(express.static(frontendPath));
+// Serve all HTML files in the folder
+app.get('/:file.html', (req, res) => {
+  const fileName = req.params.file;
+  if (fileName.includes('..') || fileName.includes('/')) {
+    return res.status(404).send('Not found');
+  }
+  const filePath = path.join(__dirname, '../frontend', `${fileName}.html`);
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send('File not found');
+  }
+});
 
-// ===== DATABASE =====
-const DB_PATH = path.join(__dirname, '..', 'database', 'gifts.json');
-
-const ensureDBExists = async () => {
-    const dir = path.dirname(DB_PATH);
-    try {
-        await fs.access(dir);
-    } catch {
-        await fs.mkdir(dir, { recursive: true });
+// ─── API: Create Shareable Link ───
+app.post('/api/create', (req, res) => {
+  try {
+    const { template, data } = req.body;
+    
+    if (!template) {
+      return res.status(400).json({ error: 'Template name is required' });
     }
-    try {
-        await fs.access(DB_PATH);
-    } catch {
-        await fs.writeFile(DB_PATH, JSON.stringify({ gifts: {} }));
+    
+    // Generate unique ID
+    const giftId = uuidv4();
+    const id = giftId.slice(0, 12);
+    
+    // Get the HTML template
+    const htmlContent = getHtmlContent(`${template}.html`);
+    if (!htmlContent) {
+      return res.status(404).json({ error: `Template "${template}" not found` });
     }
-};
-
-const readDB = async () => {
-    await ensureDBExists();
-    const data = await fs.readFile(DB_PATH, 'utf8');
-    return JSON.parse(data);
-};
-
-const writeDB = async (data) => {
-    await ensureDBExists();
-    await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
-};
-
-// ===== API ROUTES =====
-
-// Health check
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'healthy', 
-        timestamp: new Date(),
-        uptime: process.uptime()
+    
+    // Inject the data into the HTML
+    const jsonSafe = JSON.stringify(data || {}).replace(/</g, '\\u003c');
+    const injectedScript = `<script>window.__PRESET__=${jsonSafe};</script>`;
+    
+    let finalHtml = htmlContent;
+    const bodyCloseIndex = finalHtml.lastIndexOf('</body>');
+    if (bodyCloseIndex !== -1) {
+      finalHtml = finalHtml.slice(0, bodyCloseIndex) + injectedScript + finalHtml.slice(bodyCloseIndex);
+    } else {
+      finalHtml = finalHtml + injectedScript;
+    }
+    
+    // Store in memory
+    gifts.set(id, {
+      id,
+      template,
+      data,
+      html: finalHtml,
+      createdAt: Date.now()
     });
-});
-
-// Create gift
-app.post('/api/gift', async (req, res) => {
-    try {
-        const { name, shortLine, letter, passkey, photos } = req.body;
-        
-        console.log('📦 Received gift creation request:');
-        console.log('  Name:', name);
-        console.log('  Photos:', photos ? photos.length : 0);
-        
-        if (!name || name.length > 30) {
-            return res.status(400).json({ 
-                error: 'Name is required and must be less than 30 characters' 
-            });
-        }
-
-        const giftId = uuidv4();
-        const bcrypt = require('bcryptjs');
-        const salt = await bcrypt.genSalt(10);
-        const hashedPasskey = await bcrypt.hash(passkey || '1122', salt);
-        
-        const gift = {
-            id: giftId,
-            name,
-            shortLine: shortLine || 'In your smile, I found my peace.',
-            letter: letter || 'You mean the world to me.',
-            passkey: hashedPasskey,
-            photos: photos || [],
-            createdAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        };
-        
-        const db = await readDB();
-        db.gifts[giftId] = gift;
-        await writeDB(db);
-        
-        console.log('✅ Gift created with ID:', giftId);
-        
-        res.status(201).json({
-            success: true,
-            giftId,
-            url: `/gift/${giftId}`,
-            message: 'Gift created successfully!'
-        });
-        
-    } catch (error) {
-        console.error('❌ Error creating gift:', error);
-        res.status(500).json({ 
-            error: 'Failed to create gift. Please try again.' 
-        });
+    
+    // Save to disk (persistence)
+    const giftDir = path.join(__dirname, 'gifts');
+    if (!fs.existsSync(giftDir)) {
+      fs.mkdirSync(giftDir, { recursive: true });
     }
+    
+    fs.writeFileSync(
+      path.join(giftDir, `${id}.html`),
+      finalHtml,
+      'utf8'
+    );
+    fs.writeFileSync(
+      path.join(giftDir, `${id}.json`),
+      JSON.stringify({ id, template, data, createdAt: Date.now() }, null, 2),
+      'utf8'
+    );
+    
+    const shareUrl = `${req.protocol}://${req.get('host')}/gift/${id}`;
+    
+    console.log(`✅ Gift created: ${id} → ${shareUrl}`);
+    res.json({ 
+      success: true, 
+      id, 
+      url: shareUrl,
+      expiresAt: null // NEVER EXPIRES
+    });
+    
+  } catch (error) {
+    console.error('❌ Create error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Get gift
-app.get('/api/gift/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const db = await readDB();
-        const gift = db.gifts[id];
-        
-        if (!gift) {
-            return res.status(404).json({ 
-                error: 'Gift not found. Please check the URL.' 
-            });
-        }
-        
-        if (new Date(gift.expiresAt) < new Date()) {
-            return res.status(410).json({ 
-                error: 'This gift has expired. Create a new one!' 
-            });
-        }
-        
-        const { passkey, ...giftData } = gift;
-        res.json(giftData);
-        
-    } catch (error) {
-        console.error('Error fetching gift:', error);
-        res.status(500).json({ 
-            error: 'Failed to fetch gift. Please try again.' 
-        });
+// ─── API: Get gift by ID ───
+app.get('/api/gift/:id', (req, res) => {
+  const { id } = req.params;
+  
+  if (gifts.has(id)) {
+    const gift = gifts.get(id);
+    return res.json({
+      id: gift.id,
+      template: gift.template,
+      data: gift.data,
+      createdAt: gift.createdAt
+    });
+  }
+  
+  try {
+    const jsonPath = path.join(__dirname, 'gifts', `${id}.json`);
+    if (fs.existsSync(jsonPath)) {
+      const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      return res.json({
+        id: jsonData.id,
+        template: jsonData.template,
+        data: jsonData.data,
+        createdAt: jsonData.createdAt
+      });
     }
+  } catch (e) {
+    console.error('❌ Disk read error:', e);
+  }
+  
+  res.status(404).json({ error: 'Gift not found' });
 });
 
-// Verify passkey
-app.post('/api/gift/:id/verify', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { passkey } = req.body;
-        
-        if (!passkey || passkey.length !== 4) {
-            return res.status(400).json({ 
-                error: 'Please enter a valid 4-digit passkey.' 
-            });
-        }
-        
-        const db = await readDB();
-        const gift = db.gifts[id];
-        
-        if (!gift) {
-            return res.status(404).json({ 
-                error: 'Gift not found.' 
-            });
-        }
-        
-        const bcrypt = require('bcryptjs');
-        const isValid = await bcrypt.compare(passkey, gift.passkey);
-        
-        if (isValid) {
-            res.json({ 
-                success: true, 
-                message: 'Passkey verified!' 
-            });
-        } else {
-            res.status(401).json({ 
-                error: 'Incorrect passkey. Please try again.' 
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error verifying passkey:', error);
-        res.status(500).json({ 
-            error: 'Failed to verify passkey. Please try again.' 
-        });
+// ─── Serve the actual gift HTML ───
+app.get('/gift/:id', (req, res) => {
+  const { id } = req.params;
+  
+  if (gifts.has(id)) {
+    const gift = gifts.get(id);
+    return res.send(gift.html);
+  }
+  
+  try {
+    const htmlPath = path.join(__dirname, 'gifts', `${id}.html`);
+    if (fs.existsSync(htmlPath)) {
+      return res.sendFile(htmlPath);
     }
+  } catch (e) {
+    console.error('❌ HTML read error:', e);
+  }
+  
+  res.status(404).send(`
+    <!DOCTYPE html>
+    <html>
+    <head><title>Gift Not Found</title>
+    <style>
+      body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1410;color:#fff;font-family:sans-serif;text-align:center;margin:0;}
+      a{color:#c9a86c;text-decoration:none;}
+    </style>
+    </head>
+    <body>
+      <div>
+        <h1>💔 Gift Not Found</h1>
+        <p>This gift may have been removed or the link is incorrect.</p>
+        <a href="/">← Create a new gift</a>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
-// ===== FALLBACK ROUTE =====
-app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
+// ─── API: List all gifts ───
+app.get('/api/gifts', (req, res) => {
+  const allGifts = [];
+  
+  for (const [id, gift] of gifts) {
+    allGifts.push({
+      id,
+      template: gift.template,
+      createdAt: gift.createdAt
+    });
+  }
+  
+  try {
+    const giftDir = path.join(__dirname, 'gifts');
+    if (fs.existsSync(giftDir)) {
+      const files = fs.readdirSync(giftDir);
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const id = file.replace('.json', '');
+          if (!gifts.has(id)) {
+            const jsonData = JSON.parse(fs.readFileSync(path.join(giftDir, file), 'utf8'));
+            allGifts.push({
+              id,
+              template: jsonData.template,
+              createdAt: jsonData.createdAt
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('❌ List error:', e);
+  }
+  
+  res.json({ gifts: allGifts });
 });
 
-// ===== START SERVER =====
+// ─── API: Delete a gift ───
+app.delete('/api/gift/:id', (req, res) => {
+  const { id } = req.params;
+  
+  gifts.delete(id);
+  
+  try {
+    const htmlPath = path.join(__dirname, 'gifts', `${id}.html`);
+    const jsonPath = path.join(__dirname, 'gifts', `${id}.json`);
+    if (fs.existsSync(htmlPath)) fs.unlinkSync(htmlPath);
+    if (fs.existsSync(jsonPath)) fs.unlinkSync(jsonPath);
+  } catch (e) {
+    console.error('❌ Delete error:', e);
+  }
+  
+  res.json({ success: true });
+});
+
+// ─── Load existing gifts on startup ───
+function loadExistingGifts() {
+  try {
+    const giftDir = path.join(__dirname, 'gifts');
+    if (!fs.existsSync(giftDir)) return;
+    
+    const files = fs.readdirSync(giftDir);
+    let count = 0;
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        const id = file.replace('.json', '');
+        const htmlPath = path.join(giftDir, `${id}.html`);
+        if (fs.existsSync(htmlPath)) {
+          const jsonData = JSON.parse(fs.readFileSync(path.join(giftDir, file), 'utf8'));
+          const html = fs.readFileSync(htmlPath, 'utf8');
+          gifts.set(id, {
+            id: jsonData.id,
+            template: jsonData.template,
+            data: jsonData.data,
+            html: html,
+            createdAt: jsonData.createdAt
+          });
+          count++;
+        }
+      }
+    }
+    console.log(`📦 Loaded ${count} existing gifts from disk`);
+  } catch (e) {
+    console.error('❌ Load error:', e);
+  }
+}
+
+// ─── Start server ───
 app.listen(PORT, () => {
-    console.log(`
-    ╔══════════════════════════════════════════╗
-    ║     🎁 Gift App Server                  ║
-    ║     🚀 Running on: http://localhost:${PORT} ║
-    ║     📁 Frontend path: ${frontendPath}   ║
-    ║     ✅ Status: Online                    ║
-    ╚══════════════════════════════════════════╝
-    `);
+  console.log(`✨ Server running at http://localhost:${PORT}`);
+  console.log(`📁 Serving HTML files from: ${path.join(__dirname, '../frontend')}`);
+  console.log(`♾️  Gifts NEVER expire!`);
+  console.log(`📊 Total gifts loaded: ${gifts.size}`);
 });
 
-// Error handling
-process.on('uncaughtException', (error) => {
-    console.error('❌ Uncaught Exception:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled Rejection:', reason);
-});
+loadExistingGifts();
