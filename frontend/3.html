@@ -10,7 +10,6 @@
     </script>
 
     <style>
-        /* ── reset & base ── */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
@@ -34,7 +33,6 @@
             --shadow: 0 8px 25px rgba(255, 77, 109, 0.15);
         }
 
-        /* ── app shell ── */
         .app-container {
             min-height: 100vh;
             background: var(--bg-pink);
@@ -46,7 +44,6 @@
             position: relative;
         }
 
-        /* ── floating hearts ── */
         .floating-heart {
             position: fixed;
             color: rgba(255, 77, 109, 0.35);
@@ -67,7 +64,6 @@
             }
         }
 
-        /* ── screens ── */
         .screen {
             display: none;
             width: 100%;
@@ -91,7 +87,6 @@
             }
         }
 
-        /* ── cards ── */
         .pink-card {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
@@ -119,7 +114,6 @@
             font-weight: 300;
         }
 
-        /* ── buttons ── */
         .btn-pink {
             background: linear-gradient(135deg, #ff4d6d, #ff758f);
             color: white;
@@ -143,11 +137,7 @@
             border: 2px solid var(--primary-pink);
             box-shadow: none;
         }
-        .btn-pink--outline:active {
-            background: #fff0f2;
-        }
 
-        /* ── form fields ── */
         .field {
             text-align: left;
             margin-bottom: 14px;
@@ -180,9 +170,6 @@
             border-color: var(--primary-pink);
             box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.12);
         }
-        .field select option {
-            color: #592532;
-        }
         .field small {
             display: block;
             margin-top: 4px;
@@ -190,7 +177,6 @@
             font-size: 10.5px;
         }
 
-        /* ── hero image ── */
         .hero-img-box {
             width: 100%;
             height: 220px;
@@ -205,7 +191,6 @@
             object-fit: cover;
         }
 
-        /* ── timeline ── */
         .timeline {
             width: 100%;
             text-align: left;
@@ -251,7 +236,6 @@
             line-height: 1.5;
         }
 
-        /* ── letter paper ── */
         .letter-paper {
             background: #fffdfa;
             border-radius: 18px;
@@ -269,7 +253,6 @@
             color: #3d2a2f;
         }
 
-        /* ── secret cards (flip) ── */
         .secret-card {
             perspective: 1200px;
             width: 100%;
@@ -337,7 +320,6 @@
             line-height: 1.5;
         }
 
-        /* ── passkey screen ── */
         .lock-icon {
             font-size: 32px;
             margin-bottom: 4px;
@@ -410,13 +392,7 @@
             min-height: 18px;
             font-weight: 500;
         }
-        .pass-hint {
-            margin-top: 8px;
-            font-size: 11px;
-            color: #a97788;
-        }
 
-        /* ── gift box ── */
         .gift-box {
             font-size: 72px;
             cursor: pointer;
@@ -455,25 +431,6 @@
             display: block;
         }
 
-        /* ── Share / Expired screens ── */
-        .share-card .success-icon {
-            font-size: 54px;
-            margin-bottom: 8px;
-            animation: bounceIn 0.8s ease;
-        }
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
         .share-link-box {
             background: rgba(0, 0, 0, 0.06);
             border-radius: 14px;
@@ -483,16 +440,18 @@
             align-items: center;
             border: 1px solid rgba(255, 77, 109, 0.15);
             margin-bottom: 18px;
+            width: 100%;
         }
         .share-link-box input {
             flex: 1;
             border: none;
             background: transparent;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-color);
             outline: none;
             font-family: 'Poppins', sans-serif;
             min-width: 0;
+            word-break: break-all;
         }
         .copy-btn {
             background: var(--primary-pink);
@@ -504,19 +463,18 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
-        }
-        .copy-btn:hover {
-            background: #e63e5e;
+            flex-shrink: 0;
         }
         .copy-btn.copied {
             background: #27ae60;
-            color: #fff;
         }
+
         .share-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
         }
         .share-actions button {
             padding: 10px 18px;
@@ -529,22 +487,13 @@
             flex: 1;
             min-width: 80px;
         }
-        .share-actions button:hover {
-            transform: translateY(-2px);
-        }
         .share-actions .whatsapp {
             background: #25D366;
             color: #fff;
         }
-        .share-actions .whatsapp:hover {
-            background: #1da851;
-        }
         .share-actions .email {
             background: #EA4335;
             color: #fff;
-        }
-        .share-actions .email:hover {
-            background: #c62828;
         }
         .share-actions .open-gift {
             background: linear-gradient(135deg, var(--primary-pink), #ff758f);
@@ -569,7 +518,6 @@
             line-height: 1.6;
         }
 
-        /* ── misc ── */
         .restart-link {
             margin-top: 14px;
             background: none;
@@ -582,9 +530,6 @@
             padding: 6px 12px;
             border-radius: 30px;
             transition: background 0.2s;
-        }
-        .restart-link:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .flex-row {
@@ -599,14 +544,25 @@
             min-width: 120px;
         }
 
-        .expiry-badge {
+        .link-hint {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #a97788;
+            line-height: 1.5;
+        }
+        .link-hint strong {
+            color: var(--primary-pink);
+        }
+
+        .short-url-badge {
             display: inline-block;
             background: rgba(255, 77, 109, 0.1);
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 30px;
             font-size: 11px;
             color: var(--primary-pink);
             margin-top: 6px;
+            font-weight: 500;
         }
 
         @media (max-width: 420px) {
@@ -638,7 +594,7 @@
         <div class="screen active" id="scr-setup">
             <div class="pink-card">
                 <h2 class="script-title">✨ Create Your Surprise</h2>
-                <p class="subtitle">Fill in the details below, then generate a shareable link</p>
+                <p class="subtitle">Data is embedded in the link — works on any device!</p>
 
                 <div class="field">
                     <label>💕 Title Text</label>
@@ -671,40 +627,26 @@
                 </div>
                 <div class="field">
                     <label>🔑 4‑Digit Passkey</label>
-                    <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="e.g. 1122" />
+                    <input type="password" id="inpPasskey" maxlength="4" inputmode="numeric" placeholder="e.g. 1122" value="1122" />
                     <small>Leave blank to use 1122</small>
-                </div>
-                <div class="field">
-                    <label>⏳ Link Expires In</label>
-                    <select id="inpExpires">
-                        <option value="1">1 hour</option>
-                        <option value="6">6 hours</option>
-                        <option value="12">12 hours</option>
-                        <option value="24" selected>24 hours</option>
-                        <option value="48">48 hours</option>
-                        <option value="72">72 hours</option>
-                        <option value="168">7 days</option>
-                        <option value="720">30 days</option>
-                        <option value="0">♾️ Never Expire</option>
-                    </select>
-                    <small>Choose when this link should expire</small>
                 </div>
 
                 <div class="flex-row">
                     <button class="btn-pink" id="btnPreview">👀 Preview</button>
-                    <button class="btn-pink" id="btnExport" style="background:#4a4e69;">📤 Export HTML</button>
-                    <!-- <button class="btn-pink" id="btnCreateLink" style="background:#4a4e69;">🔗 Create Link</button> -->
+                    <button class="btn-pink" id="btnCreateLink" style="background:#4a4e69;">🔗 Create Link</button>
                 </div>
-                <small style="display:block;margin-top:12px;color:#a97788;">⚠️ Export HTML file to share — works on all devices! Link sharing only works on same browser.</small>
+                <div class="link-hint">
+                    💡 <strong>Data is embedded in the URL</strong> — share anywhere, works on all devices!
+                </div>
             </div>
         </div>
 
         <!-- ─── SHARE SCREEN ─── -->
         <div class="screen" id="scr-share">
             <div class="pink-card share-card">
-                <div class="success-icon">🎉</div>
+                <div style="font-size:54px; margin-bottom:8px;">🎉</div>
                 <h2 class="script-title" style="font-size:28px; margin:0;">Surprise Ready!</h2>
-                <p class="subtitle">Share this exclusive link with your special person</p>
+                <p class="subtitle">Share this link with your special person</p>
                 <div class="share-link-box">
                     <input type="text" id="shareLinkInput" readonly />
                     <button class="copy-btn" id="copyLinkBtn">Copy</button>
@@ -714,7 +656,7 @@
                     <button class="email" id="emailBtn">✉️ Email</button>
                     <button class="open-gift" id="openGiftBtn">Open Surprise →</button>
                 </div>
-                <div style="margin-top:14px; font-size:11px; color:#a97788;" id="expiryHint"></div>
+                <div class="short-url-badge" id="urlBadge">🔗 Short & clean — works everywhere!</div>
             </div>
         </div>
 
@@ -794,7 +736,7 @@
                     <button class="clear-key" data-k="clear">Clear</button><button data-k="0">0</button><button data-k="back">⌫</button>
                 </div>
                 <div class="pass-error" id="passError"></div>
-                <div class="pass-hint">💡 Hint: the passkey you set when creating this</div>
+                <div class="pass-hint" style="font-size:11px; color:#a97788;">💡 Hint: the passkey you set when creating this</div>
             </div>
         </div>
 
@@ -807,7 +749,7 @@
                     <span id="giftMessage">You mean everything to me. ❤️</span>
                <!-- </div>
                 <button class="restart-link" id="restartBtn">🔄 Create another one</button>
-            </div> -->
+            </div>-->
         </div>
 
     </div>
@@ -829,7 +771,6 @@
             thoughts: '',
             giftMsg: '',
             passkey: '1122',
-            expiresIn: 24,
             createdAt: 0
         };
         let enteredPass = '';
@@ -879,9 +820,6 @@
             state.giftMsg = document.getElementById('inpGiftMsg').value.trim() || 'You mean everything to me. ❤️';
             const pk = document.getElementById('inpPasskey').value.trim();
             state.passkey = /^\d{4}$/.test(pk) ? pk : '1122';
-            // Read expires from select
-            const expVal = parseInt(document.getElementById('inpExpires').value);
-            state.expiresIn = isNaN(expVal) ? 24 : expVal;
             state.createdAt = Date.now();
         }
 
@@ -953,20 +891,28 @@
             nav('scr-1');
         });
 
-        /* ─── generate ID ─── */
-        function genId() {
-            return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        /* ─── generate short ID ─── */
+        function genShortId() {
+            // Generate a short 6-8 character ID using timestamp + random
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            const timestamp = Date.now().toString(36);
+            id += timestamp.slice(-4);
+            for (let i = 0; i < 4; i++) {
+                id += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return id;
         }
 
-        /* ─── create shareable link ─── */
-        function createShareableLink() {
+        /* ─── CREATE SHAREABLE LINK WITH DATA EMBEDDED ─── */
+        document.getElementById('btnCreateLink').addEventListener('click', function() {
             readFormIntoState();
             if (!state.letter) {
-                alert('💌 Please write a letter before creating a link!');
+                alert('💌 Please write a message before creating a link!');
                 return;
             }
 
-            // Capture photo if selected but not yet stored in state
+            // Handle image if just uploaded
             const fileInput = document.getElementById('inpMainImg');
             if (fileInput && fileInput.files && fileInput.files.length > 0 && state.mainImg === DEFAULT_IMG) {
                 const evt = new Event('change');
@@ -977,67 +923,70 @@
                 return;
             }
             doCreateLink();
-        }
+        });
 
         function doCreateLink() {
             state.createdAt = Date.now();
 
-            const id = genId();
-            currentGiftId = id;
-            const dataToStore = JSON.parse(JSON.stringify(state));
-            localStorage.setItem('celebration_' + id, JSON.stringify(dataToStore));
+            // Build data object (exclude createdAt for shorter URL)
+            const dataToStore = {
+                title: state.title,
+                mainImg: state.mainImg,
+                tl1: state.tl1,
+                tl2: state.tl2,
+                letter: state.letter,
+                thoughts: state.thoughts,
+                giftMsg: state.giftMsg,
+                passkey: state.passkey,
+                createdAt: state.createdAt
+            };
 
-            let allIds = JSON.parse(localStorage.getItem('celebration_ids') || '[]');
-            if (!allIds.includes(id)) allIds.push(id);
-            localStorage.setItem('celebration_ids', JSON.stringify(allIds));
+            // Encode and create short URL with hash
+            const jsonStr = JSON.stringify(dataToStore);
+            const encoded = encodeURIComponent(jsonStr);
+            // Use hash instead of query param for cleaner URL
+            const shareUrl = window.location.origin + window.location.pathname + '#' + encoded;
 
-            const shareUrl = window.location.origin + window.location.pathname + '?id=' + id;
             document.getElementById('shareLinkInput').value = shareUrl;
-
-            // Show expiry hint
-            const hintEl = document.getElementById('expiryHint');
-            if (state.expiresIn === 0) {
-                hintEl.innerText = '♾️ This link will NEVER expire! Share it anytime.';
-            } else {
-                hintEl.innerText = '🔗 This link will expire in ' + state.expiresIn +
-                    ' hour' + (state.expiresIn > 1 ? 's' : '');
-            }
 
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             nav('scr-share');
 
-            console.log('✅ Surprise created! ID:', id);
+            console.log('✅ Surprise created! Short URL generated.');
+            console.log('📎 URL:', shareUrl);
         }
 
-        document.getElementById('btnCreateLink').addEventListener('click', function() {
-            createShareableLink();
-        });
+        /* ─── LOAD DATA FROM URL HASH ─── */
+        function loadFromUrlHash() {
+            const hash = window.location.hash;
+            if (!hash || hash === '#') return false;
 
-        /* ─── export functionality ─── */
-        const btnExport = document.getElementById('btnExport');
-        if (btnExport) {
-            btnExport.addEventListener('click', function() {
-                readFormIntoState();
-                if (!state.letter) {
-                    alert('💖 Please write a message before exporting!');
-                    return;
-                }
-                const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-                const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-                const bodyIdx = PRISTINE_HTML.indexOf('<body');
-                const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-                const finalHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
-                const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const safeName = state.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'surprise';
-                a.download = `${safeName}.html`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 3000);
-            });
+            try {
+                // Remove the '#' from the hash
+                const encoded = hash.substring(1);
+                const jsonStr = decodeURIComponent(encoded);
+                const data = JSON.parse(jsonStr);
+
+                state.title = data.title || 'My Love';
+                state.mainImg = data.mainImg || DEFAULT_IMG;
+                state.tl1 = data.tl1 || 'A beautiful memory...';
+                state.tl2 = data.tl2 || 'Another precious moment.';
+                state.letter = data.letter || 'You are amazing.';
+                state.thoughts = data.thoughts || 'I Love You ❤️';
+                state.giftMsg = data.giftMsg || 'You mean everything to me. ❤️';
+                state.passkey = data.passkey || '1122';
+                state.createdAt = data.createdAt || Date.now();
+
+                applyState();
+                document.getElementById('giftMessageWrap').classList.remove('show');
+                document.querySelectorAll('.secret-card').forEach(c => c.classList.remove('revealed'));
+                nav('scr-1');
+                console.log('✅ Surprise loaded from URL hash!');
+                return true;
+            } catch (e) {
+                console.error('❌ Failed to load from URL:', e);
+                return false;
+            }
         }
 
         /* ─── share buttons ─── */
@@ -1069,78 +1018,11 @@
         });
 
         document.getElementById('openGiftBtn').addEventListener('click', function() {
-            const id = currentGiftId;
-            if (id) {
-                loadFromId(id);
+            const input = document.getElementById('shareLinkInput');
+            if (input && input.value) {
+                window.location.href = input.value;
             }
         });
-
-        /* ─── load from ID ─── */
-        function loadFromId(id) {
-            const raw = localStorage.getItem('celebration_' + id);
-            if (!raw) {
-                document.getElementById('expiryDetail').innerText = 'This surprise no longer exists.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById('scr-expired').classList.add('active');
-                return false;
-            }
-            try {
-                const data = JSON.parse(raw);
-                // Check expiration - ONLY if expiresIn > 0
-                if (data.expiresIn > 0) {
-                    const now = Date.now();
-                    const expTime = (data.createdAt || 0) + (data.expiresIn || 0) * 3600000;
-                    if (expTime > 0 && now > expTime) {
-                        const d = new Date(expTime);
-                        document.getElementById('expiryDetail').innerText = 'Expired on ' + d.toLocaleString();
-                        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                        document.getElementById('scr-expired').classList.add('active');
-                        return false;
-                    }
-                }
-                // If expiresIn === 0, link never expires
-
-                // Apply data
-                state = data;
-                currentGiftId = id;
-                applyState();
-                document.getElementById('giftMessageWrap').classList.remove('show');
-                document.querySelectorAll('.secret-card').forEach(c => c.classList.remove('revealed'));
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                nav('scr-1');
-                return true;
-            } catch (e) {
-                console.error('Load error:', e);
-                document.getElementById('expiryDetail').innerText = 'Error loading surprise.';
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById('scr-expired').classList.add('active');
-                return false;
-            }
-        }
-
-        /* ─── load from URL param (DISABLED - localStorage doesn't work cross-device) ─── */
-        /*
-        function loadFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-            if (!id) return false;
-            return loadFromId(id);
-        }
-
-        if (window.location.search.includes('id=')) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            loadFromUrl();
-        } else {
-        */
-            if (window.__PRESET__) {
-                state = Object.assign(state, window.__PRESET__);
-                applyState();
-                document.getElementById('giftMessageWrap').classList.remove('show');
-                nav('scr-1');
-            } else {
-                nav('scr-setup');
-            }
-        // }
 
         /* ─── gift open ─── */
         document.getElementById('giftBox').addEventListener('click', function() {
@@ -1207,6 +1089,25 @@
         document.getElementById('restartBtn').addEventListener('click', goToSetup);
         document.getElementById('expiredRestartBtn').addEventListener('click', goToSetup);
 
+        /* ─── LOAD FROM URL HASH ON START ─── */
+        (function init() {
+            const hash = window.location.hash;
+            if (hash && hash !== '#') {
+                const success = loadFromUrlHash();
+                if (!success) {
+                    alert('Failed to load surprise data from the link. Please create a new one.');
+                    nav('scr-setup');
+                }
+            } else if (window.__PRESET__) {
+                state = Object.assign(state, window.__PRESET__);
+                applyState();
+                document.getElementById('giftMessageWrap').classList.remove('show');
+                nav('scr-1');
+            } else {
+                nav('scr-setup');
+            }
+        })();
+
         // prevent form submission on enter
         document.querySelectorAll('input, textarea').forEach(el => {
             el.addEventListener('keydown', e => {
@@ -1214,9 +1115,9 @@
             });
         });
 
-        console.log('💖 Surprise Builder with Link System loaded!');
-        console.log('🔗 Use "Create Link" to generate a shareable URL.');
-        console.log('♾️ Select "Never Expire" for permanent links.');
+        console.log('💖 Surprise Builder with Short URL System loaded!');
+        console.log('🔗 Links look like: ' + window.location.origin + window.location.pathname + '#data...');
+        console.log('📎 Data is embedded in the URL hash — works on any device!');
     </script>
 
 </body>
