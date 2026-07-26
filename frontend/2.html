@@ -1,106 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>The Ultimate Premium Celebration Experience</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<style>
-  :root {
-    --bg-deep: #050510;
-    --bg-mid: #0f1126;
-    --glass: rgba(255, 255, 255, 0.03);
-    --glass-brd: rgba(255, 255, 255, 0.1);
-    --gold: #f39c12;
-    --gold-glow: rgba(243, 156, 18, 0.3);
-    --pink: #ff4757;
-    --pink-glow: rgba(255, 71, 87, 0.4);
-    --neon-blue: #00d2d3;
-    --text-light: #f1f2f6;
-    --text-soft: #a4b0be;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>✨ Premium Celebration · shareable link</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-deep: #050510;
+      --bg-mid: #0f1126;
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-brd: rgba(255, 255, 255, 0.1);
+      --gold: #f39c12;
+      --gold-glow: rgba(243, 156, 18, 0.3);
+      --pink: #ff4757;
+      --pink-glow: rgba(255, 71, 87, 0.4);
+      --neon-blue: #00d2d3;
+      --text-light: #f1f2f6;
+      --text-soft: #a4b0be;
+    }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg-deep); font-family: 'Poppins', sans-serif; color: var(--text-light); overflow: hidden; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; background: var(--bg-deep); font-family: 'Poppins', sans-serif; color: var(--text-light); overflow: hidden; }
 
-  #stage { position: relative; width: 100%; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 30%, #14193a 0%, #080a1c 60%, var(--bg-deep) 100%); }
-  .star { position: absolute; background: #fff; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite ease-in-out; }
-  @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.9; transform: scale(1.2); } }
+    #stage { position: relative; width: 100%; height: 100dvh; overflow: hidden; background: radial-gradient(circle at 50% 30%, #14193a 0%, #080a1c 60%, var(--bg-deep) 100%); }
+    .star { position: absolute; background: #fff; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite ease-in-out; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.9; transform: scale(1.2); } }
 
-  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; opacity: 0; pointer-events: none; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: scale(0.95) translateY(15px); z-index: 2; }
-  .screen.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-  .glass { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--glass-brd); border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; opacity: 0; pointer-events: none; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: scale(0.95) translateY(15px); z-index: 2; }
+    .screen.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+    .glass { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--glass-brd); border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
 
-  .setup-container { width: 100%; max-width: 480px; padding: 30px; max-height: 92vh; overflow-y: auto; scrollbar-width: none; }
-  .setup-container::-webkit-scrollbar { display: none; }
-  .setup-container h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 34px; margin: 0 0 8px; background: linear-gradient(135deg, #fff, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .setup-container p.subtitle { font-size: 13px; color: var(--text-soft); margin: 0 0 24px; font-weight: 300; }
-  
-  .field { text-align: left; margin-bottom: 16px; }
-  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; letter-spacing: .05em; text-transform: uppercase; }
-  .field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); border-radius: 12px; padding: 11px 14px; font-family: 'Poppins', sans-serif; font-size: 13px; color: #fff; transition: all 0.3s; }
-  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 12px var(--pink-glow); }
-  .field small { display:block; margin-top:5px; color:#6b7383; font-size:10.5px; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .setup-container { width: 100%; max-width: 480px; padding: 30px; max-height: 92vh; overflow-y: auto; scrollbar-width: none; }
+    .setup-container::-webkit-scrollbar { display: none; }
+    .setup-container h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 34px; margin: 0 0 8px; background: linear-gradient(135deg, #fff, var(--gold), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .setup-container p.subtitle { font-size: 13px; color: var(--text-soft); margin: 0 0 24px; font-weight: 300; }
+    
+    .field { text-align: left; margin-bottom: 16px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; letter-spacing: .05em; text-transform: uppercase; }
+    .field input, .field textarea, .field select { width: 100%; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); border-radius: 12px; padding: 11px 14px; font-family: 'Poppins', sans-serif; font-size: 13px; color: #fff; transition: all 0.3s; }
+    .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 12px var(--pink-glow); }
+    .field small { display:block; margin-top:5px; color:#6b7383; font-size:10.5px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 8px; }
-  .btn-primary { background: linear-gradient(135deg, var(--pink), #ff6b81); color: white; box-shadow: 0 8px 25px var(--pink-glow); }
-  .btn-secondary { background: linear-gradient(135deg, var(--gold), #f1c40f); color: #1e1e1e; box-shadow: 0 8px 25px var(--gold-glow); margin-top: 12px; }
-  .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 8px; }
+    .btn-primary { background: linear-gradient(135deg, var(--pink), #ff6b81); color: white; box-shadow: 0 8px 25px var(--pink-glow); }
+    .btn-secondary { background: linear-gradient(135deg, var(--gold), #f1c40f); color: #1e1e1e; box-shadow: 0 8px 25px var(--gold-glow); margin-top: 12px; }
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-  .music-widget { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--glass-brd); margin: 20px 0; }
-  .v-bar-container { display: flex; gap: 3px; height: 20px; align-items: center; }
-  .v-bar { width: 3px; height: 5px; background: var(--pink); border-radius: 2px; animation: bounce 0.5s ease infinite alternate; transform-origin: bottom; }
-  @keyframes bounce { 0% { transform: scaleY(1); } 100% { transform: scaleY(3.5); } }
-  .v-bar:nth-child(2) { animation-delay: 0.15s; background: var(--gold); }
-  .v-bar:nth-child(3) { animation-delay: 0.3s; background: var(--neon-blue); }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #f1c40f); color: #1e1e1e; box-shadow: 0 8px 25px var(--gold-glow); }
 
-  .envelope { width: 180px; height: 120px; background: linear-gradient(135deg, #2c3e50, #34495e); border-radius: 8px; position: relative; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: 0.4s; }
-  .envelope:after { content: '💌'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30px; }
-  .envelope.opened { transform: scale(0) rotate(50deg); opacity: 0; }
-  
-  .cake { position: relative; width: 140px; height: 90px; background: #ff4757; border-radius: 12px 12px 0 0; margin-top: 40px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-  .cake:before { content:''; position: absolute; top: 30px; left: 0; width: 100%; height: 15px; background: #fff; opacity: 0.4; }
-  .candle { position: absolute; top: -20px; left: calc(50% - 4px); width: 8px; height: 20px; background: #f1c40f; border-radius: 3px; }
-  .flame { position: absolute; top: -14px; left: calc(50% - 6px); width: 12px; height: 16px; background: #e67e22; border-radius: 50% 50% 50% 50%/60% 60% 40% 40%; animation: flare 0.5s infinite alternate; cursor: pointer; }
-  .flame.blown { display: none; }
-  @keyframes flare { 0% { transform: scale(0.9) rotate(-2deg); } 100% { transform: scale(1.1) rotate(2deg); } }
+    .music-widget { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 50px; border: 1px solid var(--glass-brd); margin: 20px 0; }
+    .v-bar-container { display: flex; gap: 3px; height: 20px; align-items: center; }
+    .v-bar { width: 3px; height: 5px; background: var(--pink); border-radius: 2px; animation: bounce 0.5s ease infinite alternate; transform-origin: bottom; }
+    @keyframes bounce { 0% { transform: scaleY(1); } 100% { transform: scaleY(3.5); } }
+    .v-bar:nth-child(2) { animation-delay: 0.15s; background: var(--gold); }
+    .v-bar:nth-child(3) { animation-delay: 0.3s; background: var(--neon-blue); }
 
-  .timeline-container { width: 100%; max-width: 360px; text-align: left; position: relative; padding-left: 20px; border-left: 2px dashed var(--glass-brd); margin: 20px 0; max-height: 45vh; overflow-y: auto; }
-  .tl-item { position: relative; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); animation: slideIn 0.5s forwards; }
-  .tl-item:before { content: '✨'; position: absolute; left: -29px; top: 2px; background: var(--bg-deep); width: 16px; height: 16px; font-size: 12px; }
-  .tl-date { font-size: 11px; color: var(--gold); font-weight: 600; }
-  .tl-title { font-size: 14px; font-weight: 500; color: #fff; }
-  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+    .envelope { width: 180px; height: 120px; background: linear-gradient(135deg, #2c3e50, #34495e); border-radius: 8px; position: relative; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: 0.4s; }
+    .envelope:after { content: '💌'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+    .envelope.opened { transform: scale(0) rotate(50deg); opacity: 0; }
+    
+    .cake { position: relative; width: 140px; height: 90px; background: #ff4757; border-radius: 12px 12px 0 0; margin-top: 40px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    .cake:before { content:''; position: absolute; top: 30px; left: 0; width: 100%; height: 15px; background: #fff; opacity: 0.4; }
+    .candle { position: absolute; top: -20px; left: calc(50% - 4px); width: 8px; height: 20px; background: #f1c40f; border-radius: 3px; }
+    .flame { position: absolute; top: -14px; left: calc(50% - 6px); width: 12px; height: 16px; background: #e67e22; border-radius: 50% 50% 50% 50%/60% 60% 40% 40%; animation: flare 0.5s infinite alternate; cursor: pointer; }
+    .flame.blown { display: none; }
+    @keyframes flare { 0% { transform: scale(0.9) rotate(-2deg); } 100% { transform: scale(1.1) rotate(2deg); } }
 
-  .scratch-container { position: relative; width: 280px; height: 160px; margin: 20px 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
-  .scratch-secret { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #111, #222); color: var(--gold); padding: 10px; text-align: center; }
-  .scratch-secret h4 { margin: 0; font-size: 12px; color: var(--text-soft); text-transform: uppercase; }
-  .scratch-secret p { margin: 5px 0 0; font-size: 18px; font-weight: 600; font-family: 'Playfair Display', serif; }
-  canvas#scratchCanvas { position: absolute; inset: 0; cursor: crosshair; z-index: 3; touch-action: none; }
+    .timeline-container { width: 100%; max-width: 360px; text-align: left; position: relative; padding-left: 20px; border-left: 2px dashed var(--glass-brd); margin: 20px 0; max-height: 45vh; overflow-y: auto; }
+    .tl-item { position: relative; margin-bottom: 25px; opacity: 0; transform: translateX(-20px); animation: slideIn 0.5s forwards; }
+    .tl-item:before { content: '✨'; position: absolute; left: -29px; top: 2px; background: var(--bg-deep); width: 16px; height: 16px; font-size: 12px; }
+    .tl-date { font-size: 11px; color: var(--gold); font-weight: 600; }
+    .tl-title { font-size: 14px; font-weight: 500; color: #fff; }
+    @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 
-  .game-area { width: 100%; height: 220px; position: relative; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px dashed var(--glass-brd); overflow: hidden; margin: 15px 0; }
-  .game-heart { position: absolute; font-size: 28px; cursor: pointer; animation: floatUp 4s linear infinite; user-select: none; }
-  @keyframes floatUp { 0% { transform: translateY(240px) scale(0.8); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-40px) scale(1.2); opacity: 0; } }
+    .scratch-container { position: relative; width: 280px; height: 160px; margin: 20px 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+    .scratch-secret { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #111, #222); color: var(--gold); padding: 10px; text-align: center; }
+    .scratch-secret h4 { margin: 0; font-size: 12px; color: var(--text-soft); text-transform: uppercase; }
+    .scratch-secret p { margin: 5px 0 0; font-size: 18px; font-weight: 600; font-family: 'Playfair Display', serif; }
+    canvas#scratchCanvas { position: absolute; inset: 0; cursor: crosshair; z-index: 3; touch-action: none; }
 
-  .pass-dots { display: flex; gap: 12px; margin: 20px 0; }
-  .pass-dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--text-soft); }
-  .pass-dots span.filled { background: var(--pink); border-color: var(--pink); box-shadow: 0 0 10px var(--pink); }
-  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-  .grid-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 12px; margin-top: 15px; }
-  .grid-pad button { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--glass-brd); background: rgba(255,255,255,0.03); color: #fff; font-size: 18px; cursor: pointer; }
-  .grid-pad button:active { background: rgba(255,255,255,0.1); }
-  .pass-error { min-height: 16px; font-size: 12px; color: var(--pink); margin-top: 10px; }
+    .game-area { width: 100%; height: 220px; position: relative; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px dashed var(--glass-brd); overflow: hidden; margin: 15px 0; }
+    .game-heart { position: absolute; font-size: 28px; cursor: pointer; animation: floatUp 4s linear infinite; user-select: none; }
+    @keyframes floatUp { 0% { transform: translateY(240px) scale(0.8); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-40px) scale(1.2); opacity: 0; } }
 
-  .photo-wall { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-height: 40vh; overflow-y: auto; padding: 10px; }
-  .polaroid { background: white; padding: 6px 6px 18px; border-radius: 4px; width: 105px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transform: rotate(var(--r, 0deg)); }
-  .polaroid img { width: 100%; height: 90px; object-fit: cover; }
+    .pass-dots { display: flex; gap: 12px; margin: 20px 0; }
+    .pass-dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--text-soft); }
+    .pass-dots span.filled { background: var(--pink); border-color: var(--pink); box-shadow: 0 0 10px var(--pink); }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+    .grid-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 12px; margin-top: 15px; }
+    .grid-pad button { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--glass-brd); background: rgba(255,255,255,0.03); color: #fff; font-size: 18px; cursor: pointer; }
+    .grid-pad button:active { background: rgba(255,255,255,0.1); }
+    .pass-error { min-height: 16px; font-size: 12px; color: var(--pink); margin-top: 10px; }
 
-  .next-btn-link { margin-top: 25px; background: none; border: none; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-  .restart-link { margin-top: 16px; background: none; border: none; color: var(--text-soft); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: 'Poppins', sans-serif; }
-</style>
+    .photo-wall { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-height: 40vh; overflow-y: auto; padding: 10px; }
+    .polaroid { background: white; padding: 6px 6px 18px; border-radius: 4px; width: 105px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transform: rotate(var(--r, 0deg)); }
+    .polaroid img { width: 100%; height: 90px; object-fit: cover; }
+
+    .next-btn-link { margin-top: 25px; background: none; border: none; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .restart-link { margin-top: 16px; background: none; border: none; color: var(--text-soft); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: 'Poppins', sans-serif; }
+
+    .share-link-box { background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px 16px; display: flex; gap: 10px; align-items: center; border: 1px solid var(--glass-brd); margin-bottom: 18px; width: 100%; max-width: 400px; }
+    .share-link-box input { flex: 1; border: none; background: transparent; font-size: 13px; color: var(--text-light); outline: none; font-family: 'Poppins', sans-serif; min-width: 0; word-break: break-all; }
+    .copy-btn { background: var(--gold); color: #1a1a2e; border: none; padding: 6px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; flex-shrink: 0; }
+    .copy-btn.copied { background: #27ae60; color: #fff; }
+    .share-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+    .share-actions button { padding: 10px 18px; border: none; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s; flex: 1; min-width: 80px; }
+    .share-actions .whatsapp { background: #25D366; color: #fff; }
+    .share-actions .email { background: #EA4335; color: #fff; }
+    .share-actions .open-gift { background: linear-gradient(135deg, var(--pink), #ff6b81); color: #fff; flex: 1.5; }
+
+    .link-hint { font-size: 11px; color: #6b7383; margin-top: 14px; line-height: 1.5; }
+    .link-hint strong { color: var(--gold); }
+  </style>
 </head>
 <body>
 
@@ -109,10 +124,11 @@
 <div id="stage">
   <div id="starfield"></div>
 
+  <!-- SETUP -->
   <div class="screen active" id="scr-setup">
     <div class="setup-container glass">
-      <h1>Create Celebration v2</h1>
-      <p class="subtitle">Clean standalone export optimization engine</p>
+      <h1>✨ Create Celebration</h1>
+      <p class="subtitle">Data is embedded in the URL — works on any device!</p>
       
       <div class="field">
         <label>Recipient's Name</label>
@@ -161,17 +177,41 @@
       </div>
 
       <div class="field">
-        <label>Photos (Will be baked instantly)</label>
+        <label>Photos (Will be embedded in the link)</label>
         <input type="file" id="inpFiles" accept="image/*" multiple>
         <small id="photoCountHint"></small>
+        <small style="color:#ff6b6b; display:block; margin-top:4px;">⚠️ Large photos will make the URL very long. Use small images.</small>
       </div>
 
-      <button class="btn btn-primary" id="btnPreview">Live Preview 👀</button>
-      <button class="btn btn-secondary" id="btnExport">Export Standalone HTML 📤</button>
-      <small style="display:block;margin-top:10px;color:#6b7383;">Export downloads a ready file — send that one to them, it skips straight to the surprise.</small>
+      <button class="btn btn-primary" id="btnPreview">👀 Preview</button>
+      <button class="btn btn-gold" id="btnCreateLink">🔗 Create Shareable Link</button>
+      <small style="display:block;margin-top:10px;color:#6b7383;">✅ Data is embedded in the URL — share it anywhere, works on all devices!</small>
     </div>
   </div>
 
+  <!-- SHARE -->
+  <div class="screen" id="scr-share">
+    <div class="glass" style="width:100%; max-width:440px; padding:30px 24px;">
+      <div style="font-size:54px; margin-bottom:8px;">🎉</div>
+      <h2 style="font-family:'Playfair Display', serif; color:var(--gold); margin:0;">Celebration Ready!</h2>
+      <p style="color:var(--text-soft); font-size:13px; margin:4px 0 20px;">Copy this link and share it with your special person.</p>
+      <div class="share-link-box">
+        <input type="text" id="shareLinkInput" readonly>
+        <button class="copy-btn" id="copyLinkBtn">Copy</button>
+      </div>
+      <div class="share-actions">
+        <button class="whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+        <button class="email" id="emailBtn">✉️ Email</button>
+        <button class="open-gift" id="openGiftBtn">Open Celebration →</button>
+      </div>
+      <div class="link-hint">
+        💡 <strong>Data is embedded in the URL</strong> — no server needed!<br>
+        Works on any device, any browser.
+      </div>
+    </div>
+  </div>
+
+  <!-- ENVELOPE -->
   <div class="screen" id="scr-envelope">
     <div style="font-size: 12px; text-transform: uppercase; color: var(--text-soft); letter-spacing: 0.2em; margin-bottom: 15px;">A Premium Parcel For</div>
     <h2 id="displayEncName" style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 28px; margin: 0 0 40px;"></h2>
@@ -179,6 +219,7 @@
     <p style="font-size: 12px; color: var(--text-soft); margin-top: 30px;">(Tap to unlock container)</p>
   </div>
 
+  <!-- HERO -->
   <div class="screen" id="scr-hero">
     <h1 id="heroTitle" style="font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 10px;">Happy Day</h1>
     
@@ -196,6 +237,7 @@
     <button class="next-btn-link" id="toTimeline" style="display:none;">See the Date →</button>
   </div>
 
+  <!-- TIMELINE -->
   <div class="screen" id="scr-timeline">
     <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0;">The Date</h2>
     <p style="font-size: 12px; color: var(--text-soft); margin-bottom: 15px;">A moment worth celebrating</p>
@@ -207,6 +249,7 @@
     <button class="next-btn-link" id="toScratch">Reveal Next Layer →</button>
   </div>
 
+  <!-- SCRATCH -->
   <div class="screen" id="scr-scratch">
     <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Scratch Voucher</h2>
     <p style="font-size: 12px; color: var(--text-soft); max-width: 260px;">Swipe with finger on the layer to scrape and unlock your premium gift code!</p>
@@ -220,12 +263,14 @@
     <button class="next-btn-link" id="toGame" style="display:none;">Unlock Final Mini-Game →</button>
   </div>
 
+  <!-- GAME -->
   <div class="screen" id="scr-game">
     <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Pop the Hearts 💖</h2>
     <p style="font-size: 12px; color: var(--text-soft);">Pop <span id="gameTarget" style="color:var(--pink); font-weight:600;">5</span> interactive hearts to break encryption!</p>
     <div class="game-area" id="gameArea"></div>
   </div>
 
+  <!-- PASS -->
   <div class="screen" id="scr-pass">
     <div style="font-size: 26px;">🔒</div>
     <h3 style="font-family: 'Playfair Display', serif; margin: 10px 0 5px;">Decryption Verification</h3>
@@ -240,6 +285,7 @@
     <div class="pass-error" id="passError"></div>
   </div>
 
+  <!-- FINAL -->
   <div class="screen" id="scr-final" style="overflow-y:auto; justify-content:flex-start; padding-top:40px;">
     <h2 style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); margin: 0 0 20px;">Memories Decrypted</h2>
     <div class="photo-wall" id="galleryWall"></div>
@@ -248,21 +294,24 @@
       <h3 id="letterDear" style="font-family: 'Playfair Display', serif; color:var(--gold); margin-top:0;">Dear</h3>
       <p id="letterBody" style="font-size:14px; line-height:1.7; color:#e1e2eb; white-space:pre-wrap;"></p>
       <div style="margin-top:25px; font-family:'Playfair Display', serif; font-style:italic; color:var(--pink); text-align:right;">— Yours Forever ✨</div>
-    <!--</div>
+    </div>
     <button class="restart-link" id="restartBtn">create another one</button>
-  </div>-->
-
+  </div>
 </div>
 
 <script>
-  // Shared memory architecture
-  let state = { name: '', occasion: '', passkey: '', date: '', wish: '', scratch: '', short: '', letter: '', photos: [] };
+  // ─── STATE ───
+  let state = { 
+    name: '', occasion: '', passkey: '', date: '', wish: '', 
+    scratch: '', short: '', letter: '', photos: [] 
+  };
   let currentPin = '';
   let poppedCount = 0;
   const TARGET_POPS = 5;
   let heartSpawnInterval = null;
+  let currentGiftId = null;
 
-  // Starfield Engine
+  // ─── STARFIELD ───
   const sf = document.getElementById('starfield');
   for(let i=0; i<45; i++){
     let s = document.createElement('div'); s.className = 'star';
@@ -271,7 +320,7 @@
     s.style.animationDelay = Math.random()*3 + 's'; sf.appendChild(s);
   }
 
-  // Base64 Image Processing Pipeline
+  // ─── PHOTO HANDLING ───
   document.getElementById('inpFiles').addEventListener('change', function(e) {
     state.photos = [];
     const files = Array.from(e.target.files);
@@ -283,6 +332,7 @@
     });
   });
 
+  // ─── HELPERS ───
   function formatDateLine(dateStr, occasion){
     if(!dateStr) return '';
     const d = new Date(dateStr+'T00:00:00');
@@ -329,6 +379,19 @@
     state.letter = document.getElementById('inpLetter').value.trim();
   }
 
+  function resetExperience(){
+    document.getElementById('envelopeTap').classList.remove('opened');
+    document.getElementById('flameTap').classList.remove('blown');
+    document.getElementById('cakeHint').innerText = 'Tap the flame to blow the candle 🕯️';
+    document.getElementById('cakeHint').style.color = 'var(--text-soft)';
+    document.getElementById('toTimeline').style.display = 'none';
+    document.getElementById('toGame').style.display = 'none';
+    currentPin = ''; updateDots();
+    poppedCount = 0;
+    if(heartSpawnInterval) clearInterval(heartSpawnInterval);
+  }
+
+  // ─── PREVIEW ───
   document.getElementById('btnPreview').addEventListener('click', () => {
     readFormIntoState();
     applyStateData();
@@ -336,7 +399,96 @@
     nav('scr-envelope');
   });
 
+  // ─── CREATE SHAREABLE LINK WITH DATA EMBEDDED ───
+  document.getElementById('btnCreateLink').addEventListener('click', function() {
+    readFormIntoState();
+    if (!state.letter) { alert('💌 Please write a message before creating a link!'); return; }
+    
+    // Build the data object
+    const dataToStore = {
+      name: state.name,
+      occasion: state.occasion,
+      passkey: state.passkey,
+      date: state.date,
+      wish: state.wish,
+      scratch: state.scratch,
+      short: state.short,
+      letter: state.letter,
+      photos: state.photos
+    };
+    
+    // Encode the data into the URL
+    const jsonStr = JSON.stringify(dataToStore);
+    const encoded = encodeURIComponent(jsonStr);
+    const shareUrl = window.location.origin + window.location.pathname + '?data=' + encoded;
+    
+    document.getElementById('shareLinkInput').value = shareUrl;
+    nav('scr-share');
+    console.log('✅ Celebration link created with embedded data!');
+  });
+
+  // ─── LOAD DATA FROM URL ───
+  function loadFromUrlData(encodedData) {
+    try {
+      const jsonStr = decodeURIComponent(encodedData);
+      const data = JSON.parse(jsonStr);
+      
+      state.name = data.name || 'you';
+      state.occasion = data.occasion || 'birthday';
+      state.passkey = (data.passkey || '1234').padStart(4, '0').slice(0, 4);
+      state.date = data.date || '';
+      state.wish = data.wish || '';
+      state.scratch = data.scratch || 'Voucher';
+      state.short = data.short || '';
+      state.letter = data.letter || 'Wishing you all the best.';
+      state.photos = data.photos || [];
+      
+      applyStateData();
+      resetExperience();
+      nav('scr-envelope');
+      console.log('✅ Celebration loaded from URL data!');
+      return true;
+    } catch(e) {
+      console.error('❌ Failed to load from URL:', e);
+      return false;
+    }
+  }
+
+  // ─── SHARE BUTTONS ───
+  document.getElementById('copyLinkBtn').addEventListener('click', function() {
+    const input = document.getElementById('shareLinkInput');
+    if (!input || !input.value) return;
+    navigator.clipboard.writeText(input.value).then(() => {
+      this.textContent = '✓ Copied!';
+      this.classList.add('copied');
+      setTimeout(() => { this.textContent = 'Copy'; this.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      input.select();
+      document.execCommand('copy');
+      alert('Link copied!');
+    });
+  });
+
+  document.getElementById('whatsappBtn').addEventListener('click', () => {
+    const link = document.getElementById('shareLinkInput')?.value || '';
+    window.open('https://wa.me/?text=' + encodeURIComponent('✨ A special celebration for you! ' + link), '_blank');
+  });
+
+  document.getElementById('emailBtn').addEventListener('click', () => {
+    const link = document.getElementById('shareLinkInput')?.value || '';
+    window.location.href = 'mailto:?subject=A Celebration For You&body=✨ A special celebration for you! ' + link;
+  });
+
+  document.getElementById('openGiftBtn').addEventListener('click', function() {
+    const input = document.getElementById('shareLinkInput');
+    if (input && input.value) {
+      window.location.href = input.value;
+    }
+  });
+
+  // ─── ENVELOPE ───
   document.getElementById('envelopeTap').addEventListener('click', function() {
+    if (this.classList.contains('opened')) return;
     this.classList.add('opened');
     document.getElementById('bgMusic').play().catch(() => console.log("Audio waiting trigger"));
     setTimeout(() => {
@@ -345,6 +497,7 @@
     }, 600);
   });
 
+  // ─── FLAME ───
   document.getElementById('flameTap').addEventListener('click', function() {
     if(this.classList.contains('blown')) return;
     this.classList.add('blown');
@@ -355,8 +508,8 @@
     confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
   });
 
+  // ─── TIMELINE ───
   const OCC_ICONS = { birthday: '🎂', anniversary: '💞', love: '💖' };
-
   document.getElementById('toTimeline').addEventListener('click', () => {
     document.getElementById('dateIcon').innerText = OCC_ICONS[state.occasion] || '🎉';
     const dateLine = formatDateLine(state.date, state.occasion);
@@ -367,6 +520,7 @@
 
   document.getElementById('toScratch').addEventListener('click', () => nav('scr-scratch'));
 
+  // ─── SCRATCH CARD ───
   function initScratchCard() {
     const canvas = document.getElementById('scratchCanvas');
     const ctx = canvas.getContext('2d');
@@ -428,6 +582,7 @@
 
   document.getElementById('toGame').addEventListener('click', () => nav('scr-game'));
 
+  // ─── HEART GAME ───
   function initHeartGame(){
     poppedCount = 0;
     document.getElementById('gameTarget').innerText = TARGET_POPS;
@@ -456,7 +611,7 @@
     }, 700);
   }
 
-  // Passkey keypad
+  // ─── PASSKEY ───
   const pDots = document.querySelectorAll('#pDots span');
   function updateDots(){ pDots.forEach((d,i)=> d.classList.toggle('filled', i < currentPin.length)); }
   document.getElementById('keyboard').addEventListener('click', function(e){
@@ -487,6 +642,7 @@
     }
   });
 
+  // ─── GALLERY ───
   function buildGallery(){
     const wall = document.getElementById('galleryWall');
     wall.innerHTML = '';
@@ -505,54 +661,38 @@
     });
   }
 
-  function resetExperience(){
-    document.getElementById('envelopeTap').classList.remove('opened');
-    document.getElementById('flameTap').classList.remove('blown');
-    document.getElementById('cakeHint').innerText = 'Tap the flame to blow the candle 🕯️';
-    document.getElementById('cakeHint').style.color = 'var(--text-soft)';
-    document.getElementById('toTimeline').style.display = 'none';
-    document.getElementById('toGame').style.display = 'none';
-    currentPin = ''; updateDots();
-    poppedCount = 0;
-    if(heartSpawnInterval) clearInterval(heartSpawnInterval);
-  }
-
+  // ─── RESTART ───
   document.getElementById('restartBtn').addEventListener('click', ()=>{
     if(heartSpawnInterval) clearInterval(heartSpawnInterval);
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     resetExperience();
     document.getElementById('scr-setup').classList.add('active');
+    // Clear URL param
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', window.location.pathname);
+    }
   });
 
-  // Export standalone file with data baked in
-  const PRISTINE_HTML = document.documentElement.outerHTML;
-  document.getElementById('btnExport').addEventListener('click', function(){
-    readFormIntoState();
-    if(!state.letter){ alert('Pehle letter likh do, phir export karo :)'); return; }
+  // ─── LOAD FROM URL ───
+  (function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const dataParam = params.get('data');
+    if (dataParam) {
+      console.log('🔗 Loading celebration from URL data...');
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const success = loadFromUrlData(dataParam);
+      if (!success) {
+        alert('Failed to load celebration data from the link. Please create a new one.');
+        nav('scr-setup');
+      }
+    }
+  })();
 
-    const jsonSafe = JSON.stringify(state).replace(/</g, '\\u003c');
-    const injected = `<style>#scr-setup{display:none !important;}</style><script>window.__PRESET__=${jsonSafe};</` + `script>`;
-    const bodyIdx = PRISTINE_HTML.indexOf('<body');
-    const closeIdx = PRISTINE_HTML.indexOf('>', bodyIdx) + 1;
-    const newHtml = '<!DOCTYPE html>\n' + PRISTINE_HTML.slice(0, closeIdx) + injected + PRISTINE_HTML.slice(closeIdx);
-    const blob = new Blob([newHtml], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    const safeName = (state.name || 'you').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'');
-    a.download = `celebration-v2-${safeName || 'you'}.html`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=> URL.revokeObjectURL(url), 3000);
-  });
+  // ─── AUTO-SET DATE ───
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('inpDate').value = today;
 
-  // Auto-start if opened from an exported/preset file
-  if(window.__PRESET__){
-    state = Object.assign(state, window.__PRESET__);
-    applyStateData();
-    nav('scr-envelope');
-  }
+  console.log('✨ Premium Celebration with data embedded in URL — works on any device!');
 </script>
 </body>
 </html>
